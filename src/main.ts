@@ -4,7 +4,7 @@
  */
 
 import './style.css';
-import { ASCII_LOGO } from './ascii-logo';
+import { renderNexusLogo } from './ascii-logo';
 import { BOOT_SEQUENCE } from './boot-sequence';
 import { handleCommand, isSpecialCommand } from './commands';
 import { sendMessage, isLimitReached, getRemainingMessages } from './chat';
@@ -113,9 +113,10 @@ async function runBootSequence(): Promise<void> {
         }
 
         if (line.text === 'ASCII_LOGO') {
-            for (const logoLine of ASCII_LOGO) {
-                addLine(logoLine, 'line-logo');
-            }
+            const logoEl = renderNexusLogo();
+            logoEl.classList.add('line');
+            output.appendChild(logoEl);
+            scrollToBottom();
             await sleep(line.delay || 100);
             continue;
         }
