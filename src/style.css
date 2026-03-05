@@ -1,0 +1,484 @@
+/* ============================================================
+   Maschke.ai Under-Construction — CRT Terminal Styles
+   Colors aligned with main maschkeai-chatbot project
+   Light + Dark mode support
+   ============================================================ */
+
+:root {
+    /* — Light Mode (default) — aligned with main project — */
+    --bg-deep: #e8e6e1;
+    --bg-terminal: #f0eeea;
+    --text-primary: rgba(18, 30, 62, 0.92);
+    --text-dim: rgba(18, 30, 62, 0.48);
+    --text-prompt: rgba(35, 92, 255, 0.85);
+    --text-system: #4489cf;
+    --text-accent: #8c89c4;
+    --text-warn: rgba(120, 78, 18, 0.72);
+    --text-cyan: rgba(35, 92, 255, 0.85);
+    --text-logo-from: #8c89c4;
+    --text-logo-to: #4489cf;
+    --text-link: #4489cf;
+    --text-success: #2d8a4e;
+
+    /* — CRT Effects — */
+    --scanline-opacity: 0.025;
+    --glow-color: rgba(68, 137, 207, 0.1);
+    --glow-text: rgba(68, 137, 207, 0.3);
+    --vignette-color: rgba(0, 0, 0, 0.15);
+
+    /* — Sizing — */
+    --font-size: 15px;
+    --font-size-mobile: 13px;
+    --line-height: 1.6;
+    --terminal-padding: 2rem;
+}
+
+/* — Dark Mode — aligned with main project dark theme — */
+[data-theme="dark"] {
+    --bg-deep: #0b0f12;
+    --bg-terminal: #0d1117;
+    --text-primary: rgba(245, 248, 255, 0.92);
+    --text-dim: rgba(245, 248, 255, 0.48);
+    --text-prompt: rgba(120, 170, 255, 0.92);
+    --text-system: #78aaff;
+    --text-accent: #9b97d0;
+    --text-warn: #d29922;
+    --text-cyan: rgba(120, 170, 255, 0.90);
+    --text-logo-from: #9b97d0;
+    --text-logo-to: #78aaff;
+    --text-link: #78aaff;
+    --text-success: #3fb950;
+
+    --scanline-opacity: 0.04;
+    --glow-color: rgba(120, 170, 255, 0.15);
+    --glow-text: rgba(120, 170, 255, 0.4);
+    --vignette-color: rgba(0, 0, 0, 0.6);
+}
+
+/* — Reset — */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.6s ease, color 0.6s ease;
+}
+
+/* ============================================================
+   Terminal Container
+   ============================================================ */
+#terminal {
+    position: fixed;
+    inset: 0;
+    bottom: 28px;
+    display: flex;
+    flex-direction: column;
+    padding: var(--terminal-padding);
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--bg-terminal);
+    z-index: 1;
+    scroll-behavior: smooth;
+    transition: background-color 0.6s ease;
+}
+
+#terminal::-webkit-scrollbar {
+    width: 6px;
+}
+
+#terminal::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#terminal::-webkit-scrollbar-thumb {
+    background: rgba(110, 118, 129, 0.3);
+    border-radius: 3px;
+}
+
+#terminal::-webkit-scrollbar-thumb:hover {
+    background: rgba(110, 118, 129, 0.5);
+}
+
+/* ============================================================
+   Terminal Output
+   ============================================================ */
+#terminal-output {
+    flex: 1;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.line {
+    opacity: 0;
+    animation: lineIn 0.15s ease forwards;
+}
+
+.line-system {
+    color: var(--text-system);
+}
+
+.line-success {
+    color: var(--text-success);
+}
+
+.line-warn {
+    color: var(--text-warn);
+}
+
+.line-accent {
+    color: var(--text-accent);
+}
+
+.line-dim {
+    color: var(--text-dim);
+}
+
+.line-primary {
+    color: var(--text-primary);
+}
+
+.line-cyan {
+    color: var(--text-cyan);
+}
+
+.line-logo {
+    color: var(--text-system);
+    text-shadow: 0 0 10px var(--glow-text), 0 0 20px rgba(68, 137, 207, 0.15);
+    line-height: 1.15;
+    font-size: 0.75em;
+}
+
+.line-prompt {
+    color: var(--text-prompt);
+}
+
+.line-user {
+    color: var(--text-primary);
+}
+
+.line-ai {
+    color: var(--text-cyan);
+}
+
+.line-link {
+    color: var(--text-link);
+}
+
+.line-link a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.line-link a:hover {
+    color: var(--text-primary);
+    text-shadow: 0 0 8px var(--glow-text);
+}
+
+.progress-bar {
+    color: var(--text-success);
+}
+
+/* ============================================================
+   Input Line
+   ============================================================ */
+#terminal-input-line {
+    display: flex;
+    align-items: center;
+    margin-top: 0.5rem;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#terminal-input-line.visible {
+    opacity: 1;
+}
+
+#prompt {
+    color: var(--text-prompt);
+    white-space: nowrap;
+    user-select: none;
+}
+
+#terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    caret-color: transparent;
+}
+
+#cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1.2em;
+    background: var(--text-prompt);
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    transition: background-color 0.6s ease;
+}
+
+#cursor.blink {
+    animation: cursorBlink 1s step-end infinite;
+}
+
+/* ============================================================
+   Legal Footer (DSGVO — §5 DDG compliant)
+   ============================================================ */
+#legal-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: var(--bg-deep);
+    border-top: 1px solid rgba(110, 118, 129, 0.15);
+    z-index: 10;
+    font-size: 0.7rem;
+    transition: background-color 0.6s ease, border-color 0.6s ease;
+}
+
+#legal-footer a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+#legal-footer a:hover {
+    color: var(--text-link);
+}
+
+#legal-footer .separator {
+    color: rgba(110, 118, 129, 0.3);
+}
+
+/* Theme toggle in footer */
+#theme-toggle {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    padding: 0 0.25rem;
+    transition: color 0.2s ease;
+}
+
+#theme-toggle:hover {
+    color: var(--text-link);
+}
+
+/* ============================================================
+   CRT Overlay Effects
+   ============================================================ */
+#crt-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Scanlines */
+#crt-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, var(--scanline-opacity)) 2px,
+            rgba(0, 0, 0, var(--scanline-opacity)) 4px);
+}
+
+/* Vignette */
+#crt-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center,
+            transparent 60%,
+            var(--vignette-color) 100%);
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes lineIn {
+    from {
+        opacity: 0;
+        transform: translateY(2px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cursorBlink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+@keyframes glitch {
+    0% {
+        transform: translate(0);
+    }
+
+    20% {
+        transform: translate(-2px, 1px);
+    }
+
+    40% {
+        transform: translate(2px, -1px);
+    }
+
+    60% {
+        transform: translate(-1px, -1px);
+    }
+
+    80% {
+        transform: translate(1px, 2px);
+    }
+
+    100% {
+        transform: translate(0);
+    }
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 768px) {
+    :root {
+        --font-size: var(--font-size-mobile);
+        --terminal-padding: 1rem;
+    }
+
+    .line-logo {
+        font-size: 0.45em;
+        line-height: 1.1;
+    }
+}
+
+@media (max-width: 480px) {
+    .line-logo {
+        font-size: 0.35em;
+    }
+}
+
+/* ============================================================
+   Legal Overlay (Impressum/Datenschutz fullscreen)
+   ============================================================ */
+#legal-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-terminal);
+    z-index: 200;
+    display: none;
+    flex-direction: column;
+    padding: 2rem;
+    overflow-y: auto;
+    transition: background-color 0.6s ease;
+}
+
+#legal-overlay.active {
+    display: flex;
+}
+
+#legal-overlay-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(110, 118, 129, 0.2);
+}
+
+#legal-overlay-title {
+    color: var(--text-system);
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+#legal-overlay-close {
+    background: none;
+    border: 1px solid var(--text-dim);
+    color: var(--text-dim);
+    padding: 0.25rem 0.75rem;
+    font-family: inherit;
+    font-size: 0.8em;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+#legal-overlay-close:hover {
+    color: var(--text-primary);
+    border-color: var(--text-primary);
+}
+
+#legal-overlay-content {
+    color: var(--text-dim);
+    line-height: 1.8;
+    max-width: 700px;
+}
+
+#legal-overlay-content h2 {
+    color: var(--text-system);
+    font-size: 1em;
+    margin: 1.5rem 0 0.5rem;
+    font-weight: 500;
+}
+
+#legal-overlay-content p {
+    margin-bottom: 0.75rem;
+}
+
+#legal-overlay-content a {
+    color: var(--text-link);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .line {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+
+    #cursor.blink {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+}

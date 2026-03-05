@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maschke.ai — Kreativ-Agentur für Künstliche Intelligenz</title>
+  <meta name="description"
+    content="Maschke.ai — Kreativ-Agentur für KI-Beratung, Workshops und kreative KI-Projekte. Coming Soon.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Maschke.ai — Coming Soon">
+  <meta property="og:description" content="Kreativ-Agentur für Künstliche Intelligenz. Die Zukunft wird gebaut.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://maschke.ai">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <div id="terminal">
+    <div id="terminal-output"></div>
+    <div id="terminal-input-line">
+      <span id="prompt">nexus@maschke.ai ~ %&nbsp;</span>
+      <input type="text" id="terminal-input" autocomplete="off" autocorrect="off" autocapitalize="off"
+        spellcheck="false" aria-label="Terminal input">
+      <span id="cursor" class="blink"></span>
+    </div>
+  </div>
+
+  <!-- DSGVO-konform: Impressum & Datenschutz als sichtbare Links (max 2 Klicks, §5 DDG) -->
+  <footer id="legal-footer">
+    <a href="#" id="link-impressum">Impressum</a>
+    <span class="separator">|</span>
+    <a href="#" id="link-datenschutz">Datenschutz</a>
+    <span class="separator">|</span>
+    <button id="theme-toggle" title="Toggle theme">◐</button>
+  </footer>
+
+  <!-- Legal overlay (fullscreen) -->
+  <div id="legal-overlay">
+    <div id="legal-overlay-header">
+      <span id="legal-overlay-title"></span>
+      <button id="legal-overlay-close">[ESC] Schließen</button>
+    </div>
+    <div id="legal-overlay-content"></div>
+  </div>
+
+  <!-- Scanline + CRT overlay -->
+  <div id="crt-overlay"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>
