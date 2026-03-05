@@ -135,7 +135,7 @@ async function runBootSequence(): Promise<void> {
 // ── Echo user input ──
 function echoInput(text: string) {
     addHTML(
-        `<span class="line-prompt">nexus@maschke.ai ~ %</span> <span class="line-user">${escapeHtml(text)}</span>`,
+        `<span class="terminal-prompt">&gt; </span><span>${escapeHtml(text)}</span>`,
     );
 }
 

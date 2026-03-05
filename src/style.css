@@ -1,58 +1,53 @@
 /* ============================================================
-   Maschke.ai Under-Construction — CRT Terminal Styles
-   Colors aligned with main maschkeai-chatbot project
-   Light + Dark mode support
+   Maschke.ai Under-Construction — Terminal Styles
+   
+   DESIGN: 1:1 from main maschkeai-chatbot project.
+   Uses the exact same CSS variables, font stack, and patterns.
    ============================================================ */
 
+/* — Light Mode (default) — exact tokens from main project — */
 :root {
-    /* — Light Mode (default) — aligned with main project — */
-    --bg-deep: #e8e6e1;
-    --bg-terminal: #f0eeea;
-    --text-primary: rgba(18, 30, 62, 0.92);
-    --text-dim: rgba(18, 30, 62, 0.48);
-    --text-prompt: rgba(35, 92, 255, 0.85);
-    --text-system: #4489cf;
-    --text-accent: #8c89c4;
-    --text-warn: rgba(120, 78, 18, 0.72);
-    --text-cyan: rgba(35, 92, 255, 0.85);
-    --text-logo-from: #8c89c4;
-    --text-logo-to: #4489cf;
-    --text-link: #4489cf;
-    --text-success: #2d8a4e;
+    --terminal-ink: rgba(18, 30, 62, 0.92);
+    --terminal-sub: rgba(18, 30, 62, 0.68);
+    --terminal-accent: rgba(35, 92, 255, 0.85);
+    --terminal-grad-from: #8c89c4;
+    --terminal-grad-to: #4489cf;
+    --terminal-grad: linear-gradient(90deg, var(--terminal-grad-from), var(--terminal-grad-to));
 
-    /* — CRT Effects — */
-    --scanline-opacity: 0.025;
-    --glow-color: rgba(68, 137, 207, 0.1);
-    --glow-text: rgba(68, 137, 207, 0.3);
-    --vignette-color: rgba(0, 0, 0, 0.15);
+    --terminal-border: rgba(68, 137, 207, 0.30);
+    --terminal-border-strong: rgba(68, 137, 207, 0.55);
+    --terminal-surface: rgba(68, 137, 207, 0.06);
+    --terminal-surface-hover: rgba(68, 137, 207, 0.10);
+    --terminal-input-bg: rgba(255, 255, 255, 0.85);
+    --terminal-link-decoration: rgba(35, 92, 255, 0.30);
 
-    /* — Sizing — */
-    --font-size: 15px;
-    --font-size-mobile: 13px;
-    --line-height: 1.6;
-    --terminal-padding: 2rem;
+    --terminal-font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --terminal-font-size: 14px;
+    --terminal-line-height: 1.35;
+    --terminal-font-weight: 600;
+    --terminal-letter-spacing: 0.006em;
+    --terminal-word-spacing: 0.018em;
+
+    --bg-page: #cfcfcf;
 }
 
-/* — Dark Mode — aligned with main project dark theme — */
+/* — Dark Mode — exact tokens from main project dark theme — */
 [data-theme="dark"] {
-    --bg-deep: #0b0f12;
-    --bg-terminal: #0d1117;
-    --text-primary: rgba(245, 248, 255, 0.92);
-    --text-dim: rgba(245, 248, 255, 0.48);
-    --text-prompt: rgba(120, 170, 255, 0.92);
-    --text-system: #78aaff;
-    --text-accent: #9b97d0;
-    --text-warn: #d29922;
-    --text-cyan: rgba(120, 170, 255, 0.90);
-    --text-logo-from: #9b97d0;
-    --text-logo-to: #78aaff;
-    --text-link: #78aaff;
-    --text-success: #3fb950;
+    --terminal-ink: rgba(245, 248, 255, 0.92);
+    --terminal-sub: rgba(245, 248, 255, 0.66);
+    --terminal-accent: rgba(120, 170, 255, 0.92);
+    --terminal-grad-from: #9b97d0;
+    --terminal-grad-to: #78aaff;
+    --terminal-grad: linear-gradient(90deg, var(--terminal-grad-from), var(--terminal-grad-to));
 
-    --scanline-opacity: 0.04;
-    --glow-color: rgba(120, 170, 255, 0.15);
-    --glow-text: rgba(120, 170, 255, 0.4);
-    --vignette-color: rgba(0, 0, 0, 0.6);
+    --terminal-border: rgba(120, 170, 255, 0.30);
+    --terminal-border-strong: rgba(120, 170, 255, 0.55);
+    --terminal-surface: rgba(120, 170, 255, 0.10);
+    --terminal-surface-hover: rgba(120, 170, 255, 0.14);
+    --terminal-input-bg: rgba(20, 30, 50, 0.75);
+    --terminal-link-decoration: rgba(120, 170, 255, 0.35);
+
+    --bg-page: #0b0f12;
 }
 
 /* — Reset — */
@@ -69,14 +64,30 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: var(--bg-deep);
-    color: var(--text-primary);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: var(--font-size);
-    line-height: var(--line-height);
+    background: var(--bg-page);
+    color: var(--terminal-ink);
+    font-family: var(--terminal-font-family);
+    font-size: var(--terminal-font-size);
+    font-weight: var(--terminal-font-weight);
+    line-height: var(--terminal-line-height);
+    letter-spacing: var(--terminal-letter-spacing);
+    word-spacing: var(--terminal-word-spacing);
+    text-rendering: optimizeLegibility;
+    font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.6s ease, color 0.6s ease;
+    transition: background-color 1.5s ease, color 1.5s ease;
+}
+
+/* Selection — from main project */
+::selection {
+    background: rgba(35, 92, 255, 0.22);
+    color: rgba(0, 0, 0, 0.9);
+}
+
+[data-theme="dark"] ::selection {
+    background: rgba(120, 170, 255, 0.28);
+    color: rgba(255, 255, 255, 0.92);
 }
 
 /* ============================================================
@@ -88,13 +99,11 @@ body {
     bottom: 28px;
     display: flex;
     flex-direction: column;
-    padding: var(--terminal-padding);
+    padding: 24px;
     overflow-y: auto;
     overflow-x: hidden;
-    background: var(--bg-terminal);
+    background: transparent;
     z-index: 1;
-    scroll-behavior: smooth;
-    transition: background-color 0.6s ease;
 }
 
 #terminal::-webkit-scrollbar {
@@ -106,104 +115,125 @@ body {
 }
 
 #terminal::-webkit-scrollbar-thumb {
-    background: rgba(110, 118, 129, 0.3);
-    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
 }
 
-#terminal::-webkit-scrollbar-thumb:hover {
-    background: rgba(110, 118, 129, 0.5);
+[data-theme="dark"] #terminal::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* ============================================================
-   Terminal Output
+   Terminal Output — uses gradient text-clip from main project
    ============================================================ */
 #terminal-output {
     flex: 1;
     white-space: pre-wrap;
     word-break: break-word;
+    color: var(--terminal-ink);
 }
 
+/* Every line of terminal text uses the gradient text effect
+   (same as .terminal-scroll :where(span, strong) in main project) */
 .line {
+    margin: 0 0 6px 0;
     opacity: 0;
-    animation: lineIn 0.15s ease forwards;
+    animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.line-system {
-    color: var(--text-system);
+/* Gradient text — the signature look from the main terminal */
+.line-grad {
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
 }
 
-.line-success {
-    color: var(--text-success);
-}
-
-.line-warn {
-    color: var(--text-warn);
-}
-
-.line-accent {
-    color: var(--text-accent);
-}
-
+/* Dim text — secondary info */
 .line-dim {
-    color: var(--text-dim);
+    opacity: 0.6;
 }
 
-.line-primary {
-    color: var(--text-primary);
+/* Sub text — tertiary info */
+.line-sub {
+    color: var(--terminal-sub);
 }
 
-.line-cyan {
-    color: var(--text-cyan);
+/* Prompt style — matches .terminal-prompt from main */
+.line-prompt,
+.terminal-prompt {
+    color: var(--terminal-accent);
+    font-weight: 600;
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
+/* ASCII logo — subtle, not glowing */
 .line-logo {
-    color: var(--text-system);
-    text-shadow: 0 0 10px var(--glow-text), 0 0 20px rgba(68, 137, 207, 0.15);
     line-height: 1.15;
     font-size: 0.75em;
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
 }
 
-.line-prompt {
-    color: var(--text-prompt);
+/* System messages */
+.line-system {
+    color: var(--terminal-sub);
 }
 
-.line-user {
-    color: var(--text-primary);
+/* Success */
+.line-success {
+    color: var(--terminal-accent);
 }
 
-.line-ai {
-    color: var(--text-cyan);
+/* Warning */
+.line-warn {
+    color: var(--terminal-sub);
+    font-weight: 700;
 }
 
+/* Links */
 .line-link {
-    color: var(--text-link);
+    color: var(--terminal-accent);
 }
 
 .line-link a {
     color: inherit;
     text-decoration: underline;
+    text-decoration-color: var(--terminal-link-decoration);
     text-underline-offset: 3px;
 }
 
-.line-link a:hover {
-    color: var(--text-primary);
-    text-shadow: 0 0 8px var(--glow-text);
-}
-
+/* Progress bar */
 .progress-bar {
-    color: var(--text-success);
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
 }
 
 /* ============================================================
-   Input Line
+   Input Line — matches .terminal-input from main project
    ============================================================ */
 #terminal-input-line {
     display: flex;
     align-items: center;
-    margin-top: 0.5rem;
+    gap: 8px;
+    padding: 3px 10px;
+    margin-top: 8px;
     flex-shrink: 0;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    background: var(--terminal-input-bg);
+    border: 1px solid var(--terminal-border-strong);
+    border-radius: 3px;
+    transition: opacity 0.3s ease, background-color 1.5s ease, border-color 1.5s ease;
 }
 
 #terminal-input-line.visible {
@@ -211,35 +241,45 @@ body {
 }
 
 #prompt {
-    color: var(--text-prompt);
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     white-space: nowrap;
     user-select: none;
+    font-weight: 600;
 }
 
 #terminal-input {
     flex: 1;
+    min-width: 0;
     background: transparent;
     border: none;
     outline: none;
-    color: var(--text-primary);
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    caret-color: transparent;
+    color: var(--terminal-ink);
+    font: inherit;
+    font-weight: inherit;
+    caret-color: var(--terminal-accent);
 }
 
+#terminal-input::placeholder {
+    color: var(--terminal-sub);
+    font-weight: inherit;
+}
+
+/* Custom cursor (hidden, we use caret-color instead) */
 #cursor {
+    display: none;
+}
+
+/* Blinking cursor for boot phase only */
+.terminal-cursor-blink {
     display: inline-block;
     width: 8px;
-    height: 1.2em;
-    background: var(--text-prompt);
-    margin-left: 1px;
+    height: 1.15em;
+    background: var(--terminal-accent);
     vertical-align: text-bottom;
-    transition: background-color 0.6s ease;
-}
-
-#cursor.blink {
-    animation: cursorBlink 1s step-end infinite;
+    animation: cursor-blink 1s steps(1) infinite;
 }
 
 /* ============================================================
@@ -255,32 +295,36 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-    background: var(--bg-deep);
-    border-top: 1px solid rgba(110, 118, 129, 0.15);
+    background: var(--bg-page);
+    border-top: 1px solid rgba(0, 0, 0, 0.10);
     z-index: 10;
-    font-size: 0.7rem;
-    transition: background-color 0.6s ease, border-color 0.6s ease;
+    font-size: 0.75em;
+    transition: background-color 1.5s ease, border-color 1.5s ease;
+}
+
+[data-theme="dark"] #legal-footer {
+    border-top-color: rgba(255, 255, 255, 0.12);
 }
 
 #legal-footer a {
-    color: var(--text-dim);
+    color: var(--terminal-sub);
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
 #legal-footer a:hover {
-    color: var(--text-link);
+    color: var(--terminal-accent);
 }
 
 #legal-footer .separator {
-    color: rgba(110, 118, 129, 0.3);
+    color: var(--terminal-sub);
+    opacity: 0.4;
 }
 
-/* Theme toggle in footer */
 #theme-toggle {
     background: none;
     border: none;
-    color: var(--text-dim);
+    color: var(--terminal-sub);
     font-family: inherit;
     font-size: inherit;
     cursor: pointer;
@@ -289,48 +333,16 @@ body {
 }
 
 #theme-toggle:hover {
-    color: var(--text-link);
+    color: var(--terminal-accent);
 }
 
 /* ============================================================
-   CRT Overlay Effects
+   Animations — from main project
    ============================================================ */
-#crt-overlay {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 100;
-}
-
-/* Scanlines */
-#crt-overlay::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(0deg,
-            transparent,
-            transparent 2px,
-            rgba(0, 0, 0, var(--scanline-opacity)) 2px,
-            rgba(0, 0, 0, var(--scanline-opacity)) 4px);
-}
-
-/* Vignette */
-#crt-overlay::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center,
-            transparent 60%,
-            var(--vignette-color) 100%);
-}
-
-/* ============================================================
-   Animations
-   ============================================================ */
-@keyframes lineIn {
+@keyframes slideUpFade {
     from {
         opacity: 0;
-        transform: translateY(2px);
+        transform: translateY(10px);
     }
 
     to {
@@ -339,41 +351,16 @@ body {
     }
 }
 
-@keyframes cursorBlink {
+@keyframes cursor-blink {
 
     0%,
-    100% {
+    50% {
         opacity: 1;
     }
 
-    50% {
-        opacity: 0;
-    }
-}
-
-@keyframes glitch {
-    0% {
-        transform: translate(0);
-    }
-
-    20% {
-        transform: translate(-2px, 1px);
-    }
-
-    40% {
-        transform: translate(2px, -1px);
-    }
-
-    60% {
-        transform: translate(-1px, -1px);
-    }
-
-    80% {
-        transform: translate(1px, 2px);
-    }
-
+    51%,
     100% {
-        transform: translate(0);
+        opacity: 0;
     }
 }
 
@@ -381,9 +368,8 @@ body {
    Responsive
    ============================================================ */
 @media (max-width: 768px) {
-    :root {
-        --font-size: var(--font-size-mobile);
-        --terminal-padding: 1rem;
+    #terminal {
+        padding: 16px;
     }
 
     .line-logo {
@@ -399,18 +385,18 @@ body {
 }
 
 /* ============================================================
-   Legal Overlay (Impressum/Datenschutz fullscreen)
+   Legal Overlay (Impressum/Datenschutz)
    ============================================================ */
 #legal-overlay {
     position: fixed;
     inset: 0;
-    background: var(--bg-terminal);
+    background: var(--bg-page);
     z-index: 200;
     display: none;
     flex-direction: column;
-    padding: 2rem;
+    padding: 24px;
     overflow-y: auto;
-    transition: background-color 0.6s ease;
+    transition: background-color 1.5s ease;
 }
 
 #legal-overlay.active {
@@ -423,43 +409,51 @@ body {
     align-items: center;
     margin-bottom: 1.5rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid rgba(110, 118, 129, 0.2);
+    border-bottom: 1px solid var(--terminal-border);
 }
 
 #legal-overlay-title {
-    color: var(--text-system);
-    font-weight: 500;
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
     font-size: 1.1em;
 }
 
 #legal-overlay-close {
-    background: none;
-    border: 1px solid var(--text-dim);
-    color: var(--text-dim);
-    padding: 0.25rem 0.75rem;
+    background: var(--terminal-surface);
+    border: 1px solid var(--terminal-border-strong);
+    color: var(--terminal-ink);
+    padding: 2px 8px;
     font-family: inherit;
-    font-size: 0.8em;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
     cursor: pointer;
-    border-radius: 3px;
-    transition: all 0.2s ease;
+    border-radius: 2px;
+    transition: background 140ms ease, border-color 140ms ease;
 }
 
 #legal-overlay-close:hover {
-    color: var(--text-primary);
-    border-color: var(--text-primary);
+    background: var(--terminal-surface-hover);
+    border-color: var(--terminal-border);
 }
 
 #legal-overlay-content {
-    color: var(--text-dim);
+    color: var(--terminal-sub);
     line-height: 1.8;
     max-width: 700px;
 }
 
 #legal-overlay-content h2 {
-    color: var(--text-system);
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 1em;
     margin: 1.5rem 0 0.5rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 #legal-overlay-content p {
@@ -467,7 +461,8 @@ body {
 }
 
 #legal-overlay-content a {
-    color: var(--text-link);
+    color: var(--terminal-accent);
+    text-decoration-color: var(--terminal-link-decoration);
 }
 
 /* Reduced motion */
@@ -477,7 +472,7 @@ body {
         opacity: 1 !important;
     }
 
-    #cursor.blink {
+    .terminal-cursor-blink {
         animation: none !important;
         opacity: 1 !important;
     }

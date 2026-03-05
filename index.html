@@ -12,20 +12,15 @@
   <meta property="og:description" content="Kreativ-Agentur für Künstliche Intelligenz. Die Zukunft wird gebaut.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://maschke.ai">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap"
-    rel="stylesheet">
 </head>
 
 <body>
   <div id="terminal">
     <div id="terminal-output"></div>
     <div id="terminal-input-line">
-      <span id="prompt">nexus@maschke.ai ~ %&nbsp;</span>
+      <span id="prompt">>&nbsp;</span>
       <input type="text" id="terminal-input" autocomplete="off" autocorrect="off" autocapitalize="off"
-        spellcheck="false" aria-label="Terminal input">
-      <span id="cursor" class="blink"></span>
+        spellcheck="false" aria-label="Terminal input" placeholder="Befehl oder Frage eingeben…">
     </div>
   </div>
 
@@ -46,9 +41,6 @@
     </div>
     <div id="legal-overlay-content"></div>
   </div>
-
-  <!-- Scanline + CRT overlay -->
-  <div id="crt-overlay"></div>
 
   <script type="module" src="/src/main.ts"></script>
 </body>
