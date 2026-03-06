@@ -1244,6 +1244,50 @@ body {
     }
 }
 
+/* --- Talk: same idle sprite, faster cycle (triggers on AI streaming) --- */
+#astronaut-sprite.astro-talk {
+    animation: astro-talk 1200ms steps(1, end) infinite;
+}
+
+@keyframes astro-talk {
+    0% {
+        background-position: 0px 0px;
+    }
+
+    11.11% {
+        background-position: calc(-1 * var(--astro-frame-w)) 0px;
+    }
+
+    22.22% {
+        background-position: calc(-2 * var(--astro-frame-w)) 0px;
+    }
+
+    33.33% {
+        background-position: 0px calc(-1 * var(--astro-frame-h));
+    }
+
+    44.44% {
+        background-position: calc(-1 * var(--astro-frame-w)) calc(-1 * var(--astro-frame-h));
+    }
+
+    55.55% {
+        background-position: calc(-2 * var(--astro-frame-w)) calc(-1 * var(--astro-frame-h));
+    }
+
+    66.66% {
+        background-position: 0px calc(-2 * var(--astro-frame-h));
+    }
+
+    77.77% {
+        background-position: calc(-1 * var(--astro-frame-w)) calc(-2 * var(--astro-frame-h));
+    }
+
+    88.88%,
+    100% {
+        background-position: calc(-2 * var(--astro-frame-w)) calc(-2 * var(--astro-frame-h));
+    }
+}
+
 /* ============================================================
    Speech Bubble — 1:1 from main project's astro-bubble
    ============================================================ */

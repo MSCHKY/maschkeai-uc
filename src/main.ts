@@ -153,6 +153,7 @@ let bubblePool = [...YORI_LINES];
 let bubbleTimers: { show?: number; hide?: number } = {};
 let isFalling = false;
 let isPerfuming = false;
+let isTalking = false;
 
 // ── Perfume animation (ported from main project's useAstronaut.ts) ──
 const PERFUME_CHECK_MS = 28_000;  // check every 28 seconds
@@ -160,7 +161,7 @@ const PERFUME_CHANCE = 0.02;      // 2% chance per check
 let perfumeTimeoutId: number | null = null;
 
 function triggerPerfume(sprite: HTMLElement) {
-    if (isPerfuming || isFalling) return;
+    if (isPerfuming || isFalling || isTalking) return;
 
     if (perfumeTimeoutId != null) {
         window.clearTimeout(perfumeTimeoutId);
@@ -175,6 +176,19 @@ function triggerPerfume(sprite: HTMLElement) {
         isPerfuming = false;
         perfumeTimeoutId = null;
     }, 1350);
+}
+
+// ── Talk animation (triggers during AI streaming) ──
+function startTalking(sprite: HTMLElement) {
+    if (isFalling || isPerfuming || isTalking) return;
+    isTalking = true;
+    sprite.classList.add('astro-talk');
+}
+
+function stopTalking(sprite: HTMLElement) {
+    if (!isTalking) return;
+    isTalking = false;
+    sprite.classList.remove('astro-talk');
 }
 
 function pickNextLine(): string {
@@ -219,6 +233,9 @@ function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
     // Show click warning
     const warning = ASTRO_CLICK_WARNINGS[Math.floor(Math.random() * ASTRO_CLICK_WARNINGS.length)];
     showBubble(bubble, warning, true);
+
+    // Stop talk if active
+    stopTalking(sprite);
 
     // Fall animation
     sprite.classList.add('astro-fall');
@@ -570,16 +587,23 @@ async function processInput(text: string) {
 
     let rawAiText = '';
 
+    // Start talk animation when AI starts streaming
+    const talkSprite = document.getElementById('astronaut-sprite');
+
     await sendMessage(
         trimmed,
         // onChunk — accumulate raw text and render with formatting
         (chunk: string) => {
+            // Start Yori talking on first chunk
+            if (talkSprite && !isTalking) startTalking(talkSprite);
             rawAiText += chunk;
             responseDiv.innerHTML = formatAiText(rawAiText);
             scrollToBottom();
         },
         // onDone — final format pass + attach click handlers
         (_fullText: string) => {
+            // Stop Yori talking
+            if (talkSprite) stopTalking(talkSprite);
             responseDiv.innerHTML = formatAiText(rawAiText);
             // Make command chips clickable
             responseDiv.querySelectorAll('.cmd-chip').forEach((chip) => {
@@ -597,6 +621,8 @@ async function processInput(text: string) {
         },
         // onError
         (error: string) => {
+            // Stop Yori talking
+            if (talkSprite) stopTalking(talkSprite);
             if (error === 'LIMIT_REACHED') {
                 responseDiv.textContent = 'NEXUS ist noch in der Kalibrierung. Die volle Version kommt bald.';
                 responseDiv.className = 'line line-warn';
