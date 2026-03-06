@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-06T16:00 (Session 484ec42d)
+> Last updated: 2026-03-06T16:17 (Session 5d33a030)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -14,16 +14,17 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Component | File | Status |
 |-----------|------|--------|
 | HTML Shell | `index.html` | ✅ Done (+ astronaut overlay + debug panel) |
-| Main Orchestrator | `src/main.ts` | ⚠️ Done (Easter Eggs, astronaut, click-to-fall, `formatAiText()`, HTML box rendering) |
-| Terminal CSS | `src/style.css` | ⚠️ Done (1:1 from main project + astronaut + AI text + **terminal-box CSS needs spacing fix**) |
+| Main Orchestrator | `src/main.ts` | ✅ Done (Easter Eggs, astronaut, click-to-fall, `formatAiText()`, HTML box rendering, compact consent) |
+| Terminal CSS | `src/style.css` | ✅ Done (1:1 from main project + astronaut + AI text + compact terminal-box) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (NEXUS OS v4.0.2, German) |
-| Commands | `src/commands.ts` | ⚠️ Refactored (HTML boxes replace ASCII art — **spacing too large, needs tuning**) |
+| Commands | `src/commands.ts` | ✅ Done (static=box, dynamic=lines; compact spacing) |
 | Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, full UC system prompt) |
-| Legal Content | `src/legal.ts` | ⚠️ Refactored (HTML boxes — **spacing too large, needs tuning**) |
+| Legal Content | `src/legal.ts` | ✅ Done (HTML boxes, compact spacing) |
 | Mistral Proxy | `functions/api/mistral.js` | ✅ Done |
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall sprites) |
 | Workflows | `.agent/workflows/` | ✅ session-start + session-end |
+| Agent Rules | `.agent/rules/` | ✅ REUSE_MAIN_PROJECT.md + NO_LOCAL_SERVER.md |
 
 ## Astronaut Yori — Positioning System
 
@@ -111,6 +112,7 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
 3. **Deploys auto-trigger** on push to `main` branch via Cloudflare Pages Git integration.
 4. **Reuse before recreate**: Always check main `maschkeai-chatbot` project for existing patterns, CSS, and logic before building new ones.
 5. **Astronaut Y-position**: Always use `bottom: 54px` (input-line anchor). NEVER go back to `bottom: 28px` with large `--astroY` offsets — that causes phone/desktop divergence.
+6. **🚨 NO LOCAL DEV SERVER**: NEVER start `npm run dev` or any local server for this project. Test ONLY on `https://maschkeai-uc.pages.dev/` after push to `main`. See `.agent/rules/NO_LOCAL_SERVER.md`.
 
 ## Completed Tasks
 
@@ -168,31 +170,15 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
 - **Added**: `.agent/rules/REUSE_MAIN_PROJECT.md` rule for code reuse enforcement
 - **DSGVO**: Consent gate + termin booking (Cal.com link) implemented
 
-### ⚠️ CSS Box Refactoring (Session 484ec42d) — NEEDS FIX
-- **What was done**: Replaced ALL ASCII-art boxes (`┌──┐ │ │ └──┘`) with CSS-styled `terminal-box` cards
-  - New CSS: `.terminal-box`, `.terminal-box-title`, `.terminal-cmd`, `.terminal-box-link`
-  - `CommandResult` interface now supports both `lines[]` (legacy) and `html` (new) output
-  - Easter eggs kept line-based (raw feel), info commands converted to HTML boxes
-  - Consent disclaimer converted to CSS box with clickable AKZEPTIEREN button
-  - Impressum/Datenschutz terminal output converted to HTML boxes
-- **Problem**: Boxes are WAY TOO BIG — excessive vertical whitespace between `<p>` tags
-  - The `<p>` margin + `.terminal-box-body` line-height create bloated cards
-  - Need to massively reduce padding, margin, and line-height inside boxes
-  - Consider: maybe boxes should be narrower (max-width?) not spanning full terminal width
-- **Files affected**: `src/style.css`, `src/commands.ts`, `src/main.ts`, `src/legal.ts`
-- **Pattern reference**: Main project's `terminal-consent` in `tailwind.css` (lines 1972-2010)
+### ✅ P8.5: CSS Box Spacing + Command Refactoring (Session 5d33a030)
+- **CSS tightened**: `.terminal-box` padding 8px 12px, line-height 1.35, margins reduced
+- **Command output split**: Boxes reserved for **static content only** (contact, termin, status, impressum, datenschutz, consent). Info commands (`hilfe`, `about`, `services`) converted to terminal-native **line-based output**
+- **Consent box condensed**: Fewer `<p>` tags, merged button hints into single line
+- **Contact/Termin boxes condensed**: Merged paragraphs, fewer elements, tighter structure
+- **NO_LOCAL_SERVER rule**: Created `.agent/rules/NO_LOCAL_SERVER.md` + added to session-start workflow
+- **Files modified**: `src/style.css`, `src/commands.ts`, `src/main.ts`
 
 ## Open Tasks (Priority Order)
-
-### 🔴 P8.5: Fix CSS Box Spacing (HIGHEST PRIORITY)
-- The terminal-box cards are too tall — way too much vertical whitespace
-- Fix `.terminal-box-body p` margin (currently 0 0 6px, but line-height 1.65 + padding compounds)
-- Reduce `.terminal-box` padding (currently 12px 14px — try 8px 12px)
-- Reduce `line-height` inside boxes (currently 1.65 — try 1.35 to match terminal)
-- Consider `max-width` on boxes to prevent full-width sprawl
-- Consider tighter `.box-section` margins
-- **Test against main project's Disclaimer** for size parity
-- Might also need to reconsider the HTML structure (fewer `<p>` tags, more inline content)
 
 ### 🟢 P8: Live Chat Testing
 - Test the new NEXUS UC persona on production (https://maschkeai-uc.pages.dev/)
@@ -212,12 +198,9 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `1cc681b` — `feat: replace ASCII-art boxes with CSS-styled terminal-box cards`
-- **Session commits (484ec42d):** 4
-  - `cfc0e67` feat: add DSGVO consent gate and termin booking command (Cal.com)
-  - `6f86bcb` chore: rename workflows to uc-session-start/end, add REUSE_MAIN_PROJECT rule
-  - `1cc681b` feat: replace ASCII-art boxes with CSS-styled terminal-box cards
-  - `[pending]` docs: update handover context — session end
+- **HEAD:** `27d62b6` — `fix: compact terminal-box spacing, convert info commands to line-based output`
+- **Session commits (5d33a030):** 1
+  - `27d62b6` fix: compact terminal-box spacing, convert info commands to line-based output
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
