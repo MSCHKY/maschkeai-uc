@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-06T20:57 (Session 7f7ee283)
+> Last updated: 2026-03-06T22:10 (Session af70a592)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -19,9 +19,9 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (NEXUS OS v4.0.2, German) |
 | Commands | `src/commands.ts` | ✅ Done (static=box, dynamic=lines; compact spacing) |
-| Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, full UC system prompt) |
+| Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, prompt moved server-side) |
 | Legal Content | `src/legal.ts` | ✅ Done (HTML boxes, compact spacing) |
-| Mistral Proxy | `functions/api/mistral.js` | ✅ Done (+ 20 injection regex patterns, 403 blocking) |
+| Mistral Proxy | `functions/api/mistral.js` | ✅ Done (+ system prompt, 20 injection regex, 403 blocking) |
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
 | Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, **talk**) |
 | Workflows | `.agent/workflows/` | ✅ session-start + session-end |
@@ -65,38 +65,35 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
 ## AI Text Rendering
 
 **`formatAiText()` in `main.ts` processes AI responses during streaming:**
-- `**bold**` → `<strong>bold</strong>` (rendered as bold text)
-- `` `command` `` → clickable `.cmd-chip` span (executes command on click)
-- HTML-escaped first to prevent XSS
+1. **Sanitize** — `sanitizeAiText()` strips Markdown artifacts (headings, blockquotes, lists, code blocks, horizontal rules, collapses excessive newlines). Ported 1:1 from main project.
+2. **Escape** — HTML-escaped for XSS prevention
+3. **Format** — `**bold**` → `<strong>` tags, `` `command` `` → clickable `.cmd-chip` spans
 - Applied on each streaming chunk for live formatting during typewriter effect
 - On completion, click handlers are attached to all `.cmd-chip` elements
 
-**CSS classes added in this session:**
-- `.line-ai` — AI response text color
+**CSS classes:**
+- `.line-ai` — AI response text (max-width: 68ch, line-height: 1.5, word-spacing: 0.02em)
 - `.line-ai strong` — Bold text inside AI responses (font-weight: 700)
 - `.cmd-chip` — Clickable command chips (accent color, underline, hover opacity)
 - `.line-accent` — Error/highlight color
 - `.line-cyan` — Services box entries (accent + bold)
 
-## NEXUS System Prompt (UC Version)
+## NEXUS System Prompt
 
-**Full rewrite of the system prompt for UC context** (`src/chat.ts` → `SYSTEM_PROMPT`):
+**System prompt is injected SERVER-SIDE in `functions/api/mistral.js`** (not client-side).
 
-### Structure (9 sections):
+This was a critical fix in session af70a592: the client was sending the system prompt, but the ALLOWED_ROLES filter (`['user', 'assistant']`) was silently stripping it before Mistral received it. Moving it server-side (matching main project architecture) fixed this.
+
+### Prompt Design (9 sections):
 1. **Kontext** — "Du bist NEXUS auf der Under-Construction-Seite von maschke.ai"
-2. **Voice** — Corporate-cool, informelles "Du", trockener Humor, kein Marketing-Sprech
-3. **Format** — Short paragraphs, `**bold**` key terms, `` `backtick` `` commands, NO markdown
-4. **Antwortlänge** — 80-150 Wörter default, 60-100 für Service-Commands
-5. **Kern-Wissen** — Teaser-level: 4 services, founder info, philosophy, NO pricing
-6. **Strategie (5-Nachrichten-Funnel)** — Neugier → Kompetenz → Konkret → CTA (E-Mail)
+2. **Voice** — Corporate-cool, informelles "Du", trockener Humor, "Dichte über Länge"
+3. **Format — STRIKTE REGELN** — Explicit forbidden-list (headings, lists, code blocks, emojis), with right/wrong examples
+4. **Antwortlänge** — 50-80 Wörter (reduced from 80-150), Max 100
+5. **Kern-Wissen** — Teaser-level services as Fließtext (not list), kontakt@maschke.ai
+6. **Strategie** — 5-Nachrichten-Funnel: Neugier → Kompetenz → Konkret → CTA
 7. **UC-Bewusstsein** — "Die KI läuft schon, die Website holt noch auf"
-8. **Guardrails** — Full set matching main site (prompt protection, no code, context lock, role integrity)
-9. **Ton-Beispiel** — Concrete example response
-
-### Key Design Decisions:
-- Only CTA is `kontakt@maschke.ai` — NO booking links, NO prices
-- 5-message limit creates urgency → funnel strategy guides to email
-- Guardrails are identical to main site's `functions/api/mistral.js`
+8. **Guardrails** — Full set matching main site
+9. **Rollen-Integrität** — IMMER NEXUS, override-resistent
 
 ## Design System
 
@@ -211,20 +208,31 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
 - Point `maschke.ai` → `www.maschke.ai` to Cloudflare Pages
 - Robert has this on his radar — no task item needed
 
+### ✅ P9: Terminal Content Polish (Session af70a592)
+- **Root Cause Fix**: System prompt was being silently stripped by `ALLOWED_ROLES` filter in API proxy. Moved prompt server-side (matching main project architecture)
+- **sanitizeAiText()**: Ported from main project — strips headings, blockquotes, bullet/numbered lists, code blocks, horizontal rules, collapses newlines
+- **formatAiText() pipeline**: Sanitize → Escape → Format (bold + cmd-chips)
+- **System Prompt v2**: Explicit "STRIKTE REGELN" forbidden-list with right/wrong examples, response length 50-80 words, services as Fließtext
+- **CSS**: `.line-ai` gets `max-width: 68ch`, `line-height: 1.5` for better readability
+- **Verified on production**: On-brand responses, no markdown artifacts, correct bold + cmd-chip rendering
+- **Files modified**: `functions/api/mistral.js`, `src/chat.ts`, `src/main.ts`, `src/style.css`
+
+### 🟢 P6: Custom Domain (User handles separately)
+- Point `maschke.ai` → `www.maschke.ai` to Cloudflare Pages
+- Robert has this on his radar — no task item needed
+
 ## Open Tasks (Priority Order)
 
-### 🟡 P9: Terminal Content Polish
-- **Formatting**: AI responses sometimes output `###` headings, `-` lists — needs `formatAiText()` sanitization (strip `###`, convert `-` lists to sentence flow)
-- **Layout**: Review overall terminal spacing, line heights, response area appearance
-- **Mistral Output Quality**: Tune system prompt so responses are tighter, on-brand, no markdown artifacts
-- **Reference**: Main project's `sanitizeAiText()` aggressively strips headings, lists, code blocks, blockquotes — port similar logic
+- None currently. All P1-P9 tasks completed.
+- Consider: Mobile-responsive testing pass, additional prompt tuning based on user feedback
 
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `05ff313` — `feat: add talk animation — Yori reacts to AI streaming responses`
-- **Session commits (7f7ee283):** 1
-  - `05ff313` feat: add talk animation — Yori reacts to AI streaming responses
+- **HEAD:** `aaecc22` — `fix: move system prompt server-side — was being stripped by ALLOWED_ROLES filter`
+- **Session commits (af70a592):** 2
+  - `185a342` fix: sanitize AI responses — strip markdown artifacts, tune system prompt
+  - `aaecc22` fix: move system prompt server-side — was being stripped by ALLOWED_ROLES filter
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
@@ -238,3 +246,4 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
 - `maschkeai-chatbot/components/TerminalBoard.tsx` — AstronautOverlay component
 - `maschkeai-chatbot/tailwind.css` — All CSS variables (already extracted)
 - `maschkeai-chatbot/functions/api/mistral.js` — Full system prompt (reference for UC prompt)
+- `maschkeai-chatbot/components/useTerminalControllerV2.ts` — sanitizeAiText() reference (ported)
