@@ -1133,6 +1133,15 @@ body {
     transform: translate3d(var(--astroX), var(--astroY), 0) scale(var(--astroScale));
 }
 
+/* Mobile: match terminal card's reduced insets (10px sides, 38px bottom) */
+@media (max-width: 480px) {
+    #astronaut-overlay {
+        right: 10px;
+        bottom: 68px;
+        /* 38px card bottom + ~30px for input line spacing */
+    }
+}
+
 /* --- Sprite: idle (3x3 grid, 190x268 per frame → rendered 92x130) --- */
 #astronaut-sprite {
     --astro-frame-w: 92px;
@@ -1391,6 +1400,15 @@ body {
 
 #astronaut-bubble.visible {
     opacity: 1;
+}
+
+/* Mobile: smaller bubble to avoid obscuring terminal content */
+@media (max-width: 480px) {
+    #astronaut-bubble {
+        max-width: 140px;
+        font-size: 10px;
+        padding: 6px 8px;
+    }
 }
 
 [data-theme="dark"] #astronaut-bubble {
