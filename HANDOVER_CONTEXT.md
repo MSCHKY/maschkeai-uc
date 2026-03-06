@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-06T17:11 (Session 9bae44bc)
+> Last updated: 2026-03-06T20:57 (Session 7f7ee283)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -23,6 +23,7 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Legal Content | `src/legal.ts` | ✅ Done (HTML boxes, compact spacing) |
 | Mistral Proxy | `functions/api/mistral.js` | ✅ Done (+ 20 injection regex patterns, 403 blocking) |
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
+| Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, **talk**) |
 | Workflows | `.agent/workflows/` | ✅ session-start + session-end |
 | Agent Rules | `.agent/rules/` | ✅ REUSE_MAIN_PROJECT.md + NO_LOCAL_SERVER.md |
 
@@ -58,6 +59,7 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
   - **Easter-Egg-Hints** (4): "Tippe mal hilfe", "Was passiert bei sudo?", etc.
 - **Click-to-Fall Easter Egg:** Click Yori → fall animation + red warning bubble ("NICHT ANFASSEN!!!")
 - **Perfume Animation:** Random trigger (28s interval, 2% chance), 1300ms 9-frame stepped animation. Wider sprite (127x130) centered via margin-left. Guards prevent concurrent fall+perfume.
+- **Talk Animation:** Triggered by AI streaming responses. Same idle sprite but 1200ms cycle (vs 8s idle) — fast frame-flipping = "talking" effect. `startTalking()` on first chunk, `stopTalking()` on done/error. Guards: suppressed during fall/perfume; fall stops active talk.
 - **Debug Panel:** `?debug=1` URL param shows live sliders for position tuning
 
 ## AI Text Rendering
@@ -197,24 +199,32 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
 - Random trigger: `setInterval` 28s, 2% chance (from `useAstronaut.ts`)
 - Guards prevent concurrent fall + perfume animations
 
+### ✅ Talk Animation (Session 7f7ee283)
+- CSS: `.astro-talk` class with `@keyframes astro-talk` (1200ms, same idle sprite, fast cycle)
+- JS: `startTalking()` / `stopTalking()` toggle `.astro-talk` on sprite element
+- Trigger: First streaming chunk starts talk, `onDone`/`onError` stops talk
+- Guards: Talk suppressed during fall/perfume; fall stops active talk
+- Verified on production: idle → talk → idle animation transitions confirmed via JS 
+- **Cooler than main project**: Main project triggers on bubble-text change; UC triggers on actual AI streaming
+
 ### 🟢 P6: Custom Domain (User handles separately)
 - Point `maschke.ai` → `www.maschke.ai` to Cloudflare Pages
 - Robert has this on his radar — no task item needed
 
 ## Open Tasks (Priority Order)
 
-### 🟡 Talk Animation
-- Yori talk animation tied to AI responses (sprite exists in main project)
-- Consider: should Yori react to specific commands?
+### 🟡 P9: Terminal Content Polish
+- **Formatting**: AI responses sometimes output `###` headings, `-` lists — needs `formatAiText()` sanitization (strip `###`, convert `-` lists to sentence flow)
+- **Layout**: Review overall terminal spacing, line heights, response area appearance
+- **Mistral Output Quality**: Tune system prompt so responses are tighter, on-brand, no markdown artifacts
+- **Reference**: Main project's `sanitizeAiText()` aggressively strips headings, lists, code blocks, blockquotes — port similar logic
 
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `0ee24e1` — `feat: add perfume animation for astronaut Yori (P7)`
-- **Session commits (9bae44bc):** 3
-  - `31b144a` security: port prompt injection guardrails from main project
-  - `5fc68f9` fix: make input line sticky at bottom, only output area scrolls
-  - `0ee24e1` feat: add perfume animation for astronaut Yori (P7)
+- **HEAD:** `05ff313` — `feat: add talk animation — Yori reacts to AI streaming responses`
+- **Session commits (7f7ee283):** 1
+  - `05ff313` feat: add talk animation — Yori reacts to AI streaming responses
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
