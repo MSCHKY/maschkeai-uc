@@ -867,9 +867,9 @@ body {
 
 @media (max-width: 768px) {
     :root {
-        --astroX: 0px;
-        --astroY: -52px;
-        --astroScale: 0.42;
+        --astroX: -21px;
+        --astroY: -22px;
+        --astroScale: 0.51;
         --astroBubbleX: -6px;
         --astroBubbleY: -2px;
     }
