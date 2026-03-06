@@ -296,8 +296,7 @@ async function runBootSequence(): Promise<void> {
     <p>Bitte teile keine sensiblen Daten (z.B. Passwörter, Kundengeheimnisse).</p>
     <div class="box-section">
       <p>Tipp: Klickbare Befehle sind so dargestellt: <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button></p>
-      <p>Klicke auf <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button> oder tippe es ein, um fortzufahren.</p>
-      <p>Für Befehle: <button type="button" class="terminal-cmd" data-cmd="hilfe">HILFE</button> oder <button type="button" class="terminal-cmd" data-cmd="/hilfe">/HILFE</button></p>
+      <p>Klicke auf <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button> oder tippe es ein. Für Befehle: <button type="button" class="terminal-cmd" data-cmd="hilfe">HILFE</button></p>
     </div>
   </div>
 </div>`;

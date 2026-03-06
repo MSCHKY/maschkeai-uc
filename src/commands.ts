@@ -41,67 +41,59 @@ function link(url: string, label?: string): string {
 
 const COMMANDS: Record<string, () => CommandResult> = {
     hilfe: () => ({
-        html: box('Hilfe :: Befehle', `
-            <p><span class="box-highlight">Themen:</span></p>
-            <p><span class="box-label">about</span> — Wer ist Maschke.ai?</p>
-            <p><span class="box-label">services</span> — Was wir machen</p>
-            <p><span class="box-label">contact</span> — Kontakt aufnehmen</p>
-            <p><span class="box-label">termin</span> — Kostenloses Erstgespräch buchen</p>
-            <p><span class="box-label">status</span> — Baustellen-Status</p>
-            <div class="box-section">
-                <p><span class="box-highlight">System:</span></p>
-                <p><span class="box-label">dark · light</span> — Theme wechseln</p>
-                <p><span class="box-label">impressum</span> — Impressum</p>
-                <p><span class="box-label">datenschutz</span> — Datenschutzerklärung</p>
-                <p><span class="box-label">clear</span> — Terminal leeren</p>
-            </div>
-            <div class="box-section">
-                <p>Oder einfach lostippen — NEXUS antwortet.</p>
-            </div>
-        `),
+        lines: [
+            { text: '', cls: '' },
+            { text: 'BEFEHLE', cls: 'line-system' },
+            { text: '───────────────────────────', cls: 'line-dim' },
+            { text: '  about       Wer ist Maschke.ai?', cls: 'line-dim' },
+            { text: '  services    Was wir machen', cls: 'line-dim' },
+            { text: '  contact     Kontakt aufnehmen', cls: 'line-dim' },
+            { text: '  termin      Kostenloses Erstgespräch', cls: 'line-dim' },
+            { text: '  status      Baustellen-Status', cls: 'line-dim' },
+            { text: '', cls: '' },
+            { text: '  dark/light  Theme wechseln', cls: 'line-dim' },
+            { text: '  impressum   Impressum (§5 DDG)', cls: 'line-dim' },
+            { text: '  datenschutz DSGVO-Hinweise', cls: 'line-dim' },
+            { text: '  clear       Terminal leeren', cls: 'line-dim' },
+            { text: '', cls: '' },
+            { text: 'Oder einfach lostippen — NEXUS antwortet.', cls: 'line-system' },
+            { text: '', cls: '' },
+        ],
     }),
 
     about: () => ({
-        html: box('About', `
-            <p><strong>Maschke.ai</strong> ist eine Kreativ-Agentur an der Schnittstelle von Künstlicher Intelligenz und menschlicher Kreativität.</p>
-            <p>Wir denken KI nicht als Werkzeug, sondern als kreative Partnerin.</p>
-            <div class="box-section">
-                <p><span class="box-label">Gründer:</span> Robert Maschke</p>
-                <p><span class="box-label">Standort:</span> Vettweiß, Deutschland</p>
-            </div>
-        `),
+        lines: [
+            { text: '', cls: '' },
+            { text: 'Maschke.ai — Kreativ-Agentur für Künstliche Intelligenz.', cls: '' },
+            { text: 'KI nicht als Werkzeug, sondern als kreative Partnerin.', cls: '' },
+            { text: '', cls: '' },
+            { text: '  Gründer:   Robert Maschke', cls: 'line-dim' },
+            { text: '  Standort:  Vettweiß, Deutschland', cls: 'line-dim' },
+            { text: '', cls: '' },
+        ],
     }),
 
     services: () => ({
-        html: box('Services', `
-            <p><span class="box-highlight">◆ KI-Beratung & Strategie</span></p>
-            <p class="box-label">Von der Idee zur Implementierung</p>
-            <div class="box-section">
-                <p><span class="box-highlight">◆ Workshops & Training</span></p>
-                <p class="box-label">KI verstehen, anwenden, meistern</p>
-            </div>
-            <div class="box-section">
-                <p><span class="box-highlight">◆ Kreative KI-Projekte</span></p>
-                <p class="box-label">Wenn Maschine auf Muse trifft</p>
-            </div>
-            <div class="box-section">
-                <p><span class="box-highlight">◆ AI-Act Compliance</span></p>
-                <p class="box-label">EU-konforme KI-Implementierung</p>
-            </div>
-            <div class="box-section">
-                <p>Interesse? ${cmd('contact')} ${cmd('termin')}</p>
-            </div>
-        `),
+        lines: [
+            { text: '', cls: '' },
+            { text: '◆ KI-Beratung & Strategie', cls: 'line-accent' },
+            { text: '  Von der Idee zur Implementierung', cls: 'line-dim' },
+            { text: '◆ Workshops & Training', cls: 'line-accent' },
+            { text: '  KI verstehen, anwenden, meistern', cls: 'line-dim' },
+            { text: '◆ Kreative KI-Projekte', cls: 'line-accent' },
+            { text: '  Wenn Maschine auf Muse trifft', cls: 'line-dim' },
+            { text: '◆ AI-Act Compliance', cls: 'line-accent' },
+            { text: '  EU-konforme KI-Implementierung', cls: 'line-dim' },
+            { text: '', cls: '' },
+        ],
     }),
 
     contact: () => ({
         html: box('Kontakt', `
-            <p>✉ ${link('mailto:kontakt@maschke.ai', 'kontakt@maschke.ai')}</p>
-            <p class="box-label">Schreib uns — wir melden uns.</p>
+            <p>✉ ${link('mailto:kontakt@maschke.ai', 'kontakt@maschke.ai')} — Schreib uns, wir melden uns.</p>
             <div class="box-section">
                 <p><span class="box-highlight">◆ Kostenloses Erstgespräch (15 min)</span></p>
-                <p class="box-label">Tippe ${cmd('termin')} oder direkt buchen:</p>
-                <p>${link(CAL_URL, 'cal.eu/maschke-ai')}</p>
+                <p class="box-label">Tippe ${cmd('termin')} oder direkt: ${link(CAL_URL, 'cal.eu/maschke-ai')}</p>
             </div>
         `),
     }),
@@ -109,8 +101,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     termin: () => ({
         html: box('Erstgespräch buchen', `
             <p><span class="box-highlight">◆ 15 Min. kennenlernen — kostenlos</span></p>
-            <p>Unverbindlich und ohne Verpflichtung.<br>
-            Wir schauen gemeinsam, ob und wie KI in deinem Kontext Sinn macht.</p>
+            <p>Unverbindlich, ohne Verpflichtung. Wir schauen gemeinsam, ob KI in deinem Kontext Sinn macht.</p>
             <div class="box-section">
                 <p>→ ${link(CAL_URL, 'cal.eu/maschke-ai')}</p>
             </div>

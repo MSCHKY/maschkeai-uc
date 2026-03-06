@@ -611,8 +611,8 @@ body {
    Pattern from main project's terminal-consent system
    ============================================================ */
 .terminal-box {
-    padding: 12px 14px;
-    margin: 8px 0 12px 0;
+    padding: 8px 12px;
+    margin: 6px 0 10px 0;
     border: 1px solid var(--terminal-border);
     background: var(--terminal-surface);
     border-radius: 4px;
@@ -625,8 +625,8 @@ body {
     letter-spacing: 0.12em;
     text-transform: uppercase;
     font-size: 12px;
-    padding-bottom: 8px;
-    margin-bottom: 10px;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
     border-bottom: 1px solid var(--terminal-border);
     background-image: var(--terminal-grad);
     -webkit-background-clip: text;
@@ -636,12 +636,12 @@ body {
 
 .terminal-box-body {
     color: var(--terminal-ink);
-    line-height: 1.65;
+    line-height: 1.35;
     font-size: inherit;
 }
 
 .terminal-box-body p {
-    margin: 0 0 6px 0;
+    margin: 0 0 2px 0;
 }
 
 .terminal-box-body .box-label {
@@ -654,8 +654,8 @@ body {
 }
 
 .terminal-box-body .box-section {
-    margin-top: 10px;
-    padding-top: 8px;
+    margin-top: 5px;
+    padding-top: 4px;
     border-top: 1px solid var(--terminal-border);
 }
 

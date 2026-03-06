@@ -21,12 +21,17 @@ cd /Volumes/Work/AI/__CODING/maschkeai-uc && cat HANDOVER_CONTEXT.md
 cd /Volumes/Work/AI/__CODING/maschkeai-uc && cat .agent/rules/REUSE_MAIN_PROJECT.md
 ```
 
-3. Prüfe den aktuellen Git-Status:
+3. Lies die Server-Regel (KEIN lokaler Dev-Server!):
+```bash
+cd /Volumes/Work/AI/__CODING/maschkeai-uc && cat .agent/rules/NO_LOCAL_SERVER.md
+```
+
+4. Prüfe den aktuellen Git-Status:
 ```bash
 cd /Volumes/Work/AI/__CODING/maschkeai-uc && echo "=== Branch ===" && git branch --show-current && echo "=== Status ===" && git status --short && echo "=== Last 5 Commits ===" && git log --oneline -5 && echo "=== Remote ===" && git remote -v
 ```
 
-4. Fasse dem User zusammen:
+5. Fasse dem User zusammen:
    - Aktueller Branch + letzter Commit
    - Uncommitted Changes (besonders wichtig: aus unterbrochenen Sessions!)
    - Remote-Status (GitHub verbunden?)
