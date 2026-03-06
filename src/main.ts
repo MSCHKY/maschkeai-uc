@@ -395,13 +395,39 @@ function escapeHtml(text: string): string {
 }
 
 /**
+ * Sanitize raw AI text — strip Markdown artifacts that Mistral
+ * occasionally outputs despite system prompt instructions.
+ * Ported 1:1 from main project's sanitizeAiText().
+ */
+function sanitizeAiText(raw: string): string {
+    let text = raw;
+    // Strip Markdown headings (# Heading)
+    text = text.replace(/^\s*#{1,6}\s+/gm, '');
+    // Strip blockquotes (> text)
+    text = text.replace(/^\s*> ?/gm, '');
+    // Strip numbered lists (1. item) — convert to plain text
+    text = text.replace(/^\s*\d+[.)]\s+/gm, '');
+    // Strip bullet lists (- item, * item) but preserve **bold** markers
+    text = text.replace(/^\s*[-+]\s+/gm, '');
+    text = text.replace(/^\s*\*\s+(?!\*)/gm, ''); // single * followed by space (not **)
+    // Strip code blocks (```...```)
+    text = text.replace(/```[\s\S]*?```/g, '');
+    // Strip horizontal rules (---, ***, ___)
+    text = text.replace(/^\s*[-*_]{3,}\s*$/gm, '');
+    // Collapse excessive newlines
+    text = text.replace(/\n{3,}/g, '\n\n');
+    return text;
+}
+
+/**
  * Format AI response text:
- * - **bold** → <strong>bold</strong>
- * - `command` → clickable chip
- * HTML is escaped first to prevent XSS.
+ * 1. Sanitize (strip unwanted Markdown artifacts)
+ * 2. Escape HTML (XSS prevention)
+ * 3. Render **bold** → <strong> and `command` → clickable chip
  */
 function formatAiText(raw: string): string {
-    const escaped = escapeHtml(raw);
+    const sanitized = sanitizeAiText(raw);
+    const escaped = escapeHtml(sanitized);
     let formatted = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     formatted = formatted.replace(/`([^`]+)`/g, '<span class="cmd-chip" data-cmd="$1">$1</span>');
     return formatted;

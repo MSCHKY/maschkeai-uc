@@ -575,6 +575,9 @@ body {
 /* AI response text */
 .line-ai {
     color: var(--terminal-ink);
+    max-width: 68ch;
+    line-height: 1.5;
+    word-spacing: 0.02em;
 }
 
 .line-ai strong {
