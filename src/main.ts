@@ -86,7 +86,7 @@ function addHTML(html: string, cls: string = '') {
 }
 
 function scrollToBottom() {
-    terminal.scrollTop = terminal.scrollHeight;
+    output.scrollTop = output.scrollHeight;
 }
 
 function sleep(ms: number): Promise<void> {

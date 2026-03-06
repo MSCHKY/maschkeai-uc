@@ -100,26 +100,25 @@ body {
     display: flex;
     flex-direction: column;
     padding: 24px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     background: transparent;
     z-index: 1;
 }
 
-#terminal::-webkit-scrollbar {
+#terminal-output::-webkit-scrollbar {
     width: 6px;
 }
 
-#terminal::-webkit-scrollbar-track {
+#terminal-output::-webkit-scrollbar-track {
     background: transparent;
 }
 
-#terminal::-webkit-scrollbar-thumb {
+#terminal-output::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.12);
     border-radius: 10px;
 }
 
-[data-theme="dark"] #terminal::-webkit-scrollbar-thumb {
+[data-theme="dark"] #terminal-output::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.1);
 }
 
@@ -128,6 +127,8 @@ body {
    ============================================================ */
 #terminal-output {
     flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
     white-space: pre-wrap;
     word-break: break-word;
     color: var(--terminal-ink);
