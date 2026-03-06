@@ -912,9 +912,11 @@ body {
 
 @media (max-width: 480px) {
     :root {
-        --astroX: 4px;
-        --astroY: -44px;
-        --astroScale: 0.34;
+        --astroX: -26px;
+        --astroY: -42px;
+        --astroScale: 0.44;
+        --astroBubbleX: -10px;
+        --astroBubbleY: -10px;
     }
 }
 
