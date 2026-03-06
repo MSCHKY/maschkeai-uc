@@ -571,6 +571,41 @@ body {
     text-underline-offset: 3px;
 }
 
+/* AI response text */
+.line-ai {
+    color: var(--terminal-ink);
+}
+
+.line-ai strong {
+    color: var(--terminal-ink);
+    font-weight: 700;
+}
+
+/* Clickable command chips inside AI responses */
+.cmd-chip {
+    color: var(--terminal-accent);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--terminal-link-decoration);
+    text-underline-offset: 2px;
+    transition: opacity 0.15s ease;
+}
+
+.cmd-chip:hover {
+    opacity: 0.75;
+}
+
+/* Accent (errors, highlights) */
+.line-accent {
+    color: var(--terminal-accent);
+}
+
+/* Cyan — for services box entries */
+.line-cyan {
+    color: var(--terminal-accent);
+    font-weight: 700;
+}
+
 /* Progress bar */
 .progress-bar {
     background-image: var(--terminal-grad);

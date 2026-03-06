@@ -114,17 +114,33 @@ const ASTRO_CLICK_WARNINGS = [
 ] as const;
 
 const YORI_LINES = [
+    // Under-construction meta humor
     'Wird noch gebaut…',
     'Bald™ fertig!',
-    'Tippe mal hilfe',
-    'Psst… probier matrix',
-    'KI braucht Kaffee',
-    'Ich schweb hier nur rum',
     'Coming Soon*ish',
     'Noch 99 Bugs…',
     'Schöne Baustelle hier',
     'Vorsicht, nasser Lack!',
+    'KI braucht Kaffee',
+    'Ich schweb hier nur rum',
+
+    // Tech-remixed German proverbs
+    'Des Devs Website ist immer UC',
+    'Auch GPT wurde nicht in einem Sprint trainiert',
+    'Guter Code will Weile haben',
+    'Was lange trainiert, wird endlich gut',
+    'Wer API sagt, muss auch Doku sagen',
+    'Kein LLM ist vom Himmel gefallen',
+    'Training macht das Model',
+    'Viele Prompts verderben den Output',
+    'Nie den Deploy vor dem Test loben',
+    'In der Latenz liegt die Kraft',
+
+    // Easter Egg hints
+    'Tippe mal hilfe',
+    'Psst… probier matrix',
     'Geheimer Befehl: hack',
+    'Was passiert bei sudo?',
 ];
 
 let bubblePool = [...YORI_LINES];
@@ -297,6 +313,19 @@ function escapeHtml(text: string): string {
     return div.innerHTML;
 }
 
+/**
+ * Format AI response text:
+ * - **bold** → <strong>bold</strong>
+ * - `command` → clickable chip
+ * HTML is escaped first to prevent XSS.
+ */
+function formatAiText(raw: string): string {
+    const escaped = escapeHtml(raw);
+    let formatted = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    formatted = formatted.replace(/`([^`]+)`/g, '<span class="cmd-chip" data-cmd="$1">$1</span>');
+    return formatted;
+}
+
 
 
 // ── Legal overlay ──
@@ -408,15 +437,27 @@ async function processInput(text: string) {
     responseDiv.className = 'line line-ai';
     output.appendChild(responseDiv);
 
+    let rawAiText = '';
+
     await sendMessage(
         trimmed,
-        // onChunk — append streaming text
+        // onChunk — accumulate raw text and render with formatting
         (chunk: string) => {
-            responseDiv.textContent += chunk;
+            rawAiText += chunk;
+            responseDiv.innerHTML = formatAiText(rawAiText);
             scrollToBottom();
         },
-        // onDone
+        // onDone — final format pass + attach click handlers
         (_fullText: string) => {
+            responseDiv.innerHTML = formatAiText(rawAiText);
+            // Make command chips clickable
+            responseDiv.querySelectorAll('.cmd-chip').forEach((chip) => {
+                chip.addEventListener('click', () => {
+                    const cmd = (chip as HTMLElement).dataset.cmd || '';
+                    input.value = cmd;
+                    processInput(cmd);
+                });
+            });
             addLine('', '');
             if (remaining <= 1) {
                 addLine(` [${remaining} Nachricht${remaining === 1 ? '' : 'en'} verbleibend]`, 'line-dim');
