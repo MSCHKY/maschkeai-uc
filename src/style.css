@@ -19,7 +19,8 @@
     --terminal-surface: rgba(68, 137, 207, 0.06);
     --terminal-surface-hover: rgba(68, 137, 207, 0.10);
     --terminal-input-bg: rgba(255, 255, 255, 0.85);
-    --terminal-link-decoration: rgba(35, 92, 255, 0.30);
+    --terminal-link-decoration: rgba(35, 92, 255, 0.3);
+    --terminal-card-bg: rgba(255, 255, 255, 0.35);
 
     --terminal-font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --terminal-font-size: 14px;
@@ -48,6 +49,7 @@
     --terminal-link-decoration: rgba(120, 170, 255, 0.35);
 
     --bg-page: #0b0f12;
+    --terminal-card-bg: rgba(255, 255, 255, 0.04);
 }
 
 /* — Reset — */
@@ -95,13 +97,19 @@ body {
    ============================================================ */
 #terminal {
     position: fixed;
-    inset: 0;
-    bottom: 28px;
+    top: 16px;
+    left: 24px;
+    right: 24px;
+    bottom: 44px;
     display: flex;
     flex-direction: column;
     padding: 24px;
     overflow: hidden;
-    background: transparent;
+    background: var(--terminal-card-bg, rgba(255, 255, 255, 0.35));
+    border-radius: 8px;
+    box-shadow:
+        0 2px 16px rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(0, 0, 0, 0.04);
     z-index: 1;
 }
 
@@ -120,6 +128,23 @@ body {
 
 [data-theme="dark"] #terminal-output::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] #terminal {
+    box-shadow:
+        0 2px 24px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 480px) {
+    #terminal {
+        top: 8px;
+        left: 10px;
+        right: 10px;
+        bottom: 38px;
+        padding: 16px;
+        border-radius: 6px;
+    }
 }
 
 /* ============================================================
