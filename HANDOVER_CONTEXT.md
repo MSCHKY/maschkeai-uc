@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-06T16:17 (Session 5d33a030)
+> Last updated: 2026-03-06T17:11 (Session 9bae44bc)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -21,8 +21,8 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Commands | `src/commands.ts` | ✅ Done (static=box, dynamic=lines; compact spacing) |
 | Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, full UC system prompt) |
 | Legal Content | `src/legal.ts` | ✅ Done (HTML boxes, compact spacing) |
-| Mistral Proxy | `functions/api/mistral.js` | ✅ Done |
-| Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall sprites) |
+| Mistral Proxy | `functions/api/mistral.js` | ✅ Done (+ 20 injection regex patterns, 403 blocking) |
+| Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
 | Workflows | `.agent/workflows/` | ✅ session-start + session-end |
 | Agent Rules | `.agent/rules/` | ✅ REUSE_MAIN_PROJECT.md + NO_LOCAL_SERVER.md |
 
@@ -51,12 +51,13 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
 `transform-origin: right center` keeps the bubble anchored near Yori's head while scaling up.
 
 ### Other Astronaut Details
-- **Sprite sheets:** `sprite-256px-9.png` (idle, 3×3 grid), `sprite_fall-256px-9.png` (fall, 3×3 grid)
+- **Sprite sheets:** `sprite-256px-9.png` (idle, 3×3), `sprite_fall-256px-9.png` (fall, 3×3), `sprite_perfume-256px-9.png` (perfume, 3×3)
 - **Speech Bubbles:** 22 rotating lines in 3 categories (10s visible, 15s hidden):
   - **Baustellenhumor** (8): "Noch 99 Bugs…", "Coming Soon*ish", etc.
   - **Tech-Redewendungen** (10): "Des Devs Website ist immer UC", "In der Latenz liegt die Kraft", "Viele Prompts verderben den Output", etc.
   - **Easter-Egg-Hints** (4): "Tippe mal hilfe", "Was passiert bei sudo?", etc.
 - **Click-to-Fall Easter Egg:** Click Yori → fall animation + red warning bubble ("NICHT ANFASSEN!!!")
+- **Perfume Animation:** Random trigger (28s interval, 2% chance), 1300ms 9-frame stepped animation. Wider sprite (127x130) centered via margin-left. Guards prevent concurrent fall+perfume.
 - **Debug Panel:** `?debug=1` URL param shows live sliders for position tuning
 
 ## AI Text Rendering
@@ -178,29 +179,42 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
 - **NO_LOCAL_SERVER rule**: Created `.agent/rules/NO_LOCAL_SERVER.md` + added to session-start workflow
 - **Files modified**: `src/style.css`, `src/commands.ts`, `src/main.ts`
 
-## Open Tasks (Priority Order)
+### ✅ P8: Live Chat Testing (Session 9bae44bc)
+- Bold rendering verified (`**text**` → `<strong>`, `font-weight: 700`)
+- Command chips verified (`.cmd-chip`, blue, clickable, executes command)
+- Guardrail finding: UC had NO server-side regex patterns → **fixed**
+- Ported 20 injection regex patterns (EN+DE+jailbreak) from main project
+- Added `detectPromptInjection()` with HTTP 403 blocking
+- Added message sanitization (role whitelist, 4000 char cap, 12 msg max)
+- Added 403 handling in `chat.ts` frontend with German security message
+- 5-message funnel: Prompt-only strategy — no visible counter (bewusst)
+- Fixed sticky input line: `overflow-y:auto` moved from `#terminal` to `#terminal-output`
 
-### 🟢 P8: Live Chat Testing
-- Test the new NEXUS UC persona on production (https://maschkeai-uc.pages.dev/)
-- Verify bold rendering and command chips work with real Mistral responses
-- Test 5-message funnel flow end-to-end
-- Check guardrail behavior (prompt injection resistance)
-
-### 🟢 P7: Additional Astronaut States
-- Perfume animation (sprite exists in main project: `sprite_perfume-256px-9.png`)
-- Talk animation tied to AI responses
-- Consider: should Yori react to specific commands?
+### ✅ P7: Perfume Animation (Session 9bae44bc)
+- Sprite `sprite_perfume-256px-9.png` ported from main project
+- CSS class `.astro-perfume` (127x130 frame, centered via margin-left)
+- `@keyframes astro-perfume` (1300ms, 9 frames, stepped)
+- Random trigger: `setInterval` 28s, 2% chance (from `useAstronaut.ts`)
+- Guards prevent concurrent fall + perfume animations
 
 ### 🟢 P6: Custom Domain (User handles separately)
 - Point `maschke.ai` → `www.maschke.ai` to Cloudflare Pages
 - Robert has this on his radar — no task item needed
 
+## Open Tasks (Priority Order)
+
+### 🟡 Talk Animation
+- Yori talk animation tied to AI responses (sprite exists in main project)
+- Consider: should Yori react to specific commands?
+
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `27d62b6` — `fix: compact terminal-box spacing, convert info commands to line-based output`
-- **Session commits (5d33a030):** 1
-  - `27d62b6` fix: compact terminal-box spacing, convert info commands to line-based output
+- **HEAD:** `0ee24e1` — `feat: add perfume animation for astronaut Yori (P7)`
+- **Session commits (9bae44bc):** 3
+  - `31b144a` security: port prompt injection guardrails from main project
+  - `5fc68f9` fix: make input line sticky at bottom, only output area scrolls
+  - `0ee24e1` feat: add perfume animation for astronaut Yori (P7)
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
