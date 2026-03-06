@@ -1,5 +1,5 @@
 /**
- * Maschke.ai Under-Construction — Main entry
+ * maschke.ai Under-Construction — Main entry
  * Orchestrates boot sequence, input handling, chat, and theme
  */
 
@@ -326,27 +326,8 @@ async function runBootSequence(): Promise<void> {
         addLine(line.text, line.cls);
     }
 
-    // ── DSGVO Consent (adapted from main project) ──
-    if (!isConsented) {
-        const consentBox = document.createElement('div');
-        consentBox.className = 'line';
-        consentBox.innerHTML = `<div class="terminal-consent">
-  <div class="terminal-consent-title">Disclaimer</div>
-  <p>KI-gestützt (Mistral) · Keine Daten gespeichert. Keine sensiblen Daten teilen.</p>
-  <p>Klickbare Befehle: <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button> · <button type="button" class="terminal-cmd" data-cmd="hilfe">HILFE</button></p>
-</div>`;
-        output.appendChild(consentBox);
-        scrollToBottom();
-
-        // Attach click handlers to cmd buttons in consent box
-        consentBox.querySelectorAll('.terminal-cmd').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                const cmdName = (btn as HTMLElement).dataset.cmd || '';
-                input.value = cmdName;
-                processInput(cmdName);
-            });
-        });
-    }
+    // Consent is NOT shown here — it appears on first user input
+    // (matching main project's pattern: boot → user types → consent gate)
 
     // Show input
     inputLine.classList.add('visible');
@@ -460,6 +441,7 @@ async function processInput(text: string) {
     const cmd = trimmed.toLowerCase();
 
     // ── DSGVO Consent gate (pattern from main project) ──
+    // Consent prompt appears on FIRST user input, not during boot
     if (!isConsented) {
         if (cmd === 'akzeptieren' || cmd === 'accept' || cmd === 'zustimmen' || cmd === 'einverstanden') {
             sessionStorage.setItem(CONSENT_KEY, 'true');
@@ -487,8 +469,13 @@ async function processInput(text: string) {
             isProcessing = false;
             return;
         }
-        // Everything else blocked until consent
-        addLine("→ Tippe 'akzeptieren' um fortzufahren.", 'line-dim');
+        // First input that isn't consent/legal → show consent prompt
+        addLine('', '');
+        addLine('KI-gestützt (Mistral) · Keine Daten gespeichert.', 'line-dim');
+        addLine('Keine sensiblen Daten teilen.', 'line-dim');
+        addLine('', '');
+        addLine("→ Tippe 'akzeptieren' um fortzufahren.", '');
+        addLine('', '');
         isProcessing = false;
         return;
     }
@@ -614,7 +601,7 @@ async function processInput(text: string) {
         trimmed,
         // onChunk — accumulate raw text and render with formatting
         (chunk: string) => {
-            // Start Yori talking on first chunk
+            // Start YORI talking on first chunk
             if (talkSprite && !isTalking) startTalking(talkSprite);
             rawAiText += chunk;
             responseDiv.innerHTML = formatAiText(rawAiText);
@@ -622,7 +609,7 @@ async function processInput(text: string) {
         },
         // onDone — final format pass + attach click handlers
         (_fullText: string) => {
-            // Stop Yori talking
+            // Stop YORI talking
             if (talkSprite) stopTalking(talkSprite);
             responseDiv.innerHTML = formatAiText(rawAiText);
             // Make command chips clickable
@@ -641,7 +628,7 @@ async function processInput(text: string) {
         },
         // onError
         (error: string) => {
-            // Stop Yori talking
+            // Stop YORI talking
             if (talkSprite) stopTalking(talkSprite);
             if (error === 'LIMIT_REACHED') {
                 responseDiv.textContent = 'NEXUS ist noch in der Kalibrierung. Die volle Version kommt bald.';

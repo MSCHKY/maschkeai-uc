@@ -14,7 +14,7 @@ export const IMPRESSUM_CONTENT = `
 <p><strong>Angaben gemäß § 5 TMG</strong></p>
 
 <p>
-<strong>MASCHKE.AI</strong><br>
+<strong>maschke.ai</strong><br>
 Einzelunternehmen / Freiberufler
 </p>
 
@@ -65,7 +65,7 @@ export const DATENSCHUTZ_CONTENT = `
 
 <h2>1. Verantwortlicher</h2>
 <p>
-<strong>MASCHKE.AI</strong><br>
+<strong>maschke.ai</strong><br>
 Robert Maschke<br>
 Kirchstr. 7<br>
 52391 Vettweiß<br>
@@ -142,7 +142,7 @@ export const IMPRESSUM_TERMINAL_HTML = `<div class="terminal-box">
   <div class="terminal-box-title">Impressum</div>
   <div class="terminal-box-body">
     <p class="box-label">Angaben gemäß § 5 TMG</p>
-    <p><strong>MASCHKE.AI</strong><br>Einzelunternehmen / Freiberufler<br>Inhaber: Robert Maschke</p>
+    <p><strong>maschke.ai</strong><br>Einzelunternehmen / Freiberufler<br>Inhaber: Robert Maschke</p>
     <div class="box-section">
       <p>Kirchstr. 7<br>52391 Vettweiß, Deutschland</p>
     </div>
@@ -174,14 +174,14 @@ export const DATENSCHUTZ_TERMINAL_HTML = `<div class="terminal-box">
 
 // Legacy line-based exports kept for backward compatibility
 export const IMPRESSUM_TERMINAL = [
-    { text: '', cls: '' },
-    { text: ' Vollständiges Impressum im Footer.', cls: 'line-dim' },
-    { text: '', cls: '' },
+  { text: '', cls: '' },
+  { text: ' Vollständiges Impressum im Footer.', cls: 'line-dim' },
+  { text: '', cls: '' },
 ];
 
 export const DATENSCHUTZ_TERMINAL = [
-    { text: '', cls: '' },
-    { text: ' Vollständige Datenschutzerklärung im Footer.', cls: 'line-dim' },
-    { text: '', cls: '' },
+  { text: '', cls: '' },
+  { text: ' Vollständige Datenschutzerklärung im Footer.', cls: 'line-dim' },
+  { text: '', cls: '' },
 ];
 

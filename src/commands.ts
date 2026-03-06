@@ -37,7 +37,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
             { text: '', cls: '' },
             { text: 'BEFEHLE', cls: 'line-system' },
             { text: '───────────────────────────', cls: 'line-dim' },
-            { text: '  about       Wer ist Maschke.ai?', cls: 'line-dim' },
+            { text: '  about       Wer ist maschke.ai?', cls: 'line-dim' },
             { text: '  services    Was wir machen', cls: 'line-dim' },
             { text: '  contact     Kontakt aufnehmen', cls: 'line-dim' },
             { text: '  termin      Kostenloses Erstgespräch', cls: 'line-dim' },
@@ -56,7 +56,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     about: () => ({
         lines: [
             { text: '', cls: '' },
-            { text: 'Maschke.ai — Kreativ-Agentur für Künstliche Intelligenz.', cls: '' },
+            { text: 'maschke.ai — Kreativ-Agentur für Künstliche Intelligenz.', cls: '' },
             { text: 'KI nicht als Werkzeug, sondern als kreative Partnerin.', cls: '' },
             { text: '', cls: '' },
             { text: '  Gründer:   Robert Maschke', cls: 'line-dim' },
