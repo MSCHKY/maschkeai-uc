@@ -1,6 +1,7 @@
 ---
-description: End a session by updating HANDOVER_CONTEXT.md with current state and committing
+description: UC:End a session by updating HANDOVER_CONTEXT.md with current state and committing
 ---
+
 # /session-end - Session sauber beenden
 
 ## Zweck
