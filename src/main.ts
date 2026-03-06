@@ -6,7 +6,7 @@
 import './style.css';
 import { renderNexusLogo } from './ascii-logo';
 import { BOOT_SEQUENCE } from './boot-sequence';
-import { handleCommand, isSpecialCommand } from './commands';
+import { handleCommand, isSpecialCommand, getCommandUrl } from './commands';
 import { sendMessage, isLimitReached, getRemainingMessages } from './chat';
 import {
     IMPRESSUM_CONTENT,
@@ -31,6 +31,10 @@ const legalClose = document.getElementById('legal-overlay-close')!;
 let isProcessing = false;
 let commandHistory: string[] = [];
 let historyIndex = -1;
+
+// ── DSGVO Consent (pattern from main project: useTerminalControllerV2.ts) ──
+const CONSENT_KEY = 'nexus_uc_consent_v1';
+let isConsented = sessionStorage.getItem(CONSENT_KEY) === 'true';
 
 // ── Theme Management ──
 const THEME_KEY = 'nexus_uc_theme';
@@ -279,6 +283,16 @@ async function runBootSequence(): Promise<void> {
         addLine(line.text, line.cls);
     }
 
+    // ── DSGVO Consent (adapted from main project) ──
+    if (!isConsented) {
+        addLine('', '');
+        addLine('KI-gestützt (Mistral) · Keine Daten gespeichert.', 'line-system');
+        addLine('Keine sensiblen Daten teilen.', 'line-system');
+        addLine('', '');
+        addLine("Tippe 'akzeptieren' um fortzufahren.", 'line-dim');
+        addLine('', '');
+    }
+
     // Show input
     inputLine.classList.add('visible');
     input.focus();
@@ -358,6 +372,35 @@ async function processInput(text: string) {
 
     const cmd = trimmed.toLowerCase();
 
+    // ── DSGVO Consent gate (pattern from main project) ──
+    if (!isConsented) {
+        if (cmd === 'akzeptieren' || cmd === 'accept' || cmd === 'zustimmen' || cmd === 'einverstanden') {
+            sessionStorage.setItem(CONSENT_KEY, 'true');
+            isConsented = true;
+            addLine('', '');
+            addLine('[OK] Datenschutz akzeptiert. NEXUS ist bereit.', 'line-success');
+            addLine('', '');
+            addLine("Tippe 'hilfe' für Befehle, oder sprich einfach mit NEXUS.", 'line-dim');
+            addLine('', '');
+            isProcessing = false;
+            return;
+        }
+        // Allow impressum/datenschutz even before consent (legal requirement: always accessible)
+        if (cmd === 'impressum' || cmd === 'datenschutz') {
+            const lines = cmd === 'impressum' ? IMPRESSUM_TERMINAL : DATENSCHUTZ_TERMINAL;
+            for (const line of lines) {
+                addLine(line.text, line.cls);
+                await sleep(30);
+            }
+            isProcessing = false;
+            return;
+        }
+        // Everything else blocked until consent
+        addLine("→ Tippe 'akzeptieren' um fortzufahren.", 'line-dim');
+        isProcessing = false;
+        return;
+    }
+
     // Special commands
     if (isSpecialCommand(trimmed)) {
         if (cmd === 'clear') {
@@ -366,7 +409,6 @@ async function processInput(text: string) {
             return;
         }
         if (cmd === 'impressum') {
-            // Show terminal-formatted version + hint to footer
             for (const line of IMPRESSUM_TERMINAL) {
                 addLine(line.text, line.cls);
                 await sleep(30);
@@ -412,6 +454,11 @@ async function processInput(text: string) {
     // Local commands
     const result = handleCommand(trimmed);
     if (result) {
+        // Check if this command should also open a URL (e.g. termin → Cal)
+        const url = getCommandUrl(trimmed);
+        if (url) {
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
         for (const line of result.lines) {
             addLine(line.text, line.cls);
             await sleep(30);

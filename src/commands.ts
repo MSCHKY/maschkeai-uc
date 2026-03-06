@@ -1,11 +1,18 @@
 /**
  * Local command handlers — processed without Mistral
  * German terminal style, aligned with main maschkeai-chatbot project
+ * ─────────────────────────────────────────────────────────────────
+ * PATTERN SOURCE: maschkeai-chatbot/components/useTerminalControllerV2.ts
+ * Cal link & contact details must match main project.
+ * ─────────────────────────────────────────────────────────────────
  */
 
 export interface CommandResult {
     lines: { text: string; cls: string }[];
 }
+
+/** URL for the free 15-min intro call (shared with main project) */
+export const CAL_URL = 'https://www.cal.eu/maschke-ai';
 
 const COMMANDS: Record<string, () => CommandResult> = {
     hilfe: () => ({
@@ -18,6 +25,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
             { text: '  about      — Wer ist Maschke.ai?', cls: 'line-dim' },
             { text: '  services   — Was wir machen', cls: 'line-dim' },
             { text: '  contact    — Kontakt aufnehmen', cls: 'line-dim' },
+            { text: '  termin     — Kostenloses Erstgespräch buchen', cls: 'line-dim' },
             { text: '  status     — Baustellen-Status', cls: 'line-dim' },
             { text: '', cls: '' },
             { text: 'System:', cls: 'line-system' },
@@ -45,7 +53,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
             { text: ' │  sondern als kreative Partnerin.      │', cls: 'line-primary' },
             { text: ' │                                      │', cls: 'line-system' },
             { text: ' │  Gründer: Robert Maschke              │', cls: 'line-dim' },
-            { text: ' │  Standort: Deutschland                │', cls: 'line-dim' },
+            { text: ' │  Standort: Vettweiß, Deutschland      │', cls: 'line-dim' },
             { text: ' │                                      │', cls: 'line-system' },
             { text: ' └──────────────────────────────────────┘', cls: 'line-system' },
             { text: '', cls: '' },
@@ -71,19 +79,44 @@ const COMMANDS: Record<string, () => CommandResult> = {
             { text: ' │                                      │', cls: 'line-system' },
             { text: ' └──────────────────────────────────────┘', cls: 'line-system' },
             { text: '', cls: '' },
+            { text: ' Interesse? Tippe `contact` oder `termin`.', cls: 'line-dim' },
+            { text: '', cls: '' },
         ],
     }),
 
     contact: () => ({
         lines: [
             { text: '', cls: '' },
-            { text: ' ┌─ KONTAKT ───────────────────────┐', cls: 'line-system' },
-            { text: ' │                                  │', cls: 'line-system' },
-            { text: ' │  hello@maschke.ai                │', cls: 'line-link' },
-            { text: ' │                                  │', cls: 'line-system' },
-            { text: ' │  Wir melden uns. Versprochen.    │', cls: 'line-dim' },
-            { text: ' │                                  │', cls: 'line-system' },
-            { text: ' └──────────────────────────────────┘', cls: 'line-system' },
+            { text: ' ┌─ KONTAKT ─────────────────────────────┐', cls: 'line-system' },
+            { text: ' │                                        │', cls: 'line-system' },
+            { text: ' │  ✉  kontakt@maschke.ai                │', cls: 'line-link' },
+            { text: ' │     Schreib uns — wir melden uns.      │', cls: 'line-dim' },
+            { text: ' │                                        │', cls: 'line-system' },
+            { text: ' │  ◆  Kostenloses Erstgespräch (15 min)  │', cls: 'line-cyan' },
+            { text: ' │     Tippe `termin` oder direkt buchen:  │', cls: 'line-dim' },
+            { text: ' │     cal.eu/maschke-ai                   │', cls: 'line-link' },
+            { text: ' │                                        │', cls: 'line-system' },
+            { text: ' └─────────────────────────────────────────┘', cls: 'line-system' },
+            { text: '', cls: '' },
+        ],
+    }),
+
+    termin: () => ({
+        lines: [
+            { text: '', cls: '' },
+            { text: ' ┌─ ERSTGESPRÄCH BUCHEN ──────────────────┐', cls: 'line-system' },
+            { text: ' │                                         │', cls: 'line-system' },
+            { text: ' │  ◆  15 Min. kennenlernen — kostenlos    │', cls: 'line-cyan' },
+            { text: ' │                                         │', cls: 'line-system' },
+            { text: ' │  Unverbindlich und ohne Verpflichtung.  │', cls: 'line-dim' },
+            { text: ' │  Wir schauen gemeinsam, ob und wie      │', cls: 'line-dim' },
+            { text: ' │  KI in deinem Kontext Sinn macht.       │', cls: 'line-dim' },
+            { text: ' │                                         │', cls: 'line-system' },
+            { text: ' │  → cal.eu/maschke-ai                    │', cls: 'line-link' },
+            { text: ' │                                         │', cls: 'line-system' },
+            { text: ' └──────────────────────────────────────────┘', cls: 'line-system' },
+            { text: '', cls: '' },
+            { text: ' Link wird geöffnet…', cls: 'line-dim' },
             { text: '', cls: '' },
         ],
     }),
@@ -169,6 +202,10 @@ const COMMANDS: Record<string, () => CommandResult> = {
 const ALIASES: Record<string, string> = {
     help: 'hilfe',
     kontakt: 'contact',
+    call: 'termin',
+    intro: 'termin',
+    cal: 'termin',
+    buchen: 'termin',
     'easter egg': 'secret',
     easteregg: 'secret',
 };
@@ -190,6 +227,18 @@ export function handleCommand(input: string): CommandResult | null {
         return COMMANDS[ALIASES[cmd]]();
     }
 
+    return null;
+}
+
+/**
+ * Check if command needs to open an external URL.
+ * Returns the URL to open, or null.
+ */
+export function getCommandUrl(input: string): string | null {
+    const cmd = input.trim().toLowerCase();
+    if (cmd === 'termin' || cmd === 'call' || cmd === 'intro' || cmd === 'cal' || cmd === 'buchen') {
+        return CAL_URL;
+    }
     return null;
 }
 
