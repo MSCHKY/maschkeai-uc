@@ -1,10 +1,9 @@
 /**
  * Mistral Chat Client — SSE streaming via /api/mistral
- * Limited to MAX_MESSAGES per session.
+ * Limited to MAX_MESSAGES per page load (resets on reload).
  */
 
 const MAX_MESSAGES = 5;
-const SESSION_KEY = 'nexus_uc_msg_count';
 
 // System prompt is now injected server-side in functions/api/mistral.js
 // This prevents the ALLOWED_ROLES filter from stripping it out.
@@ -16,21 +15,18 @@ interface ChatMessage {
 }
 
 let chatHistory: ChatMessage[] = [];
-
-function getMessageCount(): number {
-    return parseInt(sessionStorage.getItem(SESSION_KEY) || '0', 10);
-}
+let messageCount = 0;
 
 function incrementMessageCount(): void {
-    sessionStorage.setItem(SESSION_KEY, String(getMessageCount() + 1));
+    messageCount++;
 }
 
 export function isLimitReached(): boolean {
-    return getMessageCount() >= MAX_MESSAGES;
+    return messageCount >= MAX_MESSAGES;
 }
 
 export function getRemainingMessages(): number {
-    return Math.max(0, MAX_MESSAGES - getMessageCount());
+    return Math.max(0, MAX_MESSAGES - messageCount);
 }
 
 /**
