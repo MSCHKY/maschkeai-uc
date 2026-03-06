@@ -1,41 +1,85 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-06T22:10 (Session af70a592)
+> Last updated: 2026-03-06T23:22 (Session af70a592)
 
 ## Project Status: LIVE (Under Construction)
 
-Under-construction holding page for `maschke.ai`. Fullscreen terminal experience with scripted boot sequence, limited Mistral AI chat (5 messages/session), and astronaut mascot Yori.
+Under-construction holding page for `maschke.ai`. Fullscreen terminal experience with scripted boot sequence, limited Mistral AI chat (5 messages/page-load), and astronaut mascot YORI.
 
 **Live URL:** https://maschkeai-uc.pages.dev/
 **GitHub:** https://github.com/MSCHKY/maschkeai-uc
+
+## ⚠️ CRITICAL RULE: REUSE FROM MAIN PROJECT
+
+**Robert has repeatedly asked to reuse code from the main `maschkeai-chatbot` project instead of rebuilding from scratch.** Always check how something is done in the main project first:
+- `/Volumes/Work/AI/__CODING/maschkeai-chatbot/` is the reference codebase
+- Check `.agent/rules/REUSE_MAIN_PROJECT.md` before building anything new
+- Key reference files listed at the bottom of this doc
 
 ## Architecture
 
 | Component | File | Status |
 |-----------|------|--------|
-| HTML Shell | `index.html` | ✅ Done (+ astronaut overlay + debug panel) |
-| Main Orchestrator | `src/main.ts` | ✅ Done (Easter Eggs, astronaut, click-to-fall, `formatAiText()`, HTML box rendering, compact consent) |
-| Terminal CSS | `src/style.css` | ✅ Done (1:1 from main project + astronaut + AI text + compact terminal-box) |
+| HTML Shell | `index.html` | ✅ Done |
+| Main Orchestrator | `src/main.ts` | ✅ Done (consent gate, formatAiText, talk animation) |
+| Terminal CSS | `src/style.css` | ✅ Done (terminal card with inset/shadow, page fade-in) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (NEXUS OS v4.0.2, German) |
-| Commands | `src/commands.ts` | ✅ Done (static=box, dynamic=lines; compact spacing) |
-| Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, prompt moved server-side) |
-| Legal Content | `src/legal.ts` | ✅ Done (HTML boxes, compact spacing) |
-| Mistral Proxy | `functions/api/mistral.js` | ✅ Done (+ system prompt, 20 injection regex, 403 blocking) |
+| Commands | `src/commands.ts` | ✅ Done (line-based output, no boxes) |
+| Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg in-memory limit) |
+| Legal Content | `src/legal.ts` | ✅ Done (maschke.ai lowercase everywhere) |
+| Mistral Proxy | `functions/api/mistral.js` | ✅ Done (server-side prompt, no message counter) |
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
-| Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, **talk**) |
-| Workflows | `.agent/workflows/` | ✅ session-start + session-end |
-| Agent Rules | `.agent/rules/` | ✅ REUSE_MAIN_PROJECT.md + NO_LOCAL_SERVER.md |
+| Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, talk) |
 
-## Astronaut Yori — Positioning System
+## Recent Session Changes (af70a592 — 2026-03-06)
 
-**CRITICAL: How positioning works (read this before touching astronaut CSS!)**
+This was a long session covering P9 (content polish) plus significant UX and visual improvements:
 
-The astronaut uses `position: fixed; right: 0; bottom: 54px` — **anchored to the input line**, not the viewport edge. This was a deliberate redesign (session 5eeef88f) because `bottom: 28px` (footer edge) with transform Y-offsets caused different positions on real phones vs desktop-resized-small (phones have browser chrome that eats viewport height).
+### ✅ Terminal Content Polish (P9)
+- System prompt moved server-side (was being stripped by ALLOWED_ROLES filter)
+- `sanitizeAiText()` ported from main project (strips heading/list/code markdown artifacts)
+- `formatAiText()` pipeline: sanitize → escape → format (bold + cmd-chips)
+- System prompt tuned: 50-80 words, Fließtext (no lists), explicit forbidden-list
 
-**Key insight:** `--astroY` is now just a **small fine-tune offset** (~0px), NOT the primary Y positioning mechanism. The base Y position comes from `bottom: 54px`.
+### ✅ Brand Naming Consistency
+- `maschke.ai` always lowercase (title, meta, commands, legal texts, comments)
+- `YORI` always uppercase (system prompt, code comments)
+- Files changed: `index.html`, `commands.ts`, `style.css`, `main.ts`, `legal.ts`, `mistral.js`
 
-### CSS Custom Properties per Breakpoint
+### ✅ Consent Flow Redesign
+- **Before:** Consent box shown immediately during boot sequence (as a terminal-box)
+- **After:** No consent on boot. First user input triggers inline consent with **clickable AKZEPTIEREN button** (`.terminal-cmd` class, click handler attached)
+- Typing `akzeptieren`/`accept`/`zustimmen`/`einverstanden` also works
+- Legal commands (`impressum`, `datenschutz`) remain accessible before consent
+- Consent stored in `sessionStorage` (persists across reloads, clears on tab close)
+
+### ✅ Message Counter Cleanup
+- **Removed visible counter** ("X Nachrichten verbleibend") from UI — was confusing users
+- **Counter moved to in-memory** (`let messageCount = 0` in chat.ts) — resets on every reload
+- **System prompt no longer mentions message limit** — replaced "STRATEGIE (5-Nachrichten-Limit)" with simple "GESPRÄCHSFÜHRUNG" section
+- Technical enforcement stays in `chat.ts` (`MAX_MESSAGES = 5`, `isLimitReached()`)
+
+### ✅ Terminal Card Design
+- `#terminal` now floats with 24px inset (top/left/right), `border-radius: 8px`, `box-shadow`
+- Background: `rgba(255,255,255,0.35)` light / `rgba(255,255,255,0.04)` dark
+- Body background darkened 25% (`#cfcfcf` → `#9b9b9b`) for better card contrast
+- Mobile breakpoint (≤480px): 10px insets, 6px radius
+
+### ✅ Visual Polish
+- **Input field**: Background opacity reduced to 8% (light) / 10% (dark) — looks like real terminal
+- **Page fade-in**: `body` animates opacity 0→1 over 1.8s with 0.2s delay
+- **Terminal boxes**: `contact` and `termin` converted to line-based output (no more boxes)
+- **Compact consent**: Uses `.terminal-consent` class with max-width
+- `.terminal-box` now has `max-width: 480px`
+
+### ✅ YORI Position Fix
+- `right: 0` → `right: 24px` and `bottom: 54px` → `bottom: 78px` to compensate for terminal card inset
+- Was previously anchored to viewport edge; now anchored relative to card edge
+
+## Astronaut YORI — Positioning System
+
+**Anchored to input line via `bottom: 78px`** (54px original + 24px terminal card bottom inset). `--astroY` is a small fine-tune offset only.
 
 | Breakpoint | `--astroX` | `--astroY` | `--astroScale` | `--astroBubbleScale` |
 |------------|-----------|-----------|---------------|---------------------|
@@ -43,196 +87,56 @@ The astronaut uses `position: fixed; right: 0; bottom: 54px` — **anchored to t
 | Tablet (≤768px) | -21px | 4px | 0.51 | 1.65 |
 | Mobile (≤480px) | -26px | 0px | 0.44 | 1.9 |
 
-### Speech Bubble Counter-Scale
+**Speech Bubble Counter-Scale:** Bubble inherits parent's `scale()`, so `--astroBubbleScale` counteracts shrinkage to keep text readable. `transform-origin: right center`.
 
-The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scale()` transform. Without counter-scaling, the bubble text would be unreadable on mobile (12px × 0.44 scale = ~5px effective). The `--astroBubbleScale` variable (applied via `transform: scale(var(--astroBubbleScale))` inside the bubble) counteracts the parent's shrinkage:
-- Desktop: 12px × 1.4 / 0.61 ≈ 27px effective → very readable
-- Mobile: 12px × 1.9 / 0.44 ≈ 52px effective → readable on small screens
-
-`transform-origin: right center` keeps the bubble anchored near Yori's head while scaling up.
-
-### Other Astronaut Details
-- **Sprite sheets:** `sprite-256px-9.png` (idle, 3×3), `sprite_fall-256px-9.png` (fall, 3×3), `sprite_perfume-256px-9.png` (perfume, 3×3)
-- **Speech Bubbles:** 22 rotating lines in 3 categories (10s visible, 15s hidden):
-  - **Baustellenhumor** (8): "Noch 99 Bugs…", "Coming Soon*ish", etc.
-  - **Tech-Redewendungen** (10): "Des Devs Website ist immer UC", "In der Latenz liegt die Kraft", "Viele Prompts verderben den Output", etc.
-  - **Easter-Egg-Hints** (4): "Tippe mal hilfe", "Was passiert bei sudo?", etc.
-- **Click-to-Fall Easter Egg:** Click Yori → fall animation + red warning bubble ("NICHT ANFASSEN!!!")
-- **Perfume Animation:** Random trigger (28s interval, 2% chance), 1300ms 9-frame stepped animation. Wider sprite (127x130) centered via margin-left. Guards prevent concurrent fall+perfume.
-- **Talk Animation:** Triggered by AI streaming responses. Same idle sprite but 1200ms cycle (vs 8s idle) — fast frame-flipping = "talking" effect. `startTalking()` on first chunk, `stopTalking()` on done/error. Guards: suppressed during fall/perfume; fall stops active talk.
-- **Debug Panel:** `?debug=1` URL param shows live sliders for position tuning
-
-## AI Text Rendering
-
-**`formatAiText()` in `main.ts` processes AI responses during streaming:**
-1. **Sanitize** — `sanitizeAiText()` strips Markdown artifacts (headings, blockquotes, lists, code blocks, horizontal rules, collapses excessive newlines). Ported 1:1 from main project.
-2. **Escape** — HTML-escaped for XSS prevention
-3. **Format** — `**bold**` → `<strong>` tags, `` `command` `` → clickable `.cmd-chip` spans
-- Applied on each streaming chunk for live formatting during typewriter effect
-- On completion, click handlers are attached to all `.cmd-chip` elements
-
-**CSS classes:**
-- `.line-ai` — AI response text (max-width: 68ch, line-height: 1.5, word-spacing: 0.02em)
-- `.line-ai strong` — Bold text inside AI responses (font-weight: 700)
-- `.cmd-chip` — Clickable command chips (accent color, underline, hover opacity)
-- `.line-accent` — Error/highlight color
-- `.line-cyan` — Services box entries (accent + bold)
+**Animations:**
+- **Idle:** 8s cycle, 3×3 sprite sheet (9 frames)
+- **Fall:** Click Yori → 1100ms fall animation + red warning bubble
+- **Perfume:** Random trigger (28s interval, 2% chance), 1300ms, 9 frames
+- **Talk:** AI streaming trigger, 1200ms fast cycle → "talking" effect. Guards prevent concurrent animations.
+- **Debug Panel:** `?debug=1` shows live sliders
 
 ## NEXUS System Prompt
 
-**System prompt is injected SERVER-SIDE in `functions/api/mistral.js`** (not client-side).
-
-This was a critical fix in session af70a592: the client was sending the system prompt, but the ALLOWED_ROLES filter (`['user', 'assistant']`) was silently stripping it before Mistral received it. Moving it server-side (matching main project architecture) fixed this.
-
-### Prompt Design (9 sections):
-1. **Kontext** — "Du bist NEXUS auf der Under-Construction-Seite von maschke.ai"
-2. **Voice** — Corporate-cool, informelles "Du", trockener Humor, "Dichte über Länge"
-3. **Format — STRIKTE REGELN** — Explicit forbidden-list (headings, lists, code blocks, emojis), with right/wrong examples
-4. **Antwortlänge** — 50-80 Wörter (reduced from 80-150), Max 100
-5. **Kern-Wissen** — Teaser-level services as Fließtext (not list), kontakt@maschke.ai
-6. **Strategie** — 5-Nachrichten-Funnel: Neugier → Kompetenz → Konkret → CTA
-7. **UC-Bewusstsein** — "Die KI läuft schon, die Website holt noch auf"
-8. **Guardrails** — Full set matching main site
-9. **Rollen-Integrität** — IMMER NEXUS, override-resistent
-
-## Design System
-
-**All CSS variables are 1:1 from the main `maschkeai-chatbot` project:**
-- `--terminal-ink`, `--terminal-sub`, `--terminal-accent`, `--terminal-grad`
-- SF Mono system font stack, `font-weight: 600`, `line-height: 1.35`
-- NexusAscii 2-layer system (solid + dither) with animated gradient (8s scroll)
-- VHS scan-line tear glitch (clip-path clones, 8s interval, 2 bursts per cycle — **amplified**)
-- Light/Dark mode via `[data-theme="dark"]` with `localStorage` persistence
-- Astronaut bubble styling adapted from main project's `.astro-bubble` (with counter-scale)
+**Server-side only** (`functions/api/mistral.js`). Key sections:
+1. Kontext, Voice, Format (STRIKTE REGELN: no headings/lists/code/emojis)
+2. Antwortlänge: 50-80 words, max 100
+3. Kern-Wissen: Teaser-level services as Fließtext
+4. **Gesprächsführung**: Simple tone guidance, NO message counter awareness
+5. UC-Bewusstsein, Guardrails (prompt injection, no code gen, context lock, role integrity)
 
 ## Invariants
 
-1. **DSGVO**: Impressum + Datenschutz MUST be visible as footer links (§5 DDG). Terminal commands are a bonus, not a replacement.
-2. **Same Mistral API key** as main project — set as `MISTRAL_API_KEY` env var on Cloudflare Pages.
-3. **Deploys auto-trigger** on push to `main` branch via Cloudflare Pages Git integration.
-4. **Reuse before recreate**: Always check main `maschkeai-chatbot` project for existing patterns, CSS, and logic before building new ones.
-5. **Astronaut Y-position**: Always use `bottom: 54px` (input-line anchor). NEVER go back to `bottom: 28px` with large `--astroY` offsets — that causes phone/desktop divergence.
-6. **🚨 NO LOCAL DEV SERVER**: NEVER start `npm run dev` or any local server for this project. Test ONLY on `https://maschkeai-uc.pages.dev/` after push to `main`. See `.agent/rules/NO_LOCAL_SERVER.md`.
+1. **DSGVO**: Impressum + Datenschutz MUST be visible as footer links (§5 DDG)
+2. **Same Mistral API key** as main project — `MISTRAL_API_KEY` env var on Cloudflare Pages
+3. **Deploys auto-trigger** on push to `main` via Cloudflare Pages Git integration
+4. **Reuse before recreate**: ALWAYS check main `maschkeai-chatbot` first
+5. **YORI Y-position**: Use `bottom: 78px` (input-line + card inset anchor). NEVER use large `--astroY` offsets
+6. **🚨 NO LOCAL DEV SERVER**: NEVER start `npm run dev`. Test ONLY on production after push. See `.agent/rules/NO_LOCAL_SERVER.md`
+7. **Brand**: `maschke.ai` always lowercase, `YORI` always uppercase
+8. **Message limit**: Technical enforcement only (in-memory counter in `chat.ts`). Model knows NOTHING about limits.
 
-## Completed Tasks
+## Open Tasks
 
-### ✅ P1: Boot Sequence + Commands (Session 0639df28)
-- Boot: NEXUS OS v4.0.2 with German BOOT lines (Secure Shell, Uplink, Protokoll-Stack)
-- Commands: `hilfe` as primary (with `help` alias), all German labels
-- Easter Eggs: ping, sudo, stats, matrix, secret, hack (animated)
-- Alias system for flexible command mapping
-
-### ✅ P2: GitHub Repo + Cloudflare Pages (Session 0639df28)
-- GitHub: `MSCHKY/maschkeai-uc` (public)
-- Cloudflare Pages: `maschkeai-uc.pages.dev` (Global, auto-deploy from main)
-- `MISTRAL_API_KEY` set as production env var
-- AI Chat verified working on production
-
-### ✅ P3: Impressum Addresses (Session f51f758a)
-- Full address: Kirchstr. 7, 52391 Vettweiß, Deutschland
-- Updated in both HTML overlay (`IMPRESSUM_CONTENT`) and terminal ASCII (`IMPRESSUM_TERMINAL`)
-
-### ✅ P4: Visual Polish + Astronaut (Session f51f758a)
-- VHS glitch effect amplified (2 bursts per cycle, stronger shifts up to 22px, higher opacity)
-- Astronaut Yori integrated with idle animation, speech bubbles, click-to-fall
-- Position pixel-tuned via debug panel (Desktop + Mobile values locked in)
-- Theme toggle verified (dark/light/auto)
-- Mobile responsiveness verified
-
-### ✅ P5: Terminal Content & System Prompt (Session 5eeef88f)
-- **System Prompt**: Complete rewrite for UC context — "Early Access" NEXUS identity
-  - 9-section prompt: Kontext, Voice, Format, Antwortlänge, Kern-Wissen, Strategie, UC-Bewusstsein, Guardrails, Ton-Beispiel
-  - 5-message funnel: Neugier → Kompetenz → Konkret → E-Mail CTA
-  - Teaser-level knowledge (services without prices, kontakt@maschke.ai as only CTA)
-  - Full guardrails matching main site
-- **AI Text Rendering**: `formatAiText()` renders `**bold**` and `` `commands` `` live during streaming
-  - Bold → `<strong>` tags, Commands → clickable `.cmd-chip` spans with click handlers
-  - HTML-escaped first for XSS prevention
-- **Yori Sprüche**: Expanded from 11 to 22 lines — 3 categories:
-  - Baustellenhumor, Tech-remixed German proverbs, Easter-Egg-Hints
-- **Contact Box**: Removed ✉ emoji (broke monospace alignment), tightened layout
-- **Astronaut Positioning Overhaul**:
-  - Changed from `bottom: 28px` + large Y-offsets → `bottom: 54px` (input-line anchor)
-  - `--astroY` reduced to ~0px fine-tuning only
-  - This fixed the phone/desktop positioning divergence
-- **Speech Bubble Readability**:
-  - Added `--astroBubbleScale` counter-scale (1.4x / 1.65x / 1.9x per breakpoint)
-  - Compensates parent astronaut scale to keep bubble text at readable effective size
-  - `transform-origin: right center` keeps bubble anchored near Yori's head
-- **Missing CSS classes added**: `.line-ai`, `.line-cyan`, `.line-accent`, `.cmd-chip`
-
-### ✅ Live Audit (Session 484ec42d + 099b16c4)
-- All core features verified on `maschkeai-uc.pages.dev`:
-  - Boot sequence, consent gate, commands (hilfe, termin, contact, impressum)
-  - Yori positioning + speech bubbles, footer, mobile responsiveness
-  - Live audit recording and screenshots captured
-- **Workflow-Trennung**: Renamed workflows to `/uc-session-start` und `/uc-session-end`
-- **Added**: `.agent/rules/REUSE_MAIN_PROJECT.md` rule for code reuse enforcement
-- **DSGVO**: Consent gate + termin booking (Cal.com link) implemented
-
-### ✅ P8.5: CSS Box Spacing + Command Refactoring (Session 5d33a030)
-- **CSS tightened**: `.terminal-box` padding 8px 12px, line-height 1.35, margins reduced
-- **Command output split**: Boxes reserved for **static content only** (contact, termin, status, impressum, datenschutz, consent). Info commands (`hilfe`, `about`, `services`) converted to terminal-native **line-based output**
-- **Consent box condensed**: Fewer `<p>` tags, merged button hints into single line
-- **Contact/Termin boxes condensed**: Merged paragraphs, fewer elements, tighter structure
-- **NO_LOCAL_SERVER rule**: Created `.agent/rules/NO_LOCAL_SERVER.md` + added to session-start workflow
-- **Files modified**: `src/style.css`, `src/commands.ts`, `src/main.ts`
-
-### ✅ P8: Live Chat Testing (Session 9bae44bc)
-- Bold rendering verified (`**text**` → `<strong>`, `font-weight: 700`)
-- Command chips verified (`.cmd-chip`, blue, clickable, executes command)
-- Guardrail finding: UC had NO server-side regex patterns → **fixed**
-- Ported 20 injection regex patterns (EN+DE+jailbreak) from main project
-- Added `detectPromptInjection()` with HTTP 403 blocking
-- Added message sanitization (role whitelist, 4000 char cap, 12 msg max)
-- Added 403 handling in `chat.ts` frontend with German security message
-- 5-message funnel: Prompt-only strategy — no visible counter (bewusst)
-- Fixed sticky input line: `overflow-y:auto` moved from `#terminal` to `#terminal-output`
-
-### ✅ P7: Perfume Animation (Session 9bae44bc)
-- Sprite `sprite_perfume-256px-9.png` ported from main project
-- CSS class `.astro-perfume` (127x130 frame, centered via margin-left)
-- `@keyframes astro-perfume` (1300ms, 9 frames, stepped)
-- Random trigger: `setInterval` 28s, 2% chance (from `useAstronaut.ts`)
-- Guards prevent concurrent fall + perfume animations
-
-### ✅ Talk Animation (Session 7f7ee283)
-- CSS: `.astro-talk` class with `@keyframes astro-talk` (1200ms, same idle sprite, fast cycle)
-- JS: `startTalking()` / `stopTalking()` toggle `.astro-talk` on sprite element
-- Trigger: First streaming chunk starts talk, `onDone`/`onError` stops talk
-- Guards: Talk suppressed during fall/perfume; fall stops active talk
-- Verified on production: idle → talk → idle animation transitions confirmed via JS 
-- **Cooler than main project**: Main project triggers on bubble-text change; UC triggers on actual AI streaming
-
-### 🟢 P6: Custom Domain (User handles separately)
-- Point `maschke.ai` → `www.maschke.ai` to Cloudflare Pages
-- Robert has this on his radar — no task item needed
-
-### ✅ P9: Terminal Content Polish (Session af70a592)
-- **Root Cause Fix**: System prompt was being silently stripped by `ALLOWED_ROLES` filter in API proxy. Moved prompt server-side (matching main project architecture)
-- **sanitizeAiText()**: Ported from main project — strips headings, blockquotes, bullet/numbered lists, code blocks, horizontal rules, collapses newlines
-- **formatAiText() pipeline**: Sanitize → Escape → Format (bold + cmd-chips)
-- **System Prompt v2**: Explicit "STRIKTE REGELN" forbidden-list with right/wrong examples, response length 50-80 words, services as Fließtext
-- **CSS**: `.line-ai` gets `max-width: 68ch`, `line-height: 1.5` for better readability
-- **Verified on production**: On-brand responses, no markdown artifacts, correct bold + cmd-chip rendering
-- **Files modified**: `functions/api/mistral.js`, `src/chat.ts`, `src/main.ts`, `src/style.css`
-
-### 🟢 P6: Custom Domain (User handles separately)
-- Point `maschke.ai` → `www.maschke.ai` to Cloudflare Pages
-- Robert has this on his radar — no task item needed
-
-## Open Tasks (Priority Order)
-
-- None currently. All P1-P9 tasks completed.
-- Consider: Mobile-responsive testing pass, additional prompt tuning based on user feedback
+- **P10: YORI mobile positioning check** — The terminal card inset may have shifted YORI on tablets/phones. Verify with Playwright mobile emulation and adjust breakpoint values if needed.
+- **P11: Consent UX review** — Verify the clickable AKZEPTIEREN button works on mobile (touch targets, visibility)
+- Consider: Additional prompt tuning based on real user feedback
 
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `aaecc22` — `fix: move system prompt server-side — was being stripped by ALLOWED_ROLES filter`
-- **Session commits (af70a592):** 2
-  - `185a342` fix: sanitize AI responses — strip markdown artifacts, tune system prompt
-  - `aaecc22` fix: move system prompt server-side — was being stripped by ALLOWED_ROLES filter
+- **HEAD:** `e9b1656`
+- **Session commits (af70a592):** 10
+  - `185a342` fix: sanitize AI responses
+  - `aaecc22` fix: move system prompt server-side
+  - `59191bb` docs: update handover context
+  - `79cc665` refactor: compact boxes
+  - `6ba8353` fix: brand naming + consent on first input
+  - `59be594` style: terminal card
+  - `adbf87d` fix: darker bg, equal insets, kill message counter
+  - `1968cdb` fix: remove visible message counter
+  - `878bae1` fix: message counter in-memory
+  - `e9b1656` fix: clickable consent, YORI position, transparent input, page fade-in
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
@@ -241,9 +145,9 @@ This was a critical fix in session af70a592: the client was sending the system p
 - Cloudflare Pages deployment (auto-deploy from GitHub)
 
 ## Key Files in Main Project (Reference)
-- `maschkeai-chatbot/hooks/useAstronaut.ts` — Astronaut state machine (already adapted)
-- `maschkeai-chatbot/components/debug/AstronautControls.tsx` — Debug panel (already adapted)
-- `maschkeai-chatbot/components/TerminalBoard.tsx` — AstronautOverlay component
-- `maschkeai-chatbot/tailwind.css` — All CSS variables (already extracted)
-- `maschkeai-chatbot/functions/api/mistral.js` — Full system prompt (reference for UC prompt)
-- `maschkeai-chatbot/components/useTerminalControllerV2.ts` — sanitizeAiText() reference (ported)
+- `maschkeai-chatbot/hooks/useAstronaut.ts` — Astronaut state machine
+- `maschkeai-chatbot/components/debug/AstronautControls.tsx` — Debug panel
+- `maschkeai-chatbot/components/TerminalBoard.tsx` — AstronautOverlay
+- `maschkeai-chatbot/tailwind.css` — All CSS variables
+- `maschkeai-chatbot/functions/api/mistral.js` — Full system prompt reference
+- `maschkeai-chatbot/components/useTerminalControllerV2.ts` — sanitizeAiText() reference
