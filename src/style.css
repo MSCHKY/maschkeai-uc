@@ -855,14 +855,14 @@ body {
 
 /* --- Tunable CSS Custom Properties (same names as main project) --- */
 :root {
-    --astroX: 10px;
-    --astroY: -70px;
-    --astroScale: 0.52;
+    --astroX: -52px;
+    --astroY: -26px;
+    --astroScale: 0.61;
     --astroFallX: 8px;
     --astroFallY: 1px;
     --astroFallScale: 1.02;
-    --astroBubbleX: -8px;
-    --astroBubbleY: -4px;
+    --astroBubbleX: -6px;
+    --astroBubbleY: -22px;
 }
 
 @media (max-width: 768px) {
