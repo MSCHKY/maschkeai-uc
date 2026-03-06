@@ -1,11 +1,11 @@
 ---
-description: UC:End a session by updating HANDOVER_CONTEXT.md with current state and committing
+description: UC:End a session on the Under-Construction site by updating HANDOVER_CONTEXT.md with current state and committing
 ---
 
-# /session-end - Session sauber beenden
+# /uc-session-end - UC-Session sauber beenden
 
 ## Zweck
-Wird am Ende jeder Chat-Session ausgeführt, um den Zustand für die nächste Session festzuhalten.
+Wird am Ende jeder Chat-Session für das **Under-Construction-Projekt** (`maschkeai-uc`) ausgeführt.
 
 ## Schritte
 
@@ -43,5 +43,5 @@ cd /Volumes/Work/AI/__CODING/maschkeai-uc && git remote -v && if git remote | gr
 
 6. Erstelle einen **Initialprompt** für den nächsten Chat:
    - Kurzer Satz was als nächstes ansteht
-   - Format: `/session-start` — dann [nächster Task]
+   - Format: `/uc-session-start` — dann [nächster Task]
    - Den Prompt dem User als Copy-Paste Block bereitstellen
