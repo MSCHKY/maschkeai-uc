@@ -1,6 +1,7 @@
 ---
-description: Initialize a new chat session by loading project context and checking git status
+description: UC:Initialize a new chat session by loading project context and checking git status
 ---
+
 # /session-start - Session initialisieren
 
 // turbo-all

@@ -104,6 +104,46 @@ async function animateProgressBar(): Promise<void> {
     }
 }
 
+// ── Astronaut Speech Bubbles ──
+const YORI_LINES = [
+    'Wird noch gebaut…',
+    'Bald™ fertig!',
+    'Tippe mal hilfe',
+    'Psst… probier matrix',
+    'KI braucht Kaffee',
+    'Ich schweb hier nur rum',
+    'Nicht anfassen!',
+    'Coming Soon*ish',
+    'Noch 99 Bugs…',
+    'Schöne Baustelle hier',
+    'Vorsicht, nasser Lack!',
+    'Geheimer Befehl: hack',
+    '01100010 01100001 01101100 01100100',
+];
+
+function startBubbleRotation(bubble: HTMLElement) {
+    let pool = [...YORI_LINES];
+    const SHOW_MS = 10_000;
+    const HIDE_MS = 15_000;
+
+    function pickNext(): string {
+        if (pool.length === 0) pool = [...YORI_LINES];
+        const idx = Math.floor(Math.random() * pool.length);
+        return pool.splice(idx, 1)[0];
+    }
+
+    function showNext() {
+        bubble.textContent = pickNext();
+        bubble.classList.add('visible');
+        setTimeout(() => {
+            bubble.classList.remove('visible');
+            setTimeout(showNext, HIDE_MS);
+        }, SHOW_MS);
+    }
+
+    showNext();
+}
+
 // ── Boot sequence ──
 async function runBootSequence(): Promise<void> {
     for (const line of BOOT_SEQUENCE) {
@@ -130,6 +170,19 @@ async function runBootSequence(): Promise<void> {
     // Show input
     inputLine.classList.add('visible');
     input.focus();
+
+    // Reveal astronaut after a short delay + start speech bubbles
+    const astronaut = document.getElementById('astronaut-overlay');
+    const bubble = document.getElementById('astronaut-bubble');
+    if (astronaut) {
+        setTimeout(() => {
+            astronaut.classList.add('visible');
+            // Start speech bubble rotation after astronaut slides in
+            if (bubble) {
+                setTimeout(() => startBubbleRotation(bubble), 3000);
+            }
+        }, 600);
+    }
 }
 
 // ── Echo user input ──

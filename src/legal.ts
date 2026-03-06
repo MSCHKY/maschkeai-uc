@@ -10,7 +10,8 @@ export const IMPRESSUM_CONTENT = `
 <p>
 Robert Maschke<br>
 Maschke.ai — Kreativ-Agentur für Künstliche Intelligenz<br>
-[Adresse wird ergänzt]<br>
+Kirchstr. 7<br>
+52391 Vettweiß<br>
 Deutschland
 </p>
 
@@ -22,7 +23,7 @@ E-Mail: hello@maschke.ai
 <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
 <p>
 Robert Maschke<br>
-[Adresse wird ergänzt]
+Kirchstr. 7, 52391 Vettweiß
 </p>
 `;
 
@@ -57,6 +58,9 @@ export const IMPRESSUM_TERMINAL = [
     { text: ' │  Robert Maschke                       │', cls: 'line-primary' },
     { text: ' │  Maschke.ai                           │', cls: 'line-primary' },
     { text: ' │  Kreativ-Agentur für KI               │', cls: 'line-primary' },
+    { text: ' │                                      │', cls: 'line-system' },
+    { text: ' │  Kirchstr. 7                          │', cls: 'line-dim' },
+    { text: ' │  52391 Vettweiß                       │', cls: 'line-dim' },
     { text: ' │                                      │', cls: 'line-system' },
     { text: ' │  ✉  hello@maschke.ai                │', cls: 'line-link' },
     { text: ' │                                      │', cls: 'line-system' },

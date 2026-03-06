@@ -184,34 +184,62 @@ body {
     animation: stack-glitch 8s step-end infinite;
 }
 
-/* — Stack-level base jitter — */
+/* — Stack-level base jitter — MORE EXTREME — */
 @keyframes stack-glitch {
 
     0%,
-    3%,
-    6%,
+    2.8%,
+    7.5%,
+    52%,
+    59%,
     100% {
         transform: scaleX(var(--terminal-nexus-scale-x, 1.39));
     }
 
-    3.2% {
-        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(2px);
+    /* — First burst (3s mark) — */
+    3% {
+        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(4px) skewX(0.6deg);
     }
 
-    3.5% {
-        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(-1px) skewX(0.4deg);
+    3.4% {
+        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(-3px) skewX(-0.8deg);
     }
 
     3.8% {
+        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(6px);
+    }
+
+    4.2% {
+        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(-5px) skewX(1.2deg);
+    }
+
+    4.8% {
         transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(3px);
     }
 
-    4.5% {
-        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(-2px);
+    5.5% {
+        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(-2px) skewX(0.3deg);
     }
 
-    5% {
-        transform: scaleX(var(--terminal-nexus-scale-x, 1.39));
+    6.5% {
+        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(1px);
+    }
+
+    /* — Second burst (55s-ish mark) — */
+    53% {
+        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(-4px) skewX(-0.5deg);
+    }
+
+    54% {
+        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(5px) skewX(0.9deg);
+    }
+
+    55% {
+        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(-6px);
+    }
+
+    56.5% {
+        transform: scaleX(var(--terminal-nexus-scale-x, 1.39)) translateX(2px);
     }
 }
 
@@ -234,60 +262,106 @@ body {
 @keyframes glitch-tear-1 {
 
     0%,
-    3%,
-    6%,
+    2.8%,
+    7.5%,
+    52%,
+    59%,
     100% {
         opacity: 0;
         clip-path: inset(0 0 100% 0);
         transform: none;
     }
 
-    3.1% {
-        opacity: 0.8;
-        clip-path: inset(10% 0 70% 0);
-        transform: translateX(-8px);
+    /* — First burst — */
+    3% {
+        opacity: 0.9;
+        clip-path: inset(8% 0 65% 0);
+        transform: translateX(-12px);
     }
 
     3.3% {
-        opacity: 0.9;
-        clip-path: inset(35% 0 40% 0);
-        transform: translateX(12px);
+        opacity: 1;
+        clip-path: inset(30% 0 35% 0);
+        transform: translateX(18px);
     }
 
-    3.5% {
-        opacity: 0.7;
-        clip-path: inset(5% 0 80% 0);
-        transform: translateX(-5px);
-    }
-
-    3.7% {
+    3.6% {
         opacity: 0.85;
-        clip-path: inset(55% 0 20% 0);
-        transform: translateX(10px);
+        clip-path: inset(5% 0 75% 0);
+        transform: translateX(-8px);
     }
 
-    4.0% {
-        opacity: 0.6;
-        clip-path: inset(20% 0 55% 0);
-        transform: translateX(-14px);
+    3.9% {
+        opacity: 0.95;
+        clip-path: inset(50% 0 15% 0);
+        transform: translateX(14px);
     }
 
     4.3% {
+        opacity: 0.7;
+        clip-path: inset(18% 0 50% 0);
+        transform: translateX(-20px);
+    }
+
+    4.7% {
+        opacity: 0.9;
+        clip-path: inset(65% 0 5% 0);
+        transform: translateX(10px);
+    }
+
+    5.2% {
+        opacity: 0.6;
+        clip-path: inset(12% 0 60% 0);
+        transform: translateX(-6px);
+    }
+
+    5.8% {
+        opacity: 0.4;
+        clip-path: inset(40% 0 40% 0);
+        transform: translateX(4px);
+    }
+
+    6.5% {
+        opacity: 0.2;
+        clip-path: inset(25% 0 55% 0);
+        transform: translateX(-2px);
+    }
+
+    /* — Second burst — */
+    53% {
+        opacity: 0.85;
+        clip-path: inset(15% 0 55% 0);
+        transform: translateX(-16px);
+    }
+
+    53.5% {
+        opacity: 1;
+        clip-path: inset(42% 0 25% 0);
+        transform: translateX(22px);
+    }
+
+    54% {
         opacity: 0.75;
-        clip-path: inset(70% 0 5% 0);
-        transform: translateX(6px);
+        clip-path: inset(8% 0 70% 0);
+        transform: translateX(-10px);
     }
 
-    4.6% {
+    55% {
+        opacity: 0.9;
+        clip-path: inset(55% 0 10% 0);
+        transform: translateX(15px);
+    }
+
+    56% {
         opacity: 0.5;
-        clip-path: inset(15% 0 65% 0);
-        transform: translateX(-3px);
+        clip-path: inset(30% 0 45% 0);
+        transform: translateX(-8px);
     }
 
-    5.0% {
-        opacity: 0;
-        clip-path: inset(0 0 100% 0);
-        transform: none;
+    57% {
+        opacity: 0.3;
+        clip-path: inset(20% 0 60% 0);
+        transform: translateX(4px);
     }
 }
 
@@ -300,60 +374,100 @@ body {
 @keyframes glitch-tear-2 {
 
     0%,
-    3%,
-    6%,
+    2.8%,
+    7.5%,
+    52%,
+    59%,
     100% {
         opacity: 0;
         clip-path: inset(0 0 100% 0);
         transform: none;
     }
 
-    3.15% {
-        opacity: 0.7;
-        clip-path: inset(60% 0 15% 0);
-        transform: translateX(9px);
-    }
-
-    3.35% {
-        opacity: 0.85;
-        clip-path: inset(25% 0 50% 0);
-        transform: translateX(-11px);
-    }
-
-    3.55% {
-        opacity: 0.6;
-        clip-path: inset(45% 0 30% 0);
-        transform: translateX(7px);
-    }
-
-    3.75% {
+    /* — First burst (offset from glitch-1 for layered effect) — */
+    3.1% {
         opacity: 0.8;
-        clip-path: inset(8% 0 75% 0);
-        transform: translateX(-6px);
+        clip-path: inset(55% 0 10% 0);
+        transform: translateX(14px);
     }
 
-    4.1% {
+    3.4% {
+        opacity: 0.95;
+        clip-path: inset(20% 0 45% 0);
+        transform: translateX(-16px);
+    }
+
+    3.7% {
+        opacity: 0.7;
+        clip-path: inset(40% 0 25% 0);
+        transform: translateX(10px);
+    }
+
+    4.0% {
         opacity: 0.9;
-        clip-path: inset(40% 0 35% 0);
-        transform: translateX(15px);
+        clip-path: inset(5% 0 70% 0);
+        transform: translateX(-12px);
     }
 
-    4.4% {
-        opacity: 0.5;
-        clip-path: inset(75% 0 5% 0);
-        transform: translateX(-8px);
-    }
-
-    4.8% {
-        opacity: 0.4;
-        clip-path: inset(30% 0 50% 0);
-        transform: translateX(4px);
+    4.5% {
+        opacity: 1;
+        clip-path: inset(35% 0 30% 0);
+        transform: translateX(20px);
     }
 
     5.0% {
-        opacity: 0;
-        clip-path: inset(0 0 100% 0);
-        transform: none;
+        opacity: 0.65;
+        clip-path: inset(70% 0 5% 0);
+        transform: translateX(-14px);
+    }
+
+    5.5% {
+        opacity: 0.45;
+        clip-path: inset(25% 0 50% 0);
+        transform: translateX(6px);
+    }
+
+    6.2% {
+        opacity: 0.25;
+        clip-path: inset(48% 0 30% 0);
+        transform: translateX(-3px);
+    }
+
+    /* — Second burst — */
+    53.2% {
+        opacity: 0.75;
+        clip-path: inset(60% 0 8% 0);
+        transform: translateX(12px);
+    }
+
+    53.8% {
+        opacity: 0.95;
+        clip-path: inset(10% 0 55% 0);
+        transform: translateX(-18px);
+    }
+
+    54.5% {
+        opacity: 0.65;
+        clip-path: inset(38% 0 30% 0);
+        transform: translateX(8px);
+    }
+
+    55.5% {
+        opacity: 0.85;
+        clip-path: inset(48% 0 15% 0);
+        transform: translateX(-12px);
+    }
+
+    56.5% {
+        opacity: 0.4;
+        clip-path: inset(22% 0 50% 0);
+        transform: translateX(6px);
+    }
+
+    57.5% {
+        opacity: 0.2;
+        clip-path: inset(35% 0 45% 0);
+        transform: translateX(-3px);
     }
 }
 
@@ -723,5 +837,220 @@ body {
     .terminal-cursor-blink {
         animation: none !important;
         opacity: 1 !important;
+    }
+
+    #astronaut-overlay {
+        animation: none !important;
+    }
+
+    #astronaut-sprite {
+        animation: astro-idle 8s steps(1, end) infinite !important;
+    }
+}
+
+/* ============================================================
+   Astronaut Yori — Pixel mascot sitting on the input bar
+   Sprite sheet: 3×3 grid (570×804 → 190×268 per frame)
+   ============================================================ */
+#astronaut-overlay {
+    position: fixed;
+    right: 24px;
+    bottom: 36px;
+    /* sits just above the footer, on the input bar */
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#astronaut-overlay.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+#astronaut-sprite {
+    /* Desktop: 60×85 for a compact but visible presence */
+    --astro-frame-w: 60px;
+    --astro-frame-h: 85px;
+    --astro-sheet-w: 180px;
+    /* 60 * 3 */
+    --astro-sheet-h: 255px;
+    /* 85 * 3 */
+
+    width: var(--astro-frame-w);
+    height: var(--astro-frame-h);
+    background-image: url('/gfx/yori_anim/sprite-256px-9.png');
+    background-repeat: no-repeat;
+    background-size: var(--astro-sheet-w) var(--astro-sheet-h);
+    image-rendering: pixelated;
+
+    /* Shadow — light from top-right (consistent with main project) */
+    filter:
+        brightness(1) drop-shadow(-2px 2px 0 rgba(0, 0, 0, 0.35)) drop-shadow(-1px 4px 8px rgba(0, 0, 0, 0.12));
+
+    animation: astro-idle 8s steps(1, end) infinite;
+}
+
+/* Dark mode: slightly brighter sprite */
+[data-theme="dark"] #astronaut-sprite {
+    filter:
+        brightness(1.1) drop-shadow(-2px 2px 0 rgba(0, 0, 0, 0.5)) drop-shadow(-1px 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* --- Idle animation: cycle through 9 frames (3×3 grid) --- */
+@keyframes astro-idle {
+    0% {
+        background-position: 0px 0px;
+    }
+
+    11.11% {
+        background-position: calc(-1 * var(--astro-frame-w)) 0px;
+    }
+
+    22.22% {
+        background-position: calc(-2 * var(--astro-frame-w)) 0px;
+    }
+
+    33.33% {
+        background-position: 0px calc(-1 * var(--astro-frame-h));
+    }
+
+    44.44% {
+        background-position: calc(-1 * var(--astro-frame-w)) calc(-1 * var(--astro-frame-h));
+    }
+
+    55.55% {
+        background-position: calc(-2 * var(--astro-frame-w)) calc(-1 * var(--astro-frame-h));
+    }
+
+    66.66% {
+        background-position: 0px calc(-2 * var(--astro-frame-h));
+    }
+
+    77.77% {
+        background-position: calc(-1 * var(--astro-frame-w)) calc(-2 * var(--astro-frame-h));
+    }
+
+    88.88%,
+    100% {
+        background-position: calc(-2 * var(--astro-frame-w)) calc(-2 * var(--astro-frame-h));
+    }
+}
+
+/* ============================================================
+   Speech Bubble — adapted from main project's astro-bubble
+   Positioned to the left of the sprite, with thought-circle
+   connectors (::before and ::after pseudo-elements)
+   ============================================================ */
+#astronaut-bubble {
+    position: absolute;
+    right: 100%;
+    top: 4px;
+    transform: translate(-8px, 0);
+    background: rgba(255, 255, 255, 0.96);
+    border: 2px solid rgba(0, 0, 0, 0.85);
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-family: var(--terminal-font-family);
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+    color: rgba(0, 0, 0, 0.88);
+    text-transform: uppercase;
+    display: inline-block;
+    width: max-content;
+    max-width: min(220px, 45vw);
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: normal;
+    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+#astronaut-bubble.visible {
+    opacity: 1;
+}
+
+/* Dark mode bubble */
+[data-theme="dark"] #astronaut-bubble {
+    background: rgba(30, 35, 50, 0.94);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: rgba(245, 248, 255, 0.88);
+    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.55);
+}
+
+/* Thought-bubble connectors — two circles leading to sprite */
+#astronaut-bubble::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 2px solid rgba(0, 0, 0, 0.85);
+    border-radius: 9999px;
+    transform: translateY(-65%);
+    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+#astronaut-bubble::before {
+    content: '';
+    position: absolute;
+    right: -22px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 2px solid rgba(0, 0, 0, 0.85);
+    border-radius: 9999px;
+    transform: translateY(10%);
+    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Dark mode connectors */
+[data-theme="dark"] #astronaut-bubble::after,
+[data-theme="dark"] #astronaut-bubble::before {
+    background: rgba(30, 35, 50, 0.94);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.55);
+}
+
+/* --- Responsive: smaller on mobile --- */
+@media (max-width: 768px) {
+    #astronaut-overlay {
+        right: 8px;
+        bottom: 34px;
+    }
+
+    #astronaut-sprite {
+        --astro-frame-w: 44px;
+        --astro-frame-h: 62px;
+        --astro-sheet-w: 132px;
+        --astro-sheet-h: 186px;
+    }
+
+    #astronaut-bubble {
+        font-size: 8px;
+        padding: 4px 7px;
+        max-width: min(160px, 40vw);
+    }
+}
+
+@media (max-width: 480px) {
+    #astronaut-sprite {
+        --astro-frame-w: 36px;
+        --astro-frame-h: 51px;
+        --astro-sheet-w: 108px;
+        --astro-sheet-h: 153px;
+    }
+
+    #astronaut-bubble {
+        font-size: 7px;
+        max-width: min(130px, 38vw);
     }
 }
