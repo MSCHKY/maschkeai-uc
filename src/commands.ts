@@ -1,5 +1,6 @@
 /**
  * Local command handlers — processed without Mistral
+ * German terminal style, aligned with main maschkeai-chatbot project
  */
 
 export interface CommandResult {
@@ -7,23 +8,25 @@ export interface CommandResult {
 }
 
 const COMMANDS: Record<string, () => CommandResult> = {
-    help: () => ({
+    hilfe: () => ({
         lines: [
             { text: '', cls: '' },
-            { text: ' Available commands:', cls: 'line-system' },
-            { text: ' ─────────────────────────────────', cls: 'line-dim' },
-            { text: '  help       — Show this menu', cls: 'line-dim' },
-            { text: '  about      — Who is Maschke.ai?', cls: 'line-dim' },
-            { text: '  services   — What we do', cls: 'line-dim' },
-            { text: '  contact    — Get in touch', cls: 'line-dim' },
-            { text: '  status     — Construction status', cls: 'line-dim' },
-            { text: '  impressum  — Legal notice', cls: 'line-dim' },
-            { text: '  datenschutz — Privacy policy', cls: 'line-dim' },
-            { text: '  clear      — Clear terminal', cls: 'line-dim' },
-            { text: '  dark       — Dark mode', cls: 'line-dim' },
-            { text: '  light      — Light mode', cls: 'line-dim' },
+            { text: 'HILFE :: BEFEHLE', cls: 'line-system' },
+            { text: '─────────────────────────────────', cls: 'line-dim' },
             { text: '', cls: '' },
-            { text: ' Or just type anything — NEXUS will respond.', cls: 'line-dim' },
+            { text: 'Themen:', cls: 'line-system' },
+            { text: '  about      — Wer ist Maschke.ai?', cls: 'line-dim' },
+            { text: '  services   — Was wir machen', cls: 'line-dim' },
+            { text: '  contact    — Kontakt aufnehmen', cls: 'line-dim' },
+            { text: '  status     — Baustellen-Status', cls: 'line-dim' },
+            { text: '', cls: '' },
+            { text: 'System:', cls: 'line-system' },
+            { text: '  dark · light — Theme wechseln', cls: 'line-dim' },
+            { text: '  impressum    — Impressum', cls: 'line-dim' },
+            { text: '  datenschutz  — Datenschutzerklärung', cls: 'line-dim' },
+            { text: '  clear        — Terminal leeren', cls: 'line-dim' },
+            { text: '', cls: '' },
+            { text: ' Oder einfach lostippen — NEXUS antwortet.', cls: 'line-dim' },
             { text: '', cls: '' },
         ],
     }),
@@ -74,7 +77,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     contact: () => ({
         lines: [
             { text: '', cls: '' },
-            { text: ' ┌─ CONTACT ───────────────────────────┐', cls: 'line-system' },
+            { text: ' ┌─ KONTAKT ──────────────────────────┐', cls: 'line-system' },
             { text: ' │                                      │', cls: 'line-system' },
             { text: ' │  ✉  hello@maschke.ai                │', cls: 'line-link' },
             { text: ' │                                      │', cls: 'line-system' },
@@ -103,6 +106,72 @@ const COMMANDS: Record<string, () => CommandResult> = {
             { text: '', cls: '' },
         ],
     }),
+
+    // Easter Eggs (from main project)
+    ping: () => ({
+        lines: [
+            { text: `PONG. Latenz: ${Math.floor(Math.random() * 42) + 3}ms`, cls: 'line-system' },
+        ],
+    }),
+
+    sudo: () => ({
+        lines: [
+            { text: 'Permission denied. Nice try.', cls: 'line-system' },
+        ],
+    }),
+
+    stats: () => {
+        const uptime = Math.floor(Math.random() * 720) + 60;
+        const mem = (Math.random() * 256 + 128).toFixed(1);
+        const sessions = Math.floor(Math.random() * 1337) + 42;
+        return {
+            lines: [
+                { text: '', cls: '' },
+                { text: 'SYSTEM STATS', cls: 'line-system' },
+                { text: '───────────────────────────', cls: 'line-dim' },
+                { text: `Uptime:    ${uptime} min`, cls: 'line-dim' },
+                { text: `Memory:    ${mem} MB / 512 MB`, cls: 'line-dim' },
+                { text: `Sessions:  ${sessions}`, cls: 'line-dim' },
+                { text: 'Model:     Mistral Medium 3', cls: 'line-dim' },
+                { text: 'Status:    Under Construction', cls: 'line-warn' },
+                { text: '', cls: '' },
+            ],
+        };
+    },
+
+    matrix: () => {
+        const chars = 'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ0123456789';
+        const matrixLines: { text: string; cls: string }[] = [{ text: '', cls: '' }];
+        for (let i = 0; i < 8; i++) {
+            let line = '';
+            for (let j = 0; j < 40; j++) {
+                line += chars[Math.floor(Math.random() * chars.length)];
+            }
+            matrixLines.push({ text: line, cls: 'line-success' });
+        }
+        matrixLines.push({ text: '', cls: '' });
+        matrixLines.push({ text: 'Wake up, Neo…', cls: 'line-dim' });
+        matrixLines.push({ text: '', cls: '' });
+        return { lines: matrixLines };
+    },
+
+    secret: () => ({
+        lines: [
+            { text: '', cls: '' },
+            { text: 'Du hast das Easter Egg gefunden.', cls: 'line-system' },
+            { text: '', cls: '' },
+            { text: "Versuch auch: 'matrix' · 'ping' · 'hack' · 'stats' · 'sudo'", cls: 'line-dim' },
+            { text: '', cls: '' },
+        ],
+    }),
+};
+
+// Aliases — multiple names for the same command
+const ALIASES: Record<string, string> = {
+    help: 'hilfe',
+    kontakt: 'contact',
+    'easter egg': 'secret',
+    easteregg: 'secret',
 };
 
 /**
@@ -111,14 +180,27 @@ const COMMANDS: Record<string, () => CommandResult> = {
  */
 export function handleCommand(input: string): CommandResult | null {
     const cmd = input.trim().toLowerCase();
+
+    // Direct match
     if (cmd in COMMANDS) {
         return COMMANDS[cmd]();
     }
+
+    // Alias match
+    if (cmd in ALIASES) {
+        return COMMANDS[ALIASES[cmd]]();
+    }
+
     return null;
 }
 
+/**
+ * Commands that are handled specially in main.ts
+ * (clear, impressum, datenschutz, theme, hack)
+ */
 export function isSpecialCommand(input: string): boolean {
     const cmd = input.trim().toLowerCase();
     return cmd === 'clear' || cmd === 'impressum' || cmd === 'datenschutz'
-        || cmd === 'dark' || cmd === 'light' || cmd === 'auto';
+        || cmd === 'dark' || cmd === 'light' || cmd === 'auto'
+        || cmd === 'hack' || cmd === 'hacking';
 }

@@ -207,6 +207,25 @@ async function processInput(text: string) {
             isProcessing = false;
             return;
         }
+        // Animated hack Easter Egg
+        if (cmd === 'hack' || cmd === 'hacking') {
+            addLine('', '');
+            addLine('Accessing mainframe…', 'line-system');
+            const steps = [
+                { text: 'Bypassing firewall… OK', delay: 600 },
+                { text: 'Decrypting payload… OK', delay: 1200 },
+                { text: 'Injecting exploit… FAILED', delay: 1800 },
+                { text: '', delay: 2000 },
+                { text: 'Just kidding. Das ist eine Website, kein Supercomputer.', delay: 2400 },
+            ];
+            steps.forEach(({ text, delay }) => {
+                setTimeout(() => {
+                    addLine(text, text ? 'line-system' : '');
+                    if (delay === 2400) isProcessing = false;
+                }, delay);
+            });
+            return;
+        }
     }
 
     // Local commands
