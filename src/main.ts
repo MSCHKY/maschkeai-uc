@@ -104,7 +104,15 @@ async function animateProgressBar(): Promise<void> {
     }
 }
 
-// ── Astronaut Speech Bubbles ──
+// ── Astronaut Speech Bubbles + Click-to-Fall (1:1 from main project) ──
+
+// Click warnings (from useAstronaut.ts)
+const ASTRO_CLICK_WARNINGS = [
+    'HEY, VORSICHTIG!!!11!!',
+    'NICHT ANFASSEN!!!',
+    'LANGSAM, KAPITAEN!!!',
+] as const;
+
 const YORI_LINES = [
     'Wird noch gebaut…',
     'Bald™ fertig!',
@@ -112,36 +120,124 @@ const YORI_LINES = [
     'Psst… probier matrix',
     'KI braucht Kaffee',
     'Ich schweb hier nur rum',
-    'Nicht anfassen!',
     'Coming Soon*ish',
     'Noch 99 Bugs…',
     'Schöne Baustelle hier',
     'Vorsicht, nasser Lack!',
     'Geheimer Befehl: hack',
-    '01100010 01100001 01101100 01100100',
 ];
 
+let bubblePool = [...YORI_LINES];
+let bubbleTimers: { show?: number; hide?: number } = {};
+let isFalling = false;
+
+function pickNextLine(): string {
+    if (bubblePool.length === 0) bubblePool = [...YORI_LINES];
+    const idx = Math.floor(Math.random() * bubblePool.length);
+    return bubblePool.splice(idx, 1)[0];
+}
+
+function showBubble(bubble: HTMLElement, text: string, isWarning = false) {
+    bubble.textContent = text;
+    bubble.classList.toggle('warning', isWarning);
+    bubble.classList.add('visible');
+}
+
+function hideBubble(bubble: HTMLElement) {
+    bubble.classList.remove('visible', 'warning');
+}
+
 function startBubbleRotation(bubble: HTMLElement) {
-    let pool = [...YORI_LINES];
     const SHOW_MS = 10_000;
     const HIDE_MS = 15_000;
 
-    function pickNext(): string {
-        if (pool.length === 0) pool = [...YORI_LINES];
-        const idx = Math.floor(Math.random() * pool.length);
-        return pool.splice(idx, 1)[0];
-    }
-
     function showNext() {
-        bubble.textContent = pickNext();
-        bubble.classList.add('visible');
-        setTimeout(() => {
-            bubble.classList.remove('visible');
-            setTimeout(showNext, HIDE_MS);
+        showBubble(bubble, pickNextLine());
+        bubbleTimers.hide = window.setTimeout(() => {
+            hideBubble(bubble);
+            bubbleTimers.show = window.setTimeout(showNext, HIDE_MS);
         }, SHOW_MS);
     }
 
     showNext();
+}
+
+function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
+    if (isFalling) return;
+    isFalling = true;
+
+    // Clear any pending bubble timers
+    if (bubbleTimers.show) window.clearTimeout(bubbleTimers.show);
+    if (bubbleTimers.hide) window.clearTimeout(bubbleTimers.hide);
+
+    // Show click warning
+    const warning = ASTRO_CLICK_WARNINGS[Math.floor(Math.random() * ASTRO_CLICK_WARNINGS.length)];
+    showBubble(bubble, warning, true);
+
+    // Fall animation
+    sprite.classList.add('astro-fall');
+
+    // Recovery sequence
+    window.setTimeout(() => {
+        sprite.classList.remove('astro-fall');
+        isFalling = false;
+    }, 1150);
+
+    // Hide warning and resume rotation
+    window.setTimeout(() => {
+        hideBubble(bubble);
+        window.setTimeout(() => startBubbleRotation(bubble), 2000);
+    }, 2300);
+}
+
+// ── Astronaut Debug Panel (enabled via ?debug=1) ──
+
+function initAstroDebug() {
+    if (!new URLSearchParams(location.search).has('debug')) return;
+
+    const panel = document.getElementById('astro-debug');
+    if (!panel) return;
+    panel.classList.add('open');
+
+    const root = document.documentElement;
+    const style = getComputedStyle(root);
+
+    const vars = [
+        { name: '--astroX', label: 'X', min: -200, max: 200, unit: 'px', initial: parseInt(style.getPropertyValue('--astroX')) || 10 },
+        { name: '--astroY', label: 'Y', min: -300, max: 100, unit: 'px', initial: parseInt(style.getPropertyValue('--astroY')) || -70 },
+        { name: '--astroScale', label: 'S', min: 20, max: 120, unit: '%', initial: Math.round((parseFloat(style.getPropertyValue('--astroScale')) || 0.52) * 100) },
+        { name: '--astroBubbleX', label: 'bX', min: -100, max: 50, unit: 'px', initial: parseInt(style.getPropertyValue('--astroBubbleX')) || -8 },
+        { name: '--astroBubbleY', label: 'bY', min: -100, max: 50, unit: 'px', initial: parseInt(style.getPropertyValue('--astroBubbleY')) || -4 },
+    ];
+
+    let html = '<div class="debug-title">🧑‍🚀 Astronaut Controls</div>';
+
+    for (const v of vars) {
+        html += `<label>
+            <span>${v.label}</span>
+            <input type="range" min="${v.min}" max="${v.max}" value="${v.initial}" data-var="${v.name}" data-unit="${v.unit}">
+            <span class="val">${v.initial}${v.unit}</span>
+        </label>`;
+    }
+
+    panel.innerHTML = html;
+
+    panel.querySelectorAll('input[type="range"]').forEach((slider) => {
+        slider.addEventListener('input', (e) => {
+            const el = e.target as HTMLInputElement;
+            const varName = el.dataset.var!;
+            const unit = el.dataset.unit!;
+            const val = parseInt(el.value);
+            const valDisplay = el.nextElementSibling as HTMLElement;
+            valDisplay.textContent = `${val}${unit}`;
+
+            if (unit === '%') {
+                root.style.setProperty(varName, String(val / 100));
+            } else {
+                root.style.setProperty(varName, `${val}px`);
+            }
+        });
+    });
 }
 
 // ── Boot sequence ──
@@ -174,15 +270,18 @@ async function runBootSequence(): Promise<void> {
     // Reveal astronaut after a short delay + start speech bubbles
     const astronaut = document.getElementById('astronaut-overlay');
     const bubble = document.getElementById('astronaut-bubble');
-    if (astronaut) {
+    const sprite = document.getElementById('astronaut-sprite');
+    if (astronaut && bubble && sprite) {
         setTimeout(() => {
             astronaut.classList.add('visible');
+            // Click-to-fall Easter egg (1:1 from main project)
+            sprite.addEventListener('click', () => triggerFall(sprite, bubble));
             // Start speech bubble rotation after astronaut slides in
-            if (bubble) {
-                setTimeout(() => startBubbleRotation(bubble), 3000);
-            }
+            setTimeout(() => startBubbleRotation(bubble), 3000);
         }, 600);
     }
+    // Initialize debug panel if ?debug=1 is in the URL
+    initAstroDebug();
 }
 
 // ── Echo user input ──

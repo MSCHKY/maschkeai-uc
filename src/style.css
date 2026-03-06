@@ -849,34 +849,64 @@ body {
 }
 
 /* ============================================================
-   Astronaut Yori — Pixel mascot sitting on the input bar
-   Sprite sheet: 3×3 grid (570×804 → 190×268 per frame)
+   Astronaut Yori — Pixel mascot (1:1 pattern from main project)
+   Position via CSS vars: tune with ?debug=1 URL param
    ============================================================ */
+
+/* --- Tunable CSS Custom Properties (same names as main project) --- */
+:root {
+    --astroX: 10px;
+    --astroY: -70px;
+    --astroScale: 0.52;
+    --astroFallX: 8px;
+    --astroFallY: 1px;
+    --astroFallScale: 1.02;
+    --astroBubbleX: -8px;
+    --astroBubbleY: -4px;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --astroX: 0px;
+        --astroY: -52px;
+        --astroScale: 0.42;
+        --astroBubbleX: -6px;
+        --astroBubbleY: -2px;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --astroX: 4px;
+        --astroY: -44px;
+        --astroScale: 0.34;
+    }
+}
+
 #astronaut-overlay {
     position: fixed;
-    right: 24px;
-    bottom: 36px;
-    /* sits just above the footer, on the input bar */
+    right: 0;
+    bottom: 28px;
+    /* above the 28px footer */
     z-index: 5;
-    pointer-events: none;
+    pointer-events: auto;
     opacity: 0;
-    transform: translateX(100px);
+    transform: translate3d(var(--astroX), var(--astroY), 0) scale(var(--astroScale)) translateX(120px);
+    transform-origin: right bottom;
     transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #astronaut-overlay.visible {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(var(--astroX), var(--astroY), 0) scale(var(--astroScale));
 }
 
+/* --- Sprite: idle (3x3 grid, 190x268 per frame → rendered 92x130) --- */
 #astronaut-sprite {
-    /* Desktop: 60×85 for a compact but visible presence */
-    --astro-frame-w: 60px;
-    --astro-frame-h: 85px;
-    --astro-sheet-w: 180px;
-    /* 60 * 3 */
-    --astro-sheet-h: 255px;
-    /* 85 * 3 */
+    --astro-frame-w: 92px;
+    --astro-frame-h: 130px;
+    --astro-sheet-w: 276px;
+    --astro-sheet-h: 390px;
 
     width: var(--astro-frame-w);
     height: var(--astro-frame-h);
@@ -884,21 +914,36 @@ body {
     background-repeat: no-repeat;
     background-size: var(--astro-sheet-w) var(--astro-sheet-h);
     image-rendering: pixelated;
+    cursor: pointer;
+    border: 0;
+    padding: 0;
+    appearance: none;
+    background-color: transparent;
 
-    /* Shadow — light from top-right (consistent with main project) */
     filter:
-        brightness(1) drop-shadow(-2px 2px 0 rgba(0, 0, 0, 0.35)) drop-shadow(-1px 4px 8px rgba(0, 0, 0, 0.12));
+        brightness(var(--astroBright, 1)) drop-shadow(-2.8px 2.8px 0 rgba(0, 0, 0, 0.4));
 
     animation: astro-idle 8s steps(1, end) infinite;
 }
 
-/* Dark mode: slightly brighter sprite */
 [data-theme="dark"] #astronaut-sprite {
     filter:
-        brightness(1.1) drop-shadow(-2px 2px 0 rgba(0, 0, 0, 0.5)) drop-shadow(-1px 4px 8px rgba(0, 0, 0, 0.2));
+        brightness(1.1) drop-shadow(-2.8px 2.8px 0 rgba(0, 0, 0, 0.55));
 }
 
-/* --- Idle animation: cycle through 9 frames (3×3 grid) --- */
+/* --- Fall sprite (1:1 from main project) --- */
+#astronaut-sprite.astro-fall {
+    --astro-frame-w: 114px;
+    --astro-frame-h: 130px;
+    --astro-sheet-w: 342px;
+    --astro-sheet-h: 390px;
+    transform-origin: right bottom;
+    transform: translate(var(--astroFallX, 0px), var(--astroFallY, 0px)) scale(var(--astroFallScale, 1));
+    background-image: url('/gfx/yori_anim/sprite_fall-256px-9.png');
+    animation: astro-fall 1100ms steps(1, end) 1 both;
+}
+
+/* --- Idle: cycle 9 frames --- */
 @keyframes astro-idle {
     0% {
         background-position: 0px 0px;
@@ -938,119 +983,196 @@ body {
     }
 }
 
+/* --- Fall: cycle 9 frames --- */
+@keyframes astro-fall {
+    0% {
+        background-position: 0px 0px;
+    }
+
+    11.11% {
+        background-position: calc(-1 * var(--astro-frame-w)) 0px;
+    }
+
+    22.22% {
+        background-position: calc(-2 * var(--astro-frame-w)) 0px;
+    }
+
+    33.33% {
+        background-position: 0px calc(-1 * var(--astro-frame-h));
+    }
+
+    44.44% {
+        background-position: calc(-1 * var(--astro-frame-w)) calc(-1 * var(--astro-frame-h));
+    }
+
+    55.55% {
+        background-position: calc(-2 * var(--astro-frame-w)) calc(-1 * var(--astro-frame-h));
+    }
+
+    66.66% {
+        background-position: 0px calc(-2 * var(--astro-frame-h));
+    }
+
+    77.77% {
+        background-position: calc(-1 * var(--astro-frame-w)) calc(-2 * var(--astro-frame-h));
+    }
+
+    88.88%,
+    100% {
+        background-position: calc(-2 * var(--astro-frame-w)) calc(-2 * var(--astro-frame-h));
+    }
+}
+
 /* ============================================================
-   Speech Bubble — adapted from main project's astro-bubble
-   Positioned to the left of the sprite, with thought-circle
-   connectors (::before and ::after pseudo-elements)
+   Speech Bubble — 1:1 from main project's astro-bubble
    ============================================================ */
 #astronaut-bubble {
     position: absolute;
     right: 100%;
-    top: 4px;
-    transform: translate(-8px, 0);
+    top: 0;
+    transform: translate(var(--astroBubbleX), var(--astroBubbleY));
     background: rgba(255, 255, 255, 0.96);
-    border: 2px solid rgba(0, 0, 0, 0.85);
+    border: 2px solid rgba(0, 0, 0, 0.9);
     border-radius: 10px;
-    padding: 6px 10px;
+    padding: 8px 12px;
     font-family: var(--terminal-font-family);
     font-weight: 600;
-    font-size: 10px;
-    line-height: 1.25;
+    font-size: 11px;
+    line-height: 1.15;
     letter-spacing: 0.04em;
-    color: rgba(0, 0, 0, 0.88);
+    color: rgba(0, 0, 0, 0.92);
     text-transform: uppercase;
     display: inline-block;
     width: max-content;
-    max-width: min(220px, 45vw);
+    max-width: min(220px, 50vw);
     white-space: normal;
     overflow-wrap: break-word;
     word-break: normal;
-    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.35);
+    box-shadow: -2.8px 2.8px 0 rgba(0, 0, 0, 0.4);
     pointer-events: none;
+    will-change: transform;
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.3s ease;
 }
 
 #astronaut-bubble.visible {
     opacity: 1;
 }
 
-/* Dark mode bubble */
 [data-theme="dark"] #astronaut-bubble {
     background: rgba(30, 35, 50, 0.94);
-    border-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.2);
     color: rgba(245, 248, 255, 0.88);
-    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.55);
+    box-shadow: -2.8px 2.8px 0 rgba(0, 0, 0, 0.55);
 }
 
-/* Thought-bubble connectors — two circles leading to sprite */
+/* Click-warning style */
+#astronaut-bubble.warning {
+    border-color: rgba(220, 40, 40, 0.85);
+    color: rgba(200, 30, 30, 0.95);
+}
+
+[data-theme="dark"] #astronaut-bubble.warning {
+    border-color: rgba(255, 100, 100, 0.6);
+    color: rgba(255, 120, 120, 0.95);
+}
+
+/* Thought-bubble connectors (1:1 from main) */
 #astronaut-bubble::after {
     content: '';
     position: absolute;
-    right: -10px;
+    right: -12px;
     top: 50%;
-    width: 9px;
-    height: 9px;
+    width: 11px;
+    height: 11px;
     background: rgba(255, 255, 255, 0.96);
-    border: 2px solid rgba(0, 0, 0, 0.85);
+    border: 2px solid rgba(0, 0, 0, 0.9);
     border-radius: 9999px;
     transform: translateY(-65%);
-    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.35);
+    box-shadow: -2.8px 2.8px 0 rgba(0, 0, 0, 0.4);
 }
 
 #astronaut-bubble::before {
     content: '';
     position: absolute;
-    right: -22px;
+    right: -26px;
     top: 50%;
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     background: rgba(255, 255, 255, 0.96);
-    border: 2px solid rgba(0, 0, 0, 0.85);
+    border: 2px solid rgba(0, 0, 0, 0.9);
     border-radius: 9999px;
     transform: translateY(10%);
-    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.35);
+    box-shadow: -2.8px 2.8px 0 rgba(0, 0, 0, 0.4);
 }
 
-/* Dark mode connectors */
 [data-theme="dark"] #astronaut-bubble::after,
 [data-theme="dark"] #astronaut-bubble::before {
     background: rgba(30, 35, 50, 0.94);
-    border-color: rgba(255, 255, 255, 0.25);
-    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.55);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: -2.8px 2.8px 0 rgba(0, 0, 0, 0.55);
 }
 
-/* --- Responsive: smaller on mobile --- */
-@media (max-width: 768px) {
-    #astronaut-overlay {
-        right: 8px;
-        bottom: 34px;
-    }
-
-    #astronaut-sprite {
-        --astro-frame-w: 44px;
-        --astro-frame-h: 62px;
-        --astro-sheet-w: 132px;
-        --astro-sheet-h: 186px;
-    }
-
-    #astronaut-bubble {
-        font-size: 8px;
-        padding: 4px 7px;
-        max-width: min(160px, 40vw);
-    }
+/* ============================================================
+   Astronaut Debug Panel — visible at ?debug=1
+   ============================================================ */
+#astro-debug {
+    display: none;
+    position: fixed;
+    left: 8px;
+    bottom: 36px;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.78);
+    color: rgba(255, 255, 255, 0.9);
+    font-family: var(--terminal-font-family);
+    font-size: 11px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+    pointer-events: auto;
+    max-width: 300px;
 }
 
-@media (max-width: 480px) {
-    #astronaut-sprite {
-        --astro-frame-w: 36px;
-        --astro-frame-h: 51px;
-        --astro-sheet-w: 108px;
-        --astro-sheet-h: 153px;
-    }
+#astro-debug.open {
+    display: block;
+}
 
-    #astronaut-bubble {
-        font-size: 7px;
-        max-width: min(130px, 38vw);
-    }
+#astro-debug label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 3px 0;
+    white-space: nowrap;
+}
+
+#astro-debug label span {
+    width: 22px;
+    opacity: 0.7;
+    text-align: right;
+    font-size: 10px;
+}
+
+#astro-debug input[type="range"] {
+    flex: 1;
+    min-width: 0;
+    accent-color: var(--terminal-accent);
+    height: 14px;
+}
+
+#astro-debug .val {
+    width: 40px;
+    text-align: right;
+    opacity: 0.6;
+    font-variant-numeric: tabular-nums;
+    font-size: 10px;
+}
+
+#astro-debug .debug-title {
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+    opacity: 0.8;
+    text-transform: uppercase;
+    font-size: 10px;
 }
