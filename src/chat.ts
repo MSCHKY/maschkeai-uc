@@ -127,6 +127,10 @@ export async function sendMessage(
         });
 
         if (!response.ok) {
+            if (response.status === 403) {
+                onError('Deine Anfrage wurde aus Sicherheitsgründen blockiert. Bitte formuliere sie anders.');
+                return;
+            }
             if (response.status === 429) {
                 onError('Rate limit — bitte warte einen Moment.');
                 return;
