@@ -469,13 +469,21 @@ async function processInput(text: string) {
             isProcessing = false;
             return;
         }
-        // First input that isn't consent/legal → show consent prompt
+        // First input that isn't consent/legal → show consent prompt with clickable button
         addLine('', '');
         addLine('KI-gestützt (Mistral) · Keine Daten gespeichert.', 'line-dim');
         addLine('Keine sensiblen Daten teilen.', 'line-dim');
         addLine('', '');
-        addLine("→ Tippe 'akzeptieren' um fortzufahren.", '');
+        const consentLine = document.createElement('div');
+        consentLine.className = 'line';
+        consentLine.innerHTML = `→ <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button> um fortzufahren.`;
+        output.appendChild(consentLine);
+        consentLine.querySelector('.terminal-cmd')?.addEventListener('click', () => {
+            input.value = 'akzeptieren';
+            processInput('akzeptieren');
+        });
         addLine('', '');
+        scrollToBottom();
         isProcessing = false;
         return;
     }
