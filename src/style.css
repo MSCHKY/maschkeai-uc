@@ -29,7 +29,7 @@
     --terminal-letter-spacing: 0.006em;
     --terminal-word-spacing: 0.018em;
 
-    --bg-page: #cfcfcf;
+    --bg-page: #9b9b9b;
 }
 
 /* — Dark Mode — exact tokens from main project dark theme — */
@@ -97,7 +97,7 @@ body {
    ============================================================ */
 #terminal {
     position: fixed;
-    top: 16px;
+    top: 24px;
     left: 24px;
     right: 24px;
     bottom: 44px;
