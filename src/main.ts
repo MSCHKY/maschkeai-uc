@@ -114,7 +114,6 @@ async function runBootSequence(): Promise<void> {
 
         if (line.text === 'ASCII_LOGO') {
             const logoEl = renderNexusLogo();
-            logoEl.classList.add('line');
             output.appendChild(logoEl);
             scrollToBottom();
             await sleep(line.delay || 100);
