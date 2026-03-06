@@ -330,16 +330,10 @@ async function runBootSequence(): Promise<void> {
     if (!isConsented) {
         const consentBox = document.createElement('div');
         consentBox.className = 'line';
-        consentBox.innerHTML = `<div class="terminal-box">
-  <div class="terminal-box-title">Disclaimer</div>
-  <div class="terminal-box-body">
-    <p>Dieses Interface nutzt Generative AI (Mistral). Antworten werden automatisiert erstellt.</p>
-    <p>Bitte teile keine sensiblen Daten (z.B. Passwörter, Kundengeheimnisse).</p>
-    <div class="box-section">
-      <p>Tipp: Klickbare Befehle sind so dargestellt: <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button></p>
-      <p>Klicke auf <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button> oder tippe es ein. Für Befehle: <button type="button" class="terminal-cmd" data-cmd="hilfe">HILFE</button></p>
-    </div>
-  </div>
+        consentBox.innerHTML = `<div class="terminal-consent">
+  <div class="terminal-consent-title">Disclaimer</div>
+  <p>KI-gestützt (Mistral) · Keine Daten gespeichert. Keine sensiblen Daten teilen.</p>
+  <p>Klickbare Befehle: <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button> · <button type="button" class="terminal-cmd" data-cmd="hilfe">HILFE</button></p>
 </div>`;
         output.appendChild(consentBox);
         scrollToBottom();

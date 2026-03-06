@@ -614,12 +614,39 @@ body {
    Terminal Info Boxes — CSS-styled cards (replaces ASCII art)
    Pattern from main project's terminal-consent system
    ============================================================ */
+.terminal-consent {
+    padding: 10px 12px;
+    margin: 10px 0 14px 0;
+    border: 1px solid var(--terminal-border);
+    background: var(--terminal-surface);
+    border-radius: 4px;
+    max-width: 520px;
+    opacity: 0;
+    animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.terminal-consent-title {
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--terminal-border);
+}
+
+.terminal-consent p {
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+}
+
 .terminal-box {
     padding: 8px 12px;
     margin: 6px 0 10px 0;
     border: 1px solid var(--terminal-border);
     background: var(--terminal-surface);
     border-radius: 4px;
+    max-width: 480px;
     opacity: 0;
     animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

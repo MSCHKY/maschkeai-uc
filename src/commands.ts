@@ -29,14 +29,6 @@ function box(title: string, body: string): string {
 </div>`;
 }
 
-function cmd(label: string): string {
-    return `<button type="button" class="terminal-cmd" data-cmd="${label}">${label}</button>`;
-}
-
-function link(url: string, label?: string): string {
-    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="terminal-box-link">${label || url}</a>`;
-}
-
 // ── Commands ─────────────────────────────────────────────────────────
 
 const COMMANDS: Record<string, () => CommandResult> = {
@@ -89,23 +81,30 @@ const COMMANDS: Record<string, () => CommandResult> = {
     }),
 
     contact: () => ({
-        html: box('Kontakt', `
-            <p>✉ ${link('mailto:kontakt@maschke.ai', 'kontakt@maschke.ai')} — Schreib uns, wir melden uns.</p>
-            <div class="box-section">
-                <p><span class="box-highlight">◆ Kostenloses Erstgespräch (15 min)</span></p>
-                <p class="box-label">Tippe ${cmd('termin')} oder direkt: ${link(CAL_URL, 'cal.eu/maschke-ai')}</p>
-            </div>
-        `),
+        lines: [
+            { text: '', cls: '' },
+            { text: 'KONTAKT', cls: 'line-system' },
+            { text: '───────────────────────────', cls: 'line-dim' },
+            { text: '  ✉  kontakt@maschke.ai', cls: 'line-accent' },
+            { text: '  🌐  maschke.ai', cls: 'line-dim' },
+            { text: '', cls: '' },
+            { text: '  Kostenloses Erstgespräch (15 min):', cls: '' },
+            { text: '  → cal.eu/maschke-ai', cls: 'line-accent' },
+            { text: '', cls: '' },
+        ],
     }),
 
     termin: () => ({
-        html: box('Erstgespräch buchen', `
-            <p><span class="box-highlight">◆ 15 Min. kennenlernen — kostenlos</span></p>
-            <p>Unverbindlich, ohne Verpflichtung. Wir schauen gemeinsam, ob KI in deinem Kontext Sinn macht.</p>
-            <div class="box-section">
-                <p>→ ${link(CAL_URL, 'cal.eu/maschke-ai')}</p>
-            </div>
-        `),
+        lines: [
+            { text: '', cls: '' },
+            { text: 'ERSTGESPRÄCH BUCHEN', cls: 'line-system' },
+            { text: '───────────────────────────', cls: 'line-dim' },
+            { text: '  15 Min. kennenlernen — kostenlos.', cls: '' },
+            { text: '  Unverbindlich, ohne Verpflichtung.', cls: 'line-dim' },
+            { text: '', cls: '' },
+            { text: '  → cal.eu/maschke-ai', cls: 'line-accent' },
+            { text: '', cls: '' },
+        ],
     }),
 
     status: () => {
