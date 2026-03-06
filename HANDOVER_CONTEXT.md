@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-06T12:10 (Session f51f758a)
+> Last updated: 2026-03-06T12:32 (Session 5eeef88f)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -14,12 +14,12 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Component | File | Status |
 |-----------|------|--------|
 | HTML Shell | `index.html` | ✅ Done (+ astronaut overlay + debug panel) |
-| Main Orchestrator | `src/main.ts` | ✅ Done (Easter Eggs, astronaut, click-to-fall) |
-| Terminal CSS | `src/style.css` | ✅ Done (1:1 from main project + astronaut) |
+| Main Orchestrator | `src/main.ts` | ✅ Done (Easter Eggs, astronaut, click-to-fall, AI text formatting) |
+| Terminal CSS | `src/style.css` | ✅ Done (1:1 from main project + astronaut + AI text styles) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (NEXUS OS v4.0.2, German) |
-| Commands | `src/commands.ts` | ✅ Done (hilfe, Easter Eggs, aliases) |
-| Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit) |
+| Commands | `src/commands.ts` | ✅ Done (hilfe, Easter Eggs, aliases, fixed box alignment) |
+| Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, full system prompt) |
 | Legal Content | `src/legal.ts` | ✅ Done (full address filled in) |
 | Mistral Proxy | `functions/api/mistral.js` | ✅ Done |
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall sprites) |
@@ -32,9 +32,20 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - **Position:** CSS custom properties (`--astroX`, `--astroY`, `--astroScale`, `--astroBubbleX/Y`)
   - Desktop: X:-52px Y:-26px S:61%
   - Mobile (≤768px): X:-21px Y:-22px S:51%
-- **Speech Bubbles:** 11 rotating German one-liners (10s visible, 15s hidden)
+- **Speech Bubbles:** 22 rotating lines in 3 categories (10s visible, 15s hidden):
+  - **Baustellenhumor** (8): "Noch 99 Bugs…", "Coming Soon*ish", etc.
+  - **Tech-Redewendungen** (10): "Des Devs Website ist immer UC", "In der Latenz liegt die Kraft", "Viele Prompts verderben den Output", etc.
+  - **Easter-Egg-Hints** (4): "Tippe mal hilfe", "Was passiert bei sudo?", etc.
 - **Click-to-Fall Easter Egg:** Click Yori → fall animation + red warning bubble ("NICHT ANFASSEN!!!", etc.) — 1:1 from `useAstronaut.ts`
 - **Debug Panel:** `?debug=1` URL param shows live sliders for position tuning (matching `AstronautControls.tsx` pattern)
+
+## AI Text Rendering
+
+**`formatAiText()` in `main.ts` processes AI responses during streaming:**
+- `**bold**` → `<strong>bold</strong>` (rendered as bold text)
+- `` `command` `` → clickable `.cmd-chip` span (executes command on click)
+- HTML-escaped first to prevent XSS
+- Applied on each streaming chunk for live formatting
 
 ## Design System
 
@@ -78,12 +89,17 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - Theme toggle verified (dark/light/auto)
 - Mobile responsiveness verified
 
-## Open Tasks (Priority Order)
+### ✅ P5: Terminal Content & System Prompt (Session 5eeef88f)
+- **System Prompt**: Complete rewrite for UC context — "Early Access" NEXUS identity
+  - Sections: Kontext, Voice, Format, Antwortlänge, Kern-Wissen, Strategie, UC-Bewusstsein, Guardrails
+  - 5-message funnel: Neugier → Kompetenz → Konkret → E-Mail CTA
+  - Teaser-level knowledge (services without prices, kontakt@maschke.ai as only CTA)
+  - Full guardrails matching main site (prompt protection, no code, context lock, role integrity)
+- **AI Text Rendering**: `formatAiText()` renders `**bold**` and `` `commands` `` live during streaming
+- **Yori Sprüche**: Expanded from 11 to 22 — tech-remixed German proverbs ("Guter Code will Weile haben", etc.)
+- **Contact Box**: Fixed emoji alignment issue, tightened layout
 
-### 🟡 P5: Terminal Content & System Prompt
-- Refine the AI system prompt for the UC page context
-- Possibly different personality/scope than main site's NEXUS
-- Terminal content strategy: what should NEXUS say on a UC page?
+## Open Tasks (Priority Order)
 
 ### 🟢 P6: Custom Domain
 - Point `maschke.ai` (or subdomain) to Cloudflare Pages
@@ -97,8 +113,8 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `b4edb3f` — `fix: apply mobile astronaut position from debug tuning`
-- **Session commits:** 4 (0c85947, 94bc2e8, c395ae5, b4edb3f)
+- **HEAD:** `db9181c` — `feat: P5 content strategy — system prompt, bold rendering, Yori proverbs`
+- **Session commits:** 1 (db9181c)
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
@@ -111,3 +127,4 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - `maschkeai-chatbot/components/debug/AstronautControls.tsx` — Debug panel (already adapted)
 - `maschkeai-chatbot/components/TerminalBoard.tsx` — AstronautOverlay component
 - `maschkeai-chatbot/tailwind.css` — All CSS variables (already extracted)
+- `maschkeai-chatbot/functions/api/mistral.js` — Full system prompt (reference for UC prompt)
