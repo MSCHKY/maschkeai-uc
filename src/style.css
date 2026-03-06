@@ -889,9 +889,11 @@ body {
    ============================================================ */
 
 /* --- Tunable CSS Custom Properties (same names as main project) --- */
+/* Y-axis is now anchored to the input line via bottom:54px.
+   --astroY is just a small fine-tune offset, not the primary position. */
 :root {
     --astroX: -52px;
-    --astroY: -26px;
+    --astroY: 0px;
     --astroScale: 0.61;
     --astroFallX: 8px;
     --astroFallY: 1px;
@@ -903,7 +905,7 @@ body {
 @media (max-width: 768px) {
     :root {
         --astroX: -21px;
-        --astroY: -22px;
+        --astroY: 4px;
         --astroScale: 0.51;
         --astroBubbleX: -6px;
         --astroBubbleY: -2px;
@@ -913,7 +915,7 @@ body {
 @media (max-width: 480px) {
     :root {
         --astroX: -26px;
-        --astroY: -42px;
+        --astroY: 0px;
         --astroScale: 0.44;
         --astroBubbleX: -10px;
         --astroBubbleY: -10px;
@@ -923,8 +925,8 @@ body {
 #astronaut-overlay {
     position: fixed;
     right: 0;
-    bottom: 28px;
-    /* above the 28px footer */
+    bottom: 54px;
+    /* anchored just above input-line + footer — no more Y guessing */
     z-index: 5;
     pointer-events: auto;
     opacity: 0;
