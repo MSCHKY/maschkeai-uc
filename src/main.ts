@@ -12,7 +12,9 @@ import {
     IMPRESSUM_CONTENT,
     DATENSCHUTZ_CONTENT,
     IMPRESSUM_TERMINAL,
+    IMPRESSUM_TERMINAL_HTML,
     DATENSCHUTZ_TERMINAL,
+    DATENSCHUTZ_TERMINAL_HTML,
 } from './legal';
 
 // ── DOM refs ──
@@ -285,12 +287,31 @@ async function runBootSequence(): Promise<void> {
 
     // ── DSGVO Consent (adapted from main project) ──
     if (!isConsented) {
-        addLine('', '');
-        addLine('KI-gestützt (Mistral) · Keine Daten gespeichert.', 'line-system');
-        addLine('Keine sensiblen Daten teilen.', 'line-system');
-        addLine('', '');
-        addLine("Tippe 'akzeptieren' um fortzufahren.", 'line-dim');
-        addLine('', '');
+        const consentBox = document.createElement('div');
+        consentBox.className = 'line';
+        consentBox.innerHTML = `<div class="terminal-box">
+  <div class="terminal-box-title">Disclaimer</div>
+  <div class="terminal-box-body">
+    <p>Dieses Interface nutzt Generative AI (Mistral). Antworten werden automatisiert erstellt.</p>
+    <p>Bitte teile keine sensiblen Daten (z.B. Passwörter, Kundengeheimnisse).</p>
+    <div class="box-section">
+      <p>Tipp: Klickbare Befehle sind so dargestellt: <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button></p>
+      <p>Klicke auf <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button> oder tippe es ein, um fortzufahren.</p>
+      <p>Für Befehle: <button type="button" class="terminal-cmd" data-cmd="hilfe">HILFE</button> oder <button type="button" class="terminal-cmd" data-cmd="/hilfe">/HILFE</button></p>
+    </div>
+  </div>
+</div>`;
+        output.appendChild(consentBox);
+        scrollToBottom();
+
+        // Attach click handlers to cmd buttons in consent box
+        consentBox.querySelectorAll('.terminal-cmd').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const cmdName = (btn as HTMLElement).dataset.cmd || '';
+                input.value = cmdName;
+                processInput(cmdName);
+            });
+        });
     }
 
     // Show input
@@ -387,10 +408,15 @@ async function processInput(text: string) {
         }
         // Allow impressum/datenschutz even before consent (legal requirement: always accessible)
         if (cmd === 'impressum' || cmd === 'datenschutz') {
-            const lines = cmd === 'impressum' ? IMPRESSUM_TERMINAL : DATENSCHUTZ_TERMINAL;
-            for (const line of lines) {
+            const htmlContent = cmd === 'impressum' ? IMPRESSUM_TERMINAL_HTML : DATENSCHUTZ_TERMINAL_HTML;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'line';
+            wrapper.innerHTML = htmlContent;
+            output.appendChild(wrapper);
+            scrollToBottom();
+            const footerLines = cmd === 'impressum' ? IMPRESSUM_TERMINAL : DATENSCHUTZ_TERMINAL;
+            for (const line of footerLines) {
                 addLine(line.text, line.cls);
-                await sleep(30);
             }
             isProcessing = false;
             return;
@@ -409,17 +435,25 @@ async function processInput(text: string) {
             return;
         }
         if (cmd === 'impressum') {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'line';
+            wrapper.innerHTML = IMPRESSUM_TERMINAL_HTML;
+            output.appendChild(wrapper);
+            scrollToBottom();
             for (const line of IMPRESSUM_TERMINAL) {
                 addLine(line.text, line.cls);
-                await sleep(30);
             }
             isProcessing = false;
             return;
         }
         if (cmd === 'datenschutz') {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'line';
+            wrapper.innerHTML = DATENSCHUTZ_TERMINAL_HTML;
+            output.appendChild(wrapper);
+            scrollToBottom();
             for (const line of DATENSCHUTZ_TERMINAL) {
                 addLine(line.text, line.cls);
-                await sleep(30);
             }
             isProcessing = false;
             return;
@@ -459,10 +493,31 @@ async function processInput(text: string) {
         if (url) {
             window.open(url, '_blank', 'noopener,noreferrer');
         }
-        for (const line of result.lines) {
-            addLine(line.text, line.cls);
-            await sleep(30);
+
+        if (result.html) {
+            // HTML block output (CSS-styled boxes)
+            const wrapper = document.createElement('div');
+            wrapper.className = 'line';
+            wrapper.innerHTML = result.html;
+            output.appendChild(wrapper);
+            scrollToBottom();
+
+            // Attach click handlers to terminal-cmd buttons inside the box
+            wrapper.querySelectorAll('.terminal-cmd').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const cmdName = (btn as HTMLElement).dataset.cmd || '';
+                    input.value = cmdName;
+                    processInput(cmdName);
+                });
+            });
+        } else if (result.lines) {
+            // Legacy line-by-line output (Easter eggs, simple responses)
+            for (const line of result.lines) {
+                addLine(line.text, line.cls);
+                await sleep(30);
+            }
         }
+
         isProcessing = false;
         return;
     }

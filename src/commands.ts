@@ -5,141 +5,140 @@
  * PATTERN SOURCE: maschkeai-chatbot/components/useTerminalControllerV2.ts
  * Cal link & contact details must match main project.
  * ─────────────────────────────────────────────────────────────────
+ * OUTPUT FORMAT: Commands can return either:
+ *   - lines[] (legacy line-by-line rendering)
+ *   - html (a single HTML string rendered via innerHTML — used for CSS boxes)
+ * ─────────────────────────────────────────────────────────────────
  */
 
 export interface CommandResult {
-    lines: { text: string; cls: string }[];
+    /** Line-by-line output (legacy — Easter eggs, simple commands) */
+    lines?: { text: string; cls: string }[];
+    /** HTML block output (CSS-styled boxes — main info commands) */
+    html?: string;
 }
 
 /** URL for the free 15-min intro call (shared with main project) */
 export const CAL_URL = 'https://www.cal.eu/maschke-ai';
 
+// ── Helper: Build a styled terminal box ──────────────────────────────
+function box(title: string, body: string): string {
+    return `<div class="terminal-box">
+  <div class="terminal-box-title">${title}</div>
+  <div class="terminal-box-body">${body}</div>
+</div>`;
+}
+
+function cmd(label: string): string {
+    return `<button type="button" class="terminal-cmd" data-cmd="${label}">${label}</button>`;
+}
+
+function link(url: string, label?: string): string {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="terminal-box-link">${label || url}</a>`;
+}
+
+// ── Commands ─────────────────────────────────────────────────────────
+
 const COMMANDS: Record<string, () => CommandResult> = {
     hilfe: () => ({
-        lines: [
-            { text: '', cls: '' },
-            { text: 'HILFE :: BEFEHLE', cls: 'line-system' },
-            { text: '─────────────────────────────────', cls: 'line-dim' },
-            { text: '', cls: '' },
-            { text: 'Themen:', cls: 'line-system' },
-            { text: '  about      — Wer ist Maschke.ai?', cls: 'line-dim' },
-            { text: '  services   — Was wir machen', cls: 'line-dim' },
-            { text: '  contact    — Kontakt aufnehmen', cls: 'line-dim' },
-            { text: '  termin     — Kostenloses Erstgespräch buchen', cls: 'line-dim' },
-            { text: '  status     — Baustellen-Status', cls: 'line-dim' },
-            { text: '', cls: '' },
-            { text: 'System:', cls: 'line-system' },
-            { text: '  dark · light — Theme wechseln', cls: 'line-dim' },
-            { text: '  impressum    — Impressum', cls: 'line-dim' },
-            { text: '  datenschutz  — Datenschutzerklärung', cls: 'line-dim' },
-            { text: '  clear        — Terminal leeren', cls: 'line-dim' },
-            { text: '', cls: '' },
-            { text: ' Oder einfach lostippen — NEXUS antwortet.', cls: 'line-dim' },
-            { text: '', cls: '' },
-        ],
+        html: box('Hilfe :: Befehle', `
+            <p><span class="box-highlight">Themen:</span></p>
+            <p><span class="box-label">about</span> — Wer ist Maschke.ai?</p>
+            <p><span class="box-label">services</span> — Was wir machen</p>
+            <p><span class="box-label">contact</span> — Kontakt aufnehmen</p>
+            <p><span class="box-label">termin</span> — Kostenloses Erstgespräch buchen</p>
+            <p><span class="box-label">status</span> — Baustellen-Status</p>
+            <div class="box-section">
+                <p><span class="box-highlight">System:</span></p>
+                <p><span class="box-label">dark · light</span> — Theme wechseln</p>
+                <p><span class="box-label">impressum</span> — Impressum</p>
+                <p><span class="box-label">datenschutz</span> — Datenschutzerklärung</p>
+                <p><span class="box-label">clear</span> — Terminal leeren</p>
+            </div>
+            <div class="box-section">
+                <p>Oder einfach lostippen — NEXUS antwortet.</p>
+            </div>
+        `),
     }),
 
     about: () => ({
-        lines: [
-            { text: '', cls: '' },
-            { text: ' ┌─ ABOUT ─────────────────────────────┐', cls: 'line-system' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' │  Maschke.ai ist eine Kreativ-Agentur │', cls: 'line-primary' },
-            { text: ' │  an der Schnittstelle von Künstlicher │', cls: 'line-primary' },
-            { text: ' │  Intelligenz und menschlicher         │', cls: 'line-primary' },
-            { text: ' │  Kreativität.                         │', cls: 'line-primary' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' │  Wir denken KI nicht als Werkzeug,   │', cls: 'line-primary' },
-            { text: ' │  sondern als kreative Partnerin.      │', cls: 'line-primary' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' │  Gründer: Robert Maschke              │', cls: 'line-dim' },
-            { text: ' │  Standort: Vettweiß, Deutschland      │', cls: 'line-dim' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' └──────────────────────────────────────┘', cls: 'line-system' },
-            { text: '', cls: '' },
-        ],
+        html: box('About', `
+            <p><strong>Maschke.ai</strong> ist eine Kreativ-Agentur an der Schnittstelle von Künstlicher Intelligenz und menschlicher Kreativität.</p>
+            <p>Wir denken KI nicht als Werkzeug, sondern als kreative Partnerin.</p>
+            <div class="box-section">
+                <p><span class="box-label">Gründer:</span> Robert Maschke</p>
+                <p><span class="box-label">Standort:</span> Vettweiß, Deutschland</p>
+            </div>
+        `),
     }),
 
     services: () => ({
-        lines: [
-            { text: '', cls: '' },
-            { text: ' ┌─ SERVICES ──────────────────────────┐', cls: 'line-system' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' │  ◆ KI-Beratung & Strategie           │', cls: 'line-cyan' },
-            { text: ' │    Von der Idee zur Implementierung   │', cls: 'line-dim' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' │  ◆ Workshops & Training              │', cls: 'line-cyan' },
-            { text: ' │    KI verstehen, anwenden, meistern   │', cls: 'line-dim' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' │  ◆ Kreative KI-Projekte              │', cls: 'line-cyan' },
-            { text: ' │    Wenn Maschine auf Muse trifft      │', cls: 'line-dim' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' │  ◆ AI-Act Compliance                 │', cls: 'line-cyan' },
-            { text: ' │    EU-konforme KI-Implementierung     │', cls: 'line-dim' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' └──────────────────────────────────────┘', cls: 'line-system' },
-            { text: '', cls: '' },
-            { text: ' Interesse? Tippe `contact` oder `termin`.', cls: 'line-dim' },
-            { text: '', cls: '' },
-        ],
+        html: box('Services', `
+            <p><span class="box-highlight">◆ KI-Beratung & Strategie</span></p>
+            <p class="box-label">Von der Idee zur Implementierung</p>
+            <div class="box-section">
+                <p><span class="box-highlight">◆ Workshops & Training</span></p>
+                <p class="box-label">KI verstehen, anwenden, meistern</p>
+            </div>
+            <div class="box-section">
+                <p><span class="box-highlight">◆ Kreative KI-Projekte</span></p>
+                <p class="box-label">Wenn Maschine auf Muse trifft</p>
+            </div>
+            <div class="box-section">
+                <p><span class="box-highlight">◆ AI-Act Compliance</span></p>
+                <p class="box-label">EU-konforme KI-Implementierung</p>
+            </div>
+            <div class="box-section">
+                <p>Interesse? ${cmd('contact')} ${cmd('termin')}</p>
+            </div>
+        `),
     }),
 
     contact: () => ({
-        lines: [
-            { text: '', cls: '' },
-            { text: ' ┌─ KONTAKT ─────────────────────────────┐', cls: 'line-system' },
-            { text: ' │                                        │', cls: 'line-system' },
-            { text: ' │  ✉  kontakt@maschke.ai                │', cls: 'line-link' },
-            { text: ' │     Schreib uns — wir melden uns.      │', cls: 'line-dim' },
-            { text: ' │                                        │', cls: 'line-system' },
-            { text: ' │  ◆  Kostenloses Erstgespräch (15 min)  │', cls: 'line-cyan' },
-            { text: ' │     Tippe `termin` oder direkt buchen:  │', cls: 'line-dim' },
-            { text: ' │     cal.eu/maschke-ai                   │', cls: 'line-link' },
-            { text: ' │                                        │', cls: 'line-system' },
-            { text: ' └─────────────────────────────────────────┘', cls: 'line-system' },
-            { text: '', cls: '' },
-        ],
+        html: box('Kontakt', `
+            <p>✉ ${link('mailto:kontakt@maschke.ai', 'kontakt@maschke.ai')}</p>
+            <p class="box-label">Schreib uns — wir melden uns.</p>
+            <div class="box-section">
+                <p><span class="box-highlight">◆ Kostenloses Erstgespräch (15 min)</span></p>
+                <p class="box-label">Tippe ${cmd('termin')} oder direkt buchen:</p>
+                <p>${link(CAL_URL, 'cal.eu/maschke-ai')}</p>
+            </div>
+        `),
     }),
 
     termin: () => ({
-        lines: [
-            { text: '', cls: '' },
-            { text: ' ┌─ ERSTGESPRÄCH BUCHEN ──────────────────┐', cls: 'line-system' },
-            { text: ' │                                         │', cls: 'line-system' },
-            { text: ' │  ◆  15 Min. kennenlernen — kostenlos    │', cls: 'line-cyan' },
-            { text: ' │                                         │', cls: 'line-system' },
-            { text: ' │  Unverbindlich und ohne Verpflichtung.  │', cls: 'line-dim' },
-            { text: ' │  Wir schauen gemeinsam, ob und wie      │', cls: 'line-dim' },
-            { text: ' │  KI in deinem Kontext Sinn macht.       │', cls: 'line-dim' },
-            { text: ' │                                         │', cls: 'line-system' },
-            { text: ' │  → cal.eu/maschke-ai                    │', cls: 'line-link' },
-            { text: ' │                                         │', cls: 'line-system' },
-            { text: ' └──────────────────────────────────────────┘', cls: 'line-system' },
-            { text: '', cls: '' },
-            { text: ' Link wird geöffnet…', cls: 'line-dim' },
-            { text: '', cls: '' },
-        ],
+        html: box('Erstgespräch buchen', `
+            <p><span class="box-highlight">◆ 15 Min. kennenlernen — kostenlos</span></p>
+            <p>Unverbindlich und ohne Verpflichtung.<br>
+            Wir schauen gemeinsam, ob und wie KI in deinem Kontext Sinn macht.</p>
+            <div class="box-section">
+                <p>→ ${link(CAL_URL, 'cal.eu/maschke-ai')}</p>
+            </div>
+        `),
     }),
 
-    status: () => ({
-        lines: [
-            { text: '', cls: '' },
-            { text: ' ┌─ SYSTEM STATUS ─────────────────────┐', cls: 'line-system' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' │  NEXUS Core:     ██████░░░░  60%     │', cls: 'line-warn' },
-            { text: ' │  UI Interface:   ████░░░░░░  40%     │', cls: 'line-warn' },
-            { text: ' │  AI Engine:      ████████░░  80%     │', cls: 'line-success' },
-            { text: ' │  Creative Suite: ███░░░░░░░  30%     │', cls: 'line-accent' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' │  Overall:        UNDER CONSTRUCTION  │', cls: 'line-warn' },
-            { text: ' │  ETA:            Coming Soon™        │', cls: 'line-dim' },
-            { text: ' │                                      │', cls: 'line-system' },
-            { text: ' └──────────────────────────────────────┘', cls: 'line-system' },
-            { text: '', cls: '' },
-        ],
-    }),
+    status: () => {
+        const bar = (filled: number, total: number) => {
+            const f = '█'.repeat(filled);
+            const e = '░'.repeat(total - filled);
+            const pct = Math.round((filled / total) * 100);
+            return `<span class="status-bar"><span class="status-bar-fill">${f}</span><span class="status-bar-empty">${e}</span> ${pct}%</span>`;
+        };
+        return {
+            html: box('System Status', `
+                <p><span class="box-label">NEXUS Core:</span>     ${bar(6, 10)}</p>
+                <p><span class="box-label">UI Interface:</span>   ${bar(4, 10)}</p>
+                <p><span class="box-label">AI Engine:</span>      ${bar(8, 10)}</p>
+                <p><span class="box-label">Creative Suite:</span> ${bar(3, 10)}</p>
+                <div class="box-section">
+                    <p><span class="box-highlight">Overall: UNDER CONSTRUCTION</span></p>
+                    <p class="box-label">ETA: Coming Soon™</p>
+                </div>
+            `),
+        };
+    },
 
-    // Easter Eggs (from main project)
+    // Easter Eggs (line-based — intentionally raw/simple)
     ping: () => ({
         lines: [
             { text: `PONG. Latenz: ${Math.floor(Math.random() * 42) + 3}ms`, cls: 'line-system' },

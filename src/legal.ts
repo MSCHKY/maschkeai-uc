@@ -136,27 +136,44 @@ Wir verarbeiten Ihre Daten ausschließlich im Rahmen der Datenschutz-Grundverord
 `;
 
 // ── Terminal-formatted versions (for `impressum` / `datenschutz` commands) ──
+// Now HTML-based with CSS terminal boxes (same pattern as other commands)
 
+export const IMPRESSUM_TERMINAL_HTML = `<div class="terminal-box">
+  <div class="terminal-box-title">Impressum</div>
+  <div class="terminal-box-body">
+    <p class="box-label">Angaben gemäß § 5 TMG</p>
+    <p><strong>MASCHKE.AI</strong><br>Einzelunternehmen / Freiberufler<br>Inhaber: Robert Maschke</p>
+    <div class="box-section">
+      <p>Kirchstr. 7<br>52391 Vettweiß, Deutschland</p>
+    </div>
+    <div class="box-section">
+      <p>Tel: +49 172 25 25 775<br>
+      <a href="mailto:kontakt@maschke.ai" class="terminal-box-link">kontakt@maschke.ai</a><br>
+      <a href="https://www.maschke.ai" target="_blank" rel="noopener noreferrer" class="terminal-box-link">https://www.maschke.ai</a></p>
+    </div>
+    <div class="box-section">
+      <p class="box-label">USt-IdNr: DE220961988</p>
+    </div>
+  </div>
+</div>`;
+
+export const DATENSCHUTZ_TERMINAL_HTML = `<div class="terminal-box">
+  <div class="terminal-box-title">Datenschutz</div>
+  <div class="terminal-box-body">
+    <p><span class="box-label">Verantwortlich:</span> Robert Maschke<br>
+    <a href="mailto:kontakt@maschke.ai" class="terminal-box-link">kontakt@maschke.ai</a></p>
+    <div class="box-section">
+      <p><span class="box-label">Hosting:</span> Cloudflare (EU, AVV)</p>
+      <p><span class="box-label">Chat-AI:</span> Mistral AI (EU, DSGVO-konform)</p>
+      <p><span class="box-label">Termine:</span> Cal.com (Art. 6 Abs. 1b)</p>
+      <p><span class="box-label">Cookies:</span> Keine Tracking-Cookies</p>
+      <p><span class="box-label">Storage:</span> Nur Session (Zähler)</p>
+    </div>
+  </div>
+</div>`;
+
+// Legacy line-based exports kept for backward compatibility
 export const IMPRESSUM_TERMINAL = [
-    { text: '', cls: '' },
-    { text: ' ┌─ IMPRESSUM ─────────────────────────┐', cls: 'line-system' },
-    { text: ' │                                      │', cls: 'line-system' },
-    { text: ' │  Angaben gemäß § 5 TMG              │', cls: 'line-dim' },
-    { text: ' │                                      │', cls: 'line-system' },
-    { text: ' │  MASCHKE.AI                           │', cls: 'line-primary' },
-    { text: ' │  Einzelunternehmen / Freiberufler     │', cls: 'line-dim' },
-    { text: ' │  Inhaber: Robert Maschke              │', cls: 'line-primary' },
-    { text: ' │                                      │', cls: 'line-system' },
-    { text: ' │  Kirchstr. 7                          │', cls: 'line-dim' },
-    { text: ' │  52391 Vettweiß, Deutschland          │', cls: 'line-dim' },
-    { text: ' │                                      │', cls: 'line-system' },
-    { text: ' │  Tel: +49 172 25 25 775               │', cls: 'line-dim' },
-    { text: ' │  kontakt@maschke.ai                   │', cls: 'line-link' },
-    { text: ' │  https://www.maschke.ai               │', cls: 'line-link' },
-    { text: ' │                                      │', cls: 'line-system' },
-    { text: ' │  USt-IdNr: DE220961988                │', cls: 'line-dim' },
-    { text: ' │                                      │', cls: 'line-system' },
-    { text: ' └──────────────────────────────────────┘', cls: 'line-system' },
     { text: '', cls: '' },
     { text: ' Vollständiges Impressum im Footer.', cls: 'line-dim' },
     { text: '', cls: '' },
@@ -164,19 +181,7 @@ export const IMPRESSUM_TERMINAL = [
 
 export const DATENSCHUTZ_TERMINAL = [
     { text: '', cls: '' },
-    { text: ' ┌─ DATENSCHUTZ ───────────────────────┐', cls: 'line-system' },
-    { text: ' │                                      │', cls: 'line-system' },
-    { text: ' │  Verantwortlich: Robert Maschke       │', cls: 'line-dim' },
-    { text: ' │  kontakt@maschke.ai                   │', cls: 'line-link' },
-    { text: ' │                                      │', cls: 'line-system' },
-    { text: ' │  Hosting: Cloudflare (EU, AVV)        │', cls: 'line-dim' },
-    { text: ' │  Chat-AI: Mistral AI (EU, DSGVO ok)   │', cls: 'line-dim' },
-    { text: ' │  Termine: Cal.com (Art. 6 Abs. 1b)    │', cls: 'line-dim' },
-    { text: ' │  Cookies: Keine Tracking-Cookies      │', cls: 'line-dim' },
-    { text: ' │  Storage: Nur Session (Zähler)        │', cls: 'line-dim' },
-    { text: ' │                                      │', cls: 'line-system' },
-    { text: ' └──────────────────────────────────────┘', cls: 'line-system' },
-    { text: '', cls: '' },
     { text: ' Vollständige Datenschutzerklärung im Footer.', cls: 'line-dim' },
     { text: '', cls: '' },
 ];
+

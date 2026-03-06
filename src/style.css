@@ -606,6 +606,127 @@ body {
     font-weight: 700;
 }
 
+/* ============================================================
+   Terminal Info Boxes — CSS-styled cards (replaces ASCII art)
+   Pattern from main project's terminal-consent system
+   ============================================================ */
+.terminal-box {
+    padding: 12px 14px;
+    margin: 8px 0 12px 0;
+    border: 1px solid var(--terminal-border);
+    background: var(--terminal-surface);
+    border-radius: 4px;
+    opacity: 0;
+    animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.terminal-box-title {
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--terminal-border);
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.terminal-box-body {
+    color: var(--terminal-ink);
+    line-height: 1.65;
+    font-size: inherit;
+}
+
+.terminal-box-body p {
+    margin: 0 0 6px 0;
+}
+
+.terminal-box-body .box-label {
+    color: var(--terminal-sub);
+    font-size: 0.92em;
+}
+
+.terminal-box-body .box-value {
+    color: var(--terminal-ink);
+}
+
+.terminal-box-body .box-section {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--terminal-border);
+}
+
+.terminal-box-body .box-highlight {
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+/* Clickable command buttons inside boxes */
+.terminal-cmd {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    margin: 2px 4px 2px 0;
+    border: 1px solid var(--terminal-border-strong);
+    background: var(--terminal-surface);
+    border-radius: 2px;
+    font: inherit;
+    font-size: 11px;
+    line-height: 1.2;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--terminal-ink);
+    cursor: pointer;
+    user-select: none;
+    transition: background 140ms ease, border-color 140ms ease, transform 80ms ease;
+}
+
+.terminal-cmd:hover {
+    background: var(--terminal-surface-hover);
+    border-color: var(--terminal-accent);
+}
+
+.terminal-cmd:active {
+    transform: translateY(1px);
+}
+
+/* Links inside boxes */
+.terminal-box-link {
+    color: var(--terminal-accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--terminal-link-decoration);
+    transition: border-color 140ms ease;
+    cursor: pointer;
+}
+
+.terminal-box-link:hover {
+    border-bottom-color: var(--terminal-accent);
+}
+
+/* Progress bar inside status box */
+.status-bar {
+    display: inline-block;
+    min-width: 120px;
+    font-variant-numeric: tabular-nums;
+}
+
+.status-bar-fill {
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.status-bar-empty {
+    opacity: 0.3;
+}
+
 /* Progress bar */
 .progress-bar {
     background-image: var(--terminal-grad);
