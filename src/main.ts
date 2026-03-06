@@ -7,7 +7,7 @@ import './style.css';
 import { renderNexusLogo } from './ascii-logo';
 import { BOOT_SEQUENCE } from './boot-sequence';
 import { handleCommand, isSpecialCommand, getCommandUrl } from './commands';
-import { sendMessage, isLimitReached, getRemainingMessages } from './chat';
+import { sendMessage, isLimitReached } from './chat';
 import {
     IMPRESSUM_CONTENT,
     DATENSCHUTZ_CONTENT,
@@ -585,7 +585,6 @@ async function processInput(text: string) {
         return;
     }
 
-    const remaining = getRemainingMessages() - 1;
     addLine('', '');
 
     const responseDiv = document.createElement('div');
@@ -621,9 +620,6 @@ async function processInput(text: string) {
                 });
             });
             addLine('', '');
-            if (remaining <= 1) {
-                addLine(` [${remaining} Nachricht${remaining === 1 ? '' : 'en'} verbleibend]`, 'line-dim');
-            }
             isProcessing = false;
         },
         // onError
