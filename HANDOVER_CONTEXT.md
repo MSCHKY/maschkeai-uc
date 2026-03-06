@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-06T13:08 (Session 5eeef88f)
+> Last updated: 2026-03-06T16:00 (Session 484ec42d)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -14,13 +14,13 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Component | File | Status |
 |-----------|------|--------|
 | HTML Shell | `index.html` | ✅ Done (+ astronaut overlay + debug panel) |
-| Main Orchestrator | `src/main.ts` | ✅ Done (Easter Eggs, astronaut, click-to-fall, `formatAiText()`) |
-| Terminal CSS | `src/style.css` | ✅ Done (1:1 from main project + astronaut + AI text styles + bubble counter-scale) |
+| Main Orchestrator | `src/main.ts` | ⚠️ Done (Easter Eggs, astronaut, click-to-fall, `formatAiText()`, HTML box rendering) |
+| Terminal CSS | `src/style.css` | ⚠️ Done (1:1 from main project + astronaut + AI text + **terminal-box CSS needs spacing fix**) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (NEXUS OS v4.0.2, German) |
-| Commands | `src/commands.ts` | ✅ Done (hilfe, Easter Eggs, aliases, clean contact box) |
+| Commands | `src/commands.ts` | ⚠️ Refactored (HTML boxes replace ASCII art — **spacing too large, needs tuning**) |
 | Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, full UC system prompt) |
-| Legal Content | `src/legal.ts` | ✅ Done (full address filled in) |
+| Legal Content | `src/legal.ts` | ⚠️ Refactored (HTML boxes — **spacing too large, needs tuning**) |
 | Mistral Proxy | `functions/api/mistral.js` | ✅ Done |
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall sprites) |
 | Workflows | `.agent/workflows/` | ✅ session-start + session-end |
@@ -159,16 +159,40 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
   - `transform-origin: right center` keeps bubble anchored near Yori's head
 - **Missing CSS classes added**: `.line-ai`, `.line-cyan`, `.line-accent`, `.cmd-chip`
 
+### ✅ Live Audit (Session 484ec42d + 099b16c4)
+- All core features verified on `maschkeai-uc.pages.dev`:
+  - Boot sequence, consent gate, commands (hilfe, termin, contact, impressum)
+  - Yori positioning + speech bubbles, footer, mobile responsiveness
+  - Live audit recording and screenshots captured
+- **Workflow-Trennung**: Renamed workflows to `/uc-session-start` und `/uc-session-end`
+- **Added**: `.agent/rules/REUSE_MAIN_PROJECT.md` rule for code reuse enforcement
+- **DSGVO**: Consent gate + termin booking (Cal.com link) implemented
+
+### ⚠️ CSS Box Refactoring (Session 484ec42d) — NEEDS FIX
+- **What was done**: Replaced ALL ASCII-art boxes (`┌──┐ │ │ └──┘`) with CSS-styled `terminal-box` cards
+  - New CSS: `.terminal-box`, `.terminal-box-title`, `.terminal-cmd`, `.terminal-box-link`
+  - `CommandResult` interface now supports both `lines[]` (legacy) and `html` (new) output
+  - Easter eggs kept line-based (raw feel), info commands converted to HTML boxes
+  - Consent disclaimer converted to CSS box with clickable AKZEPTIEREN button
+  - Impressum/Datenschutz terminal output converted to HTML boxes
+- **Problem**: Boxes are WAY TOO BIG — excessive vertical whitespace between `<p>` tags
+  - The `<p>` margin + `.terminal-box-body` line-height create bloated cards
+  - Need to massively reduce padding, margin, and line-height inside boxes
+  - Consider: maybe boxes should be narrower (max-width?) not spanning full terminal width
+- **Files affected**: `src/style.css`, `src/commands.ts`, `src/main.ts`, `src/legal.ts`
+- **Pattern reference**: Main project's `terminal-consent` in `tailwind.css` (lines 1972-2010)
+
 ## Open Tasks (Priority Order)
 
-### 🟢 P6: Custom Domain
-- Point `maschke.ai` (or subdomain) to Cloudflare Pages
-- Update OG meta tags in `index.html`
-
-### 🟢 P7: Additional Astronaut States
-- Perfume animation (sprite exists in main project: `sprite_perfume-256px-9.png`)
-- Talk animation tied to AI responses
-- Consider: should Yori react to specific commands?
+### 🔴 P8.5: Fix CSS Box Spacing (HIGHEST PRIORITY)
+- The terminal-box cards are too tall — way too much vertical whitespace
+- Fix `.terminal-box-body p` margin (currently 0 0 6px, but line-height 1.65 + padding compounds)
+- Reduce `.terminal-box` padding (currently 12px 14px — try 8px 12px)
+- Reduce `line-height` inside boxes (currently 1.65 — try 1.35 to match terminal)
+- Consider `max-width` on boxes to prevent full-width sprawl
+- Consider tighter `.box-section` margins
+- **Test against main project's Disclaimer** for size parity
+- Might also need to reconsider the HTML structure (fewer `<p>` tags, more inline content)
 
 ### 🟢 P8: Live Chat Testing
 - Test the new NEXUS UC persona on production (https://maschkeai-uc.pages.dev/)
@@ -176,16 +200,24 @@ The bubble is a child of `#astronaut-overlay`, so it inherits the parent's `scal
 - Test 5-message funnel flow end-to-end
 - Check guardrail behavior (prompt injection resistance)
 
+### 🟢 P7: Additional Astronaut States
+- Perfume animation (sprite exists in main project: `sprite_perfume-256px-9.png`)
+- Talk animation tied to AI responses
+- Consider: should Yori react to specific commands?
+
+### 🟢 P6: Custom Domain (User handles separately)
+- Point `maschke.ai` → `www.maschke.ai` to Cloudflare Pages
+- Robert has this on his radar — no task item needed
+
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `473ebe9` — `fix: scale speech bubble to stay readable on smaller viewports`
-- **Session commits (5eeef88f):** 5
-  - `db9181c` feat: P5 content strategy — system prompt, bold rendering, Yori proverbs
-  - `6c04c0a` docs: update handover — P5 completed
-  - `79bdb1f` fix: tune astronaut mobile position (≤480px breakpoint)
-  - `64c905d` fix: anchor astronaut to input line instead of viewport offset
-  - `473ebe9` fix: scale speech bubble to stay readable on smaller viewports
+- **HEAD:** `1cc681b` — `feat: replace ASCII-art boxes with CSS-styled terminal-box cards`
+- **Session commits (484ec42d):** 4
+  - `cfc0e67` feat: add DSGVO consent gate and termin booking command (Cal.com)
+  - `6f86bcb` chore: rename workflows to uc-session-start/end, add REUSE_MAIN_PROJECT rule
+  - `1cc681b` feat: replace ASCII-art boxes with CSS-styled terminal-box cards
+  - `[pending]` docs: update handover context — session end
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
