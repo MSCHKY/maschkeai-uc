@@ -152,6 +152,30 @@ const YORI_LINES = [
 let bubblePool = [...YORI_LINES];
 let bubbleTimers: { show?: number; hide?: number } = {};
 let isFalling = false;
+let isPerfuming = false;
+
+// ── Perfume animation (ported from main project's useAstronaut.ts) ──
+const PERFUME_CHECK_MS = 28_000;  // check every 28 seconds
+const PERFUME_CHANCE = 0.02;      // 2% chance per check
+let perfumeTimeoutId: number | null = null;
+
+function triggerPerfume(sprite: HTMLElement) {
+    if (isPerfuming || isFalling) return;
+
+    if (perfumeTimeoutId != null) {
+        window.clearTimeout(perfumeTimeoutId);
+        perfumeTimeoutId = null;
+    }
+
+    isPerfuming = true;
+    sprite.classList.add('astro-perfume');
+
+    perfumeTimeoutId = window.setTimeout(() => {
+        sprite.classList.remove('astro-perfume');
+        isPerfuming = false;
+        perfumeTimeoutId = null;
+    }, 1350);
+}
 
 function pickNextLine(): string {
     if (bubblePool.length === 0) bubblePool = [...YORI_LINES];
@@ -328,6 +352,12 @@ async function runBootSequence(): Promise<void> {
             sprite.addEventListener('click', () => triggerFall(sprite, bubble));
             // Start speech bubble rotation after astronaut slides in
             setTimeout(() => startBubbleRotation(bubble), 3000);
+            // Start random perfume check (28s interval, 2% chance)
+            setInterval(() => {
+                if (!isFalling && !isPerfuming) {
+                    if (Math.random() < PERFUME_CHANCE) triggerPerfume(sprite);
+                }
+            }, PERFUME_CHECK_MS);
         }, 600);
     }
     // Initialize debug panel if ?debug=1 is in the URL
