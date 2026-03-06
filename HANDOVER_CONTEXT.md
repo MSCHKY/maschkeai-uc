@@ -1,24 +1,28 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-06T04:32 (Session 22a88477)
+> Last updated: 2026-03-06T11:23 (Session 0639df28)
 
-## Project Status: IN DEVELOPMENT
+## Project Status: LIVE (Under Construction)
 
 Under-construction holding page for `maschke.ai`. Fullscreen terminal experience with scripted boot sequence and limited Mistral AI chat (5 messages/session).
+
+**Live URL:** https://maschkeai-uc.pages.dev/
+**GitHub:** https://github.com/MSCHKY/maschkeai-uc
 
 ## Architecture
 
 | Component | File | Status |
 |-----------|------|--------|
 | HTML Shell | `index.html` | ✅ Done |
-| Main Orchestrator | `src/main.ts` | ✅ Done |
+| Main Orchestrator | `src/main.ts` | ✅ Done (Easter Eggs included) |
 | Terminal CSS | `src/style.css` | ✅ Done (1:1 from main project) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
-| Boot Sequence | `src/boot-sequence.ts` | ⚠️ Needs content from main project |
-| Commands | `src/commands.ts` | ⚠️ Needs content alignment |
+| Boot Sequence | `src/boot-sequence.ts` | ✅ Done (NEXUS OS v4.0.2, German) |
+| Commands | `src/commands.ts` | ✅ Done (hilfe, Easter Eggs, aliases) |
 | Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit) |
 | Legal Content | `src/legal.ts` | ⚠️ Placeholder addresses |
 | Mistral Proxy | `functions/api/mistral.js` | ✅ Done |
+| Workflows | `.agent/workflows/` | ✅ session-start + session-end |
 
 ## Design System
 
@@ -32,23 +36,24 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Invariants
 
 1. **DSGVO**: Impressum + Datenschutz MUST be visible as footer links (§5 DDG). Terminal commands are a bonus, not a replacement.
-2. **Same Mistral API key** as main project — set as `MISTRAL_API_KEY` env var.
-3. **No GitHub repo yet** — local only, branch `main`.
-4. **No Cloudflare Pages project yet**.
+2. **Same Mistral API key** as main project — set as `MISTRAL_API_KEY` env var on Cloudflare Pages.
+3. **Deploys auto-trigger** on push to `main` branch via Cloudflare Pages Git integration.
+
+## Completed Tasks
+
+### ✅ P1: Boot Sequence + Commands (Session 0639df28)
+- Boot: NEXUS OS v4.0.2 with German BOOT lines (Secure Shell, Uplink, Protokoll-Stack)
+- Commands: `hilfe` as primary (with `help` alias), all German labels
+- Easter Eggs: ping, sudo, stats, matrix, secret, hack (animated)
+- Alias system for flexible command mapping
+
+### ✅ P2: GitHub Repo + Cloudflare Pages (Session 0639df28)
+- GitHub: `MSCHKY/maschkeai-uc` (public)
+- Cloudflare Pages: `maschkeai-uc.pages.dev` (Global, auto-deploy from main)
+- `MISTRAL_API_KEY` set as production env var
+- AI Chat verified working on production
 
 ## Open Tasks (Priority Order)
-
-### P1: Boot Sequence + Commands from Main Project
-The boot text and command outputs currently use generic English placeholder text. They need to match the main project's German terminal style:
-- Boot: "NEXUS OS v4.0.2", "BOOT: Secure Shell wird initialisiert…", etc.
-- Reference: Main project `useTerminalControllerV2.ts` for boot messages
-- Reference: Main project `commands.ts` / command handling for output style
-
-### P2: GitHub Repo + Cloudflare Pages
-1. `gh repo create maschkeai-uc --public --source=. --push`
-2. Create Cloudflare Pages project (Git integration)
-3. Set `MISTRAL_API_KEY` as env var
-4. Custom domain later (once verified)
 
 ### P3: Impressum Addresses
 Fill in placeholder addresses in `src/legal.ts` — Robert provides.
@@ -58,21 +63,15 @@ Fill in placeholder addresses in `src/legal.ts` — Robert provides.
 - Test theme toggle (light/dark/auto)
 - Mobile testing
 
-## Git History
-
-```
-5a955c1 fix: remove .line class from logo to fix animation conflict
-4d7e773 feat: VHS scan-line tear glitch on NEXUS logo
-d385362 fix: replicate exact NexusAscii 2-layer logo from main project
-ddbb488 refactor: align design 1:1 with main project terminal
-f438d49 feat: initial under-construction terminal site
-```
+### P5: Custom Domain
+- Point `maschke.ai` (or subdomain) to Cloudflare Pages
+- Update OG meta tags in `index.html`
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
 - Vanilla CSS (no Tailwind)
 - Mistral Medium 3 via Cloudflare Pages Function proxy
-- Target: Cloudflare Pages deployment
+- Cloudflare Pages deployment (auto-deploy from GitHub)
 
 ## Key Files in Main Project (Reference)
 - `maschkeai-chatbot/components/NexusAscii.tsx` — Logo component (already replicated)
