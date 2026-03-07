@@ -1,0 +1,15 @@
+--- src/style.css
++++ src/style.css
+@@ -870,4 +870,12 @@
+     box-shadow: 0 0 0 1px rgba(35, 92, 255, 0.15);
+ }
++
++[data-theme="dark"] #terminal-input-line:focus-within {
++    box-shadow: 0 0 0 1px rgba(120, 170, 255, 0.2);
++}
++
++#terminal-input:focus-visible {
++    outline: none; /* Let the container handle the focus style */
++}
+
+ /* Custom cursor (hidden, we use caret-color instead) */
