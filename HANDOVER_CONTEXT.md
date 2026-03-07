@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-06T23:22 (Session af70a592)
+> Last updated: 2026-03-07T09:37 (Session 4fbe628b)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -22,7 +22,7 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 |-----------|------|--------|
 | HTML Shell | `index.html` | ✅ Done |
 | Main Orchestrator | `src/main.ts` | ✅ Done (consent gate, formatAiText, talk animation) |
-| Terminal CSS | `src/style.css` | ✅ Done (terminal card with inset/shadow, page fade-in) |
+| Terminal CSS | `src/style.css` | ✅ Done (terminal card, mobile breakpoints, YORI overlay) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (NEXUS OS v4.0.2, German) |
 | Commands | `src/commands.ts` | ✅ Done (line-based output, no boxes) |
@@ -32,54 +32,25 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
 | Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, talk) |
 
-## Recent Session Changes (af70a592 — 2026-03-06)
+## Recent Session Changes (4fbe628b — 2026-03-07)
 
-This was a long session covering P9 (content polish) plus significant UX and visual improvements:
+Short session focused on P10/P11 mobile verification and fixes:
 
-### ✅ Terminal Content Polish (P9)
-- System prompt moved server-side (was being stripped by ALLOWED_ROLES filter)
-- `sanitizeAiText()` ported from main project (strips heading/list/code markdown artifacts)
-- `formatAiText()` pipeline: sanitize → escape → format (bold + cmd-chips)
-- System prompt tuned: 50-80 words, Fließtext (no lists), explicit forbidden-list
+### ✅ P10: YORI Mobile Breakpoint Fix
+- **Root cause**: `#astronaut-overlay` had hard-coded `right: 24px` / `bottom: 78px` — didn't adapt when terminal card switches to `right: 10px` / `bottom: 38px` on ≤480px
+- **Fix**: Added `@media (max-width: 480px)` for overlay: `right: 10px`, `bottom: 68px`
+- **Speech bubble**: Capped at `max-width: 140px`, `font-size: 10px`, `padding: 6px 8px` on mobile to prevent content overlap
+- Verified across 5 viewports (1280, 768, 480, 375, 320) with Playwright `setViewportSize()`
 
-### ✅ Brand Naming Consistency
-- `maschke.ai` always lowercase (title, meta, commands, legal texts, comments)
-- `YORI` always uppercase (system prompt, code comments)
-- Files changed: `index.html`, `commands.ts`, `style.css`, `main.ts`, `legal.ts`, `mistral.js`
-
-### ✅ Consent Flow Redesign
-- **Before:** Consent box shown immediately during boot sequence (as a terminal-box)
-- **After:** No consent on boot. First user input triggers inline consent with **clickable AKZEPTIEREN button** (`.terminal-cmd` class, click handler attached)
-- Typing `akzeptieren`/`accept`/`zustimmen`/`einverstanden` also works
-- Legal commands (`impressum`, `datenschutz`) remain accessible before consent
-- Consent stored in `sessionStorage` (persists across reloads, clears on tab close)
-
-### ✅ Message Counter Cleanup
-- **Removed visible counter** ("X Nachrichten verbleibend") from UI — was confusing users
-- **Counter moved to in-memory** (`let messageCount = 0` in chat.ts) — resets on every reload
-- **System prompt no longer mentions message limit** — replaced "STRATEGIE (5-Nachrichten-Limit)" with simple "GESPRÄCHSFÜHRUNG" section
-- Technical enforcement stays in `chat.ts` (`MAX_MESSAGES = 5`, `isLimitReached()`)
-
-### ✅ Terminal Card Design
-- `#terminal` now floats with 24px inset (top/left/right), `border-radius: 8px`, `box-shadow`
-- Background: `rgba(255,255,255,0.35)` light / `rgba(255,255,255,0.04)` dark
-- Body background darkened 25% (`#cfcfcf` → `#9b9b9b`) for better card contrast
-- Mobile breakpoint (≤480px): 10px insets, 6px radius
-
-### ✅ Visual Polish
-- **Input field**: Background opacity reduced to 8% (light) / 10% (dark) — looks like real terminal
-- **Page fade-in**: `body` animates opacity 0→1 over 1.8s with 0.2s delay
-- **Terminal boxes**: `contact` and `termin` converted to line-based output (no more boxes)
-- **Compact consent**: Uses `.terminal-consent` class with max-width
-- `.terminal-box` now has `max-width: 480px`
-
-### ✅ YORI Position Fix
-- `right: 0` → `right: 24px` and `bottom: 54px` → `bottom: 78px` to compensate for terminal card inset
-- Was previously anchored to viewport edge; now anchored relative to card edge
+### ✅ P11: Consent AKZEPTIEREN Button — Mobile Touch Verified
+- Button renders correctly as `<button class="terminal-cmd">` on 375px viewport
+- Click/tap triggers consent acceptance, `sessionStorage` updated, confirmation message shown
+- **Note**: Touch target (~20px) is below Apple's 44px minimum — functional but could be improved
 
 ## Astronaut YORI — Positioning System
 
-**Anchored to input line via `bottom: 78px`** (54px original + 24px terminal card bottom inset). `--astroY` is a small fine-tune offset only.
+**Desktop/Tablet:** Anchored via `bottom: 78px`, `right: 24px`.
+**Mobile (≤480px):** Anchored via `bottom: 68px`, `right: 10px` (matching card insets).
 
 | Breakpoint | `--astroX` | `--astroY` | `--astroScale` | `--astroBubbleScale` |
 |------------|-----------|-----------|---------------|---------------------|
@@ -111,32 +82,23 @@ This was a long session covering P9 (content polish) plus significant UX and vis
 2. **Same Mistral API key** as main project — `MISTRAL_API_KEY` env var on Cloudflare Pages
 3. **Deploys auto-trigger** on push to `main` via Cloudflare Pages Git integration
 4. **Reuse before recreate**: ALWAYS check main `maschkeai-chatbot` first
-5. **YORI Y-position**: Use `bottom: 78px` (input-line + card inset anchor). NEVER use large `--astroY` offsets
+5. **YORI Y-position**: Desktop `bottom: 78px`, mobile `bottom: 68px`. NEVER use large `--astroY` offsets
 6. **🚨 NO LOCAL DEV SERVER**: NEVER start `npm run dev`. Test ONLY on production after push. See `.agent/rules/NO_LOCAL_SERVER.md`
 7. **Brand**: `maschke.ai` always lowercase, `YORI` always uppercase
 8. **Message limit**: Technical enforcement only (in-memory counter in `chat.ts`). Model knows NOTHING about limits.
 
 ## Open Tasks
 
-- **P10: YORI mobile positioning check** — The terminal card inset may have shifted YORI on tablets/phones. Verify with Playwright mobile emulation and adjust breakpoint values if needed.
-- **P11: Consent UX review** — Verify the clickable AKZEPTIEREN button works on mobile (touch targets, visibility)
-- Consider: Additional prompt tuning based on real user feedback
+- **P12: Consent touch target** — Increase `.terminal-cmd` touch target to min-height 36px on mobile (currently ~20px, below Apple HIG 44px minimum)
+- **P13: Real-user prompt tuning** — Adjust system prompt based on real conversation feedback
+- Consider: Dark mode visual polish pass (subtle glow effects, card border highlight)
 
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `e9b1656`
-- **Session commits (af70a592):** 10
-  - `185a342` fix: sanitize AI responses
-  - `aaecc22` fix: move system prompt server-side
-  - `59191bb` docs: update handover context
-  - `79cc665` refactor: compact boxes
-  - `6ba8353` fix: brand naming + consent on first input
-  - `59be594` style: terminal card
-  - `adbf87d` fix: darker bg, equal insets, kill message counter
-  - `1968cdb` fix: remove visible message counter
-  - `878bae1` fix: message counter in-memory
-  - `e9b1656` fix: clickable consent, YORI position, transparent input, page fade-in
+- **HEAD:** `d74b319`
+- **Session commits (4fbe628b):** 1
+  - `d74b319` fix: YORI mobile breakpoint — align overlay to card insets, cap bubble size
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
