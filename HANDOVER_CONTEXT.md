@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-07T09:37 (Session 4fbe628b)
+> Last updated: 2026-03-07T09:52 (Session ed39cf50)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -22,7 +22,7 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 |-----------|------|--------|
 | HTML Shell | `index.html` | ✅ Done |
 | Main Orchestrator | `src/main.ts` | ✅ Done (consent gate, formatAiText, talk animation) |
-| Terminal CSS | `src/style.css` | ✅ Done (terminal card, mobile breakpoints, YORI overlay) |
+| Terminal CSS | `src/style.css` | ✅ Done (terminal card, mobile breakpoints, YORI overlay, dark-mode glow) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (NEXUS OS v4.0.2, German) |
 | Commands | `src/commands.ts` | ✅ Done (line-based output, no boxes) |
@@ -32,20 +32,21 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
 | Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, talk) |
 
-## Recent Session Changes (4fbe628b — 2026-03-07)
+## Recent Session Changes (ed39cf50 — 2026-03-07)
 
-Short session focused on P10/P11 mobile verification and fixes:
+Short session focused on P12 touch-target fix + dark-mode visual polish:
 
-### ✅ P10: YORI Mobile Breakpoint Fix
-- **Root cause**: `#astronaut-overlay` had hard-coded `right: 24px` / `bottom: 78px` — didn't adapt when terminal card switches to `right: 10px` / `bottom: 38px` on ≤480px
-- **Fix**: Added `@media (max-width: 480px)` for overlay: `right: 10px`, `bottom: 68px`
-- **Speech bubble**: Capped at `max-width: 140px`, `font-size: 10px`, `padding: 6px 8px` on mobile to prevent content overlap
-- Verified across 5 viewports (1280, 768, 480, 375, 320) with Playwright `setViewportSize()`
+### ✅ P12: Consent Button Touch-Target
+- `.terminal-cmd` min-height increased: **36px** desktop, **44px** mobile (Apple HIG)
+- Padding bumped from `2px 8px` to `6px 12px` desktop / `8px 16px` mobile
+- `box-shadow` transition added for smooth hover effects
+- Verified on production via Playwright
 
-### ✅ P11: Consent AKZEPTIEREN Button — Mobile Touch Verified
-- Button renders correctly as `<button class="terminal-cmd">` on 375px viewport
-- Click/tap triggers consent acceptance, `sessionStorage` updated, confirmation message shown
-- **Note**: Touch target (~20px) is below Apple's 44px minimum — functional but could be improved
+### ✅ Dark-Mode Visual Polish
+- Terminal card border glow: `rgba(120, 170, 255, 0.12)` accent + `40px` outer glow
+- `.terminal-cmd:hover` glow: `8px` spread in dark mode
+- `.terminal-grad-text` drop-shadow for gradient text glow
+- Removed duplicate dark-mode `box-shadow` rule that would override glow
 
 ## Astronaut YORI — Positioning System
 
@@ -89,16 +90,15 @@ Short session focused on P10/P11 mobile verification and fixes:
 
 ## Open Tasks
 
-- **P12: Consent touch target** — Increase `.terminal-cmd` touch target to min-height 36px on mobile (currently ~20px, below Apple HIG 44px minimum)
-- **P13: Real-user prompt tuning** — Adjust system prompt based on real conversation feedback
-- Consider: Dark mode visual polish pass (subtle glow effects, card border highlight)
+- **P13: Real-user prompt tuning** — Robert self-tests 10 min, notes 3-5 pain points, then tune system prompt accordingly. No telemetry exists — manual testing is the path.
+- Consider: Performance audit (bundle size, lighthouse score)
 
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `d74b319`
-- **Session commits (4fbe628b):** 1
-  - `d74b319` fix: YORI mobile breakpoint — align overlay to card insets, cap bubble size
+- **HEAD:** `2b94c3c`
+- **Session commits (ed39cf50):** 1
+  - `2b94c3c` fix: consent button touch target 36px (44px mobile) + dark-mode glow polish
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
@@ -113,3 +113,4 @@ Short session focused on P10/P11 mobile verification and fixes:
 - `maschkeai-chatbot/tailwind.css` — All CSS variables
 - `maschkeai-chatbot/functions/api/mistral.js` — Full system prompt reference
 - `maschkeai-chatbot/components/useTerminalControllerV2.ts` — sanitizeAiText() reference
+
