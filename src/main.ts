@@ -604,6 +604,8 @@ async function processInput(text: string) {
     // Start talk animation when AI starts streaming
     const talkSprite = document.getElementById('astronaut-sprite');
 
+    let renderFrameId = 0;
+
     await sendMessage(
         trimmed,
         // onChunk — accumulate raw text and render with formatting
@@ -611,11 +613,26 @@ async function processInput(text: string) {
             // Start YORI talking on first chunk
             if (talkSprite && !isTalking) startTalking(talkSprite);
             rawAiText += chunk;
-            responseDiv.innerHTML = formatAiText(rawAiText);
-            scrollToBottom();
+
+            // ⚡ Bolt: Batch rapid DOM updates and layout recalcs during streaming
+            // This prevents main-thread blocking by debouncing innerHTML assignments
+            // and synchronous scrollToBottom() to the display refresh rate (max 60fps)
+            if (!renderFrameId) {
+                renderFrameId = requestAnimationFrame(() => {
+                    responseDiv.innerHTML = formatAiText(rawAiText);
+                    scrollToBottom();
+                    renderFrameId = 0;
+                });
+            }
         },
         // onDone — final format pass + attach click handlers
         (_fullText: string) => {
+            // ⚡ Bolt: Prevent race condition by cancelling any pending frame
+            // before the final synchronous render pass and event listeners
+            if (renderFrameId) {
+                cancelAnimationFrame(renderFrameId);
+                renderFrameId = 0;
+            }
             // Stop YORI talking
             if (talkSprite) stopTalking(talkSprite);
             responseDiv.innerHTML = formatAiText(rawAiText);
@@ -632,6 +649,10 @@ async function processInput(text: string) {
         },
         // onError
         (error: string) => {
+            if (renderFrameId) {
+                cancelAnimationFrame(renderFrameId);
+                renderFrameId = 0;
+            }
             // Stop YORI talking
             if (talkSprite) stopTalking(talkSprite);
             if (error === 'LIMIT_REACHED') {

@@ -1,0 +1,3 @@
+## 2025-03-07 - Batching rapid DOM updates in streaming AI responses
+**Learning:** In terminal-like interfaces where AI streaming pushes tiny chunk updates frequently (e.g., via `onChunk`), synchronously modifying `innerHTML` and recalculating layout via `.scrollHeight` for *each chunk* creates significant main-thread blocking and O(n²) string parsing overhead.
+**Action:** Use `requestAnimationFrame` to debounce/batch these continuous UI updates to a maximum of 60 frames per second. Ensure any pending frames are explicitly cancelled on completion/error events to prevent race conditions that can wipe out finalized event listeners.
