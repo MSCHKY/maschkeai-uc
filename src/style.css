@@ -52,6 +52,22 @@
     --terminal-card-bg: rgba(255, 255, 255, 0.04);
 }
 
+/* — Dark Mode: Visual Polish (glow effects) — */
+[data-theme="dark"] #terminal {
+    box-shadow:
+        0 2px 24px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(120, 170, 255, 0.12),
+        0 0 40px rgba(120, 170, 255, 0.04);
+}
+
+[data-theme="dark"] .terminal-cmd:hover {
+    box-shadow: 0 0 8px rgba(120, 170, 255, 0.25);
+}
+
+[data-theme="dark"] .terminal-grad-text {
+    filter: drop-shadow(0 0 6px rgba(120, 170, 255, 0.15));
+}
+
 /* — Reset — */
 *,
 *::before,
@@ -141,12 +157,6 @@ body {
 
 [data-theme="dark"] #terminal-output::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] #terminal {
-    box-shadow:
-        0 2px 24px rgba(0, 0, 0, 0.35),
-        0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 @media (max-width: 480px) {
@@ -740,7 +750,8 @@ body {
 .terminal-cmd {
     display: inline-flex;
     align-items: center;
-    padding: 2px 8px;
+    padding: 6px 12px;
+    min-height: 36px;
     margin: 2px 4px 2px 0;
     border: 1px solid var(--terminal-border-strong);
     background: var(--terminal-surface);
@@ -753,7 +764,7 @@ body {
     color: var(--terminal-ink);
     cursor: pointer;
     user-select: none;
-    transition: background 140ms ease, border-color 140ms ease, transform 80ms ease;
+    transition: background 140ms ease, border-color 140ms ease, transform 80ms ease, box-shadow 140ms ease;
 }
 
 .terminal-cmd:hover {
@@ -968,6 +979,12 @@ body {
     .terminal-nexus-stack {
         --terminal-nexus-font-size: 10px;
         --terminal-nexus-scale-x: 1.05;
+    }
+
+    .terminal-cmd {
+        min-height: 44px;
+        padding: 8px 16px;
+        font-size: 12px;
     }
 }
 
