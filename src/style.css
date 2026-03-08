@@ -881,7 +881,8 @@ body {
 }
 
 #terminal-input:focus-visible {
-    outline: none; /* Let the container handle the focus style */
+    outline: none;
+    /* Let the container handle the focus style */
 }
 
 /* Custom cursor (hidden, we use caret-color instead) */
@@ -1188,7 +1189,7 @@ body {
 
     width: var(--astro-frame-w);
     height: var(--astro-frame-h);
-    background-image: url('/gfx/yori_anim/sprite-256px-9.png');
+    background-image: url('/gfx/yori_anim/sprite-256px-9.webp');
     background-repeat: no-repeat;
     background-size: var(--astro-sheet-w) var(--astro-sheet-h);
     image-rendering: pixelated;
@@ -1217,7 +1218,7 @@ body {
     --astro-sheet-h: 390px;
     transform-origin: right bottom;
     transform: translate(var(--astroFallX, 0px), var(--astroFallY, 0px)) scale(var(--astroFallScale, 1));
-    background-image: url('/gfx/yori_anim/sprite_fall-256px-9.png');
+    background-image: url('/gfx/yori_anim/sprite_fall-256px-9.webp');
     animation: astro-fall 1100ms steps(1, end) 1 both;
 }
 
@@ -1313,7 +1314,7 @@ body {
     --astro-sheet-h: 390px;
     /* 130 * 3 */
     width: 127px;
-    background-image: url('/gfx/yori_anim/sprite_perfume-256px-9.png');
+    background-image: url('/gfx/yori_anim/sprite_perfume-256px-9.webp');
     animation: astro-perfume 1300ms steps(1, end) 1 both;
     /* Center the wider frame so it doesn't shift right */
     margin-left: calc((92px - 127px) / 2);
