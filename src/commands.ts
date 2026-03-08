@@ -81,30 +81,18 @@ const COMMANDS: Record<string, () => CommandResult> = {
     }),
 
     contact: () => ({
-        lines: [
-            { text: '', cls: '' },
-            { text: 'KONTAKT', cls: 'line-system' },
-            { text: '───────────────────────────', cls: 'line-dim' },
-            { text: '  ✉  kontakt@maschke.ai', cls: 'line-accent' },
-            { text: '  🌐  maschke.ai', cls: 'line-dim' },
-            { text: '', cls: '' },
-            { text: '  Kostenloses Erstgespräch (15 min):', cls: '' },
-            { text: '  → cal.eu/maschke-ai', cls: 'line-accent' },
-            { text: '', cls: '' },
-        ],
+        html: box('Kontakt', `
+            <p><a href="mailto:kontakt@maschke.ai" class="terminal-box-link">✉ kontakt@maschke.ai</a></p>
+            <p class="box-label">Kostenloses Erstgespräch (15 min):</p>
+            <p><a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-box-link">→ cal.eu/maschke-ai</a></p>
+        `),
     }),
 
     termin: () => ({
-        lines: [
-            { text: '', cls: '' },
-            { text: 'ERSTGESPRÄCH BUCHEN', cls: 'line-system' },
-            { text: '───────────────────────────', cls: 'line-dim' },
-            { text: '  15 Min. kennenlernen — kostenlos.', cls: '' },
-            { text: '  Unverbindlich, ohne Verpflichtung.', cls: 'line-dim' },
-            { text: '', cls: '' },
-            { text: '  → cal.eu/maschke-ai', cls: 'line-accent' },
-            { text: '', cls: '' },
-        ],
+        html: box('Erstgespräch buchen', `
+            <p>15 Min. kennenlernen — kostenlos. Unverbindlich, ohne Verpflichtung.</p>
+            <p><a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-box-link">→ Termin vereinbaren</a></p>
+        `),
     }),
 
     status: () => {
