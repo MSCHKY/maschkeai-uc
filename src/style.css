@@ -1198,7 +1198,7 @@ body {
    --astroY is just a small fine-tune offset, not the primary position. */
 :root {
     --astroX: -52px;
-    --astroY: 0px;
+    --astroY: 7px;
     --astroScale: 0.61;
     --astroFallX: 8px;
     --astroFallY: 1px;
@@ -1233,8 +1233,8 @@ body {
 #astronaut-overlay {
     position: fixed;
     right: 24px;
-    bottom: 110px;
-    /* anchored just above input-line + separator + status-bar + footer */
+    bottom: 78px;
+    /* anchored to the input/command line — moves with it on resize */
     z-index: 5;
     pointer-events: auto;
     opacity: 0;
