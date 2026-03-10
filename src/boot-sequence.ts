@@ -22,7 +22,7 @@ export const BOOT_SEQUENCE: BootLine[] = [
     { text: '', cls: '', delay: 300 },
     { text: 'ASCII_LOGO', cls: 'line-logo', delay: 0 }, // special: render logo
     { text: '', cls: '', delay: 300 },
-    { text: ' Kreativ-Agentur für Künstliche Intelligenz', cls: 'line-dim', delay: 60 },
+    { text: ' maschke.ai · Kreativ-Agentur für Künstliche Intelligenz', cls: 'line-dim', delay: 60 },
     { text: ' ──────────────────────────────────────────', cls: 'line-dim', delay: 40 },
     { text: '', cls: '', delay: 200 },
     { text: ' Status: UNDER CONSTRUCTION', cls: 'line-warn', delay: 100 },
