@@ -142,9 +142,12 @@ body {
     z-index: 1;
 }
 
-/* Subtle text tint on terminal output — carries over the gradient tone from main chatbot site */
-#terminal-output {
-    color: var(--terminal-grad-to);
+/* Subtle text gradient on terminal output lines — carried over from main chatbot site */
+#terminal-output>* {
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 #terminal-output::-webkit-scrollbar {
