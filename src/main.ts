@@ -58,7 +58,7 @@ function toggleTheme() {
 }
 
 // Initialize theme
-const savedTheme = (localStorage.getItem(THEME_KEY) as 'light' | 'dark' | 'auto') || 'auto';
+const savedTheme = (localStorage.getItem(THEME_KEY) as 'light' | 'dark' | 'auto') || 'dark';
 applyTheme(savedTheme);
 
 // Listen for system theme changes when set to 'auto'

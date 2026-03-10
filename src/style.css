@@ -142,6 +142,11 @@ body {
     z-index: 1;
 }
 
+/* Subtle text tint on terminal output — carries over the gradient tone from main chatbot site */
+#terminal-output {
+    color: var(--terminal-grad-to);
+}
+
 #terminal-output::-webkit-scrollbar {
     width: 6px;
 }
@@ -917,7 +922,7 @@ body {
     align-items: center;
     padding: 4px 0 0;
     flex-shrink: 0;
-    font-size: inherit;
+    font-size: 0.85em;
     color: var(--terminal-sub);
     opacity: 0.5;
     letter-spacing: 0.04em;
@@ -1225,8 +1230,8 @@ body {
 #astronaut-overlay {
     position: fixed;
     right: 24px;
-    bottom: 78px;
-    /* anchored just above input-line + footer + terminal card inset */
+    bottom: 110px;
+    /* anchored just above input-line + separator + status-bar + footer */
     z-index: 5;
     pointer-events: auto;
     opacity: 0;
