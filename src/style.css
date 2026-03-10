@@ -900,8 +900,9 @@ body {
 }
 
 #terminal-input {
-    flex: 1;
-    min-width: 0;
+    flex: 0 1 auto;
+    min-width: 1ch;
+    width: auto;
     background: transparent;
     border: none;
     outline: none;
@@ -912,14 +913,13 @@ body {
     /* hide native thin caret */
 }
 
-/* Block cursor — retro terminal style */
-#terminal-input-line::after {
-    content: '█';
+/* Block cursor — retro terminal style (HTML span element) */
+#block-cursor {
     color: var(--terminal-accent);
     font: inherit;
     animation: block-cursor-blink 1s step-end infinite;
     pointer-events: none;
-    margin-left: -2px;
+    user-select: none;
 }
 
 @keyframes block-cursor-blink {
@@ -941,16 +941,16 @@ body {
 
 /* Glitch scanline — periodic interference line */
 .glitch-scanline {
-    height: 2px;
+    height: 5px;
     background: linear-gradient(90deg,
             transparent 0%,
-            rgba(120, 170, 255, 0.15) 10%,
-            rgba(120, 170, 255, 0.4) 50%,
-            rgba(120, 170, 255, 0.15) 90%,
+            rgba(120, 170, 255, 0.25) 10%,
+            rgba(120, 170, 255, 0.6) 50%,
+            rgba(120, 170, 255, 0.25) 90%,
             transparent 100%);
     margin: 0;
     opacity: 0;
-    animation: glitch-flash 0.15s ease-out forwards;
+    animation: glitch-flash 0.2s ease-out forwards;
 }
 
 @keyframes glitch-flash {
@@ -959,14 +959,14 @@ body {
         height: 0;
     }
 
-    20% {
+    15% {
         opacity: 1;
-        height: 2px;
+        height: 5px;
     }
 
-    80% {
+    75% {
         opacity: 1;
-        height: 2px;
+        height: 5px;
     }
 
     100% {

@@ -24,7 +24,7 @@ export const BOOT_SEQUENCE: BootLine[] = [
     { text: '', cls: '', delay: 300 },
     { text: ' maschke.ai · Kreativ-Agentur für Künstliche Intelligenz', cls: 'line-dim', delay: 60 },
     { text: '', cls: '', delay: 300 },
-    { text: 'ℹ Die Website ist noch im Bau, aber die KI läuft schon.', cls: 'line-dim', delay: 60 },
-    { text: '  Tippe services für mehr oder frag direkt.', cls: 'line-dim', delay: 60 },
+    { text: 'ℹ System initialisiert. Die Oberfläche wird noch kalibriert.', cls: 'line-dim', delay: 60 },
+    { text: '  Die KI läuft bereits — frag drauf los.', cls: 'line-dim', delay: 60 },
     { text: '', cls: '', delay: 200 },
 ];

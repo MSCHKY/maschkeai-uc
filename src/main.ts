@@ -57,8 +57,9 @@ function toggleTheme() {
     applyTheme(current === 'dark' ? 'light' : 'dark');
 }
 
-// Initialize theme
-const savedTheme = (localStorage.getItem(THEME_KEY) as 'light' | 'dark' | 'auto') || 'dark';
+// Initialize theme — default to dark (treat 'auto' as dark too)
+const rawTheme = localStorage.getItem(THEME_KEY) as 'light' | 'dark' | 'auto' | null;
+const savedTheme = (rawTheme === 'light') ? 'light' : 'dark';
 applyTheme(savedTheme);
 
 // Listen for system theme changes when set to 'auto'
@@ -738,6 +739,11 @@ input.addEventListener('keydown', (e) => {
             input.value = '';
         }
     }
+});
+
+// Auto-size input so block cursor follows typed text
+input.addEventListener('input', () => {
+    input.size = Math.max(1, input.value.length);
 });
 
 // Click anywhere to focus input
