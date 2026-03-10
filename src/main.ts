@@ -489,17 +489,6 @@ async function processInput(text: string) {
     // ── DSGVO Consent gate (pattern from main project) ──
     // Consent prompt appears on FIRST user input, not during boot
     if (!isConsented) {
-        if (cmd === 'akzeptieren' || cmd === 'accept' || cmd === 'zustimmen' || cmd === 'einverstanden') {
-            sessionStorage.setItem(CONSENT_KEY, 'true');
-            isConsented = true;
-            addLine('', '');
-            addLine('[OK] Datenschutz akzeptiert. NEXUS ist bereit.', 'line-success');
-            addLine('', '');
-            addLine("Tippe 'hilfe' für Befehle, oder sprich einfach mit NEXUS.", 'line-dim');
-            addLine('', '');
-            isProcessing = false;
-            return;
-        }
         // Allow impressum/datenschutz even before consent (legal requirement: always accessible)
         if (cmd === 'impressum' || cmd === 'datenschutz') {
             const htmlContent = cmd === 'impressum' ? IMPRESSUM_TERMINAL_HTML : DATENSCHUTZ_TERMINAL_HTML;
@@ -515,7 +504,20 @@ async function processInput(text: string) {
             isProcessing = false;
             return;
         }
-        // First input that isn't consent/legal → show consent prompt with clickable button
+
+        // Accept consent directly
+        if (cmd === 'akzeptieren' || cmd === 'accept' || cmd === 'zustimmen' || cmd === 'einverstanden') {
+            sessionStorage.setItem(CONSENT_KEY, 'true');
+            isConsented = true;
+            addLine('', '');
+            addLine('[OK] Datenschutz akzeptiert. NEXUS ist bereit.', 'line-success');
+            addLine('', '');
+            isProcessing = false;
+            return;
+        }
+
+        // Any other input → save it, show consent, then auto-send after accept
+        const pendingMessage = trimmed;
         addLine('', '');
         addLine('KI-gestützt (Mistral) · Keine Daten gespeichert.', 'line-dim');
         addLine('Keine sensiblen Daten teilen.', 'line-dim');
@@ -525,8 +527,17 @@ async function processInput(text: string) {
         consentLine.innerHTML = `→ <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button> um fortzufahren.`;
         output.appendChild(consentLine);
         consentLine.querySelector('.terminal-cmd')?.addEventListener('click', () => {
-            input.value = 'akzeptieren';
-            processInput('akzeptieren');
+            // Accept and then auto-send the original message
+            sessionStorage.setItem(CONSENT_KEY, 'true');
+            isConsented = true;
+            echoInput('akzeptieren');
+            addLine('', '');
+            addLine('[OK] Datenschutz akzeptiert. NEXUS ist bereit.', 'line-success');
+            addLine('', '');
+            scrollToBottom();
+            isProcessing = false;
+            // Defer to next tick so stack is clean before re-entering processInput
+            setTimeout(() => processInput(pendingMessage), 50);
         });
         addLine('', '');
         scrollToBottom();
