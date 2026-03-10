@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-07T09:52 (Session ed39cf50)
+> Last updated: 2026-03-10T12:25 (Session 83aecd6e)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -21,32 +21,40 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Component | File | Status |
 |-----------|------|--------|
 | HTML Shell | `index.html` | ✅ Done |
-| Main Orchestrator | `src/main.ts` | ✅ Done (consent gate, formatAiText, talk animation) |
+| Main Orchestrator | `src/main.ts` | ✅ Done (consent gate, formatAiText + kursiv sanitizer, talk animation) |
 | Terminal CSS | `src/style.css` | ✅ Done (terminal card, mobile breakpoints, YORI overlay, dark-mode glow) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (NEXUS OS v4.0.2, German) |
 | Commands | `src/commands.ts` | ✅ Done (line-based output, no boxes) |
-| Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg in-memory limit) |
+| Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, max_tokens=400) |
 | Legal Content | `src/legal.ts` | ✅ Done (maschke.ai lowercase everywhere) |
-| Mistral Proxy | `functions/api/mistral.js` | ✅ Done (server-side prompt, no message counter) |
+| Mistral Proxy | `functions/api/mistral.js` | ✅ Done (server-side prompt, max_tokens=400) |
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
 | Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, talk) |
 
-## Recent Session Changes (ed39cf50 — 2026-03-07)
+## Recent Session Changes (83aecd6e — 2026-03-10)
 
-Short session focused on P12 touch-target fix + dark-mode visual polish:
+### ✅ P13: System Prompt Tuning
+Tested 4 live AI responses, identified 6 issues, applied 2 rounds of fixes:
 
-### ✅ P12: Consent Button Touch-Target
-- `.terminal-cmd` min-height increased: **36px** desktop, **44px** mobile (Apple HIG)
-- Padding bumped from `2px 8px` to `6px 12px` desktop / `8px 16px` mobile
-- `box-shadow` transition added for smooth hover effects
-- Verified on production via Playwright
+**Round 1 — Prompt fixes (`mistral.js`):**
+- **NEXUS ≠ Agency**: Clear instruction that NEXUS is the interface name, **maschke.ai** is the agency. Bot now says "wir bei maschke.ai" not "wir bei NEXUS"
+- **Word limit tightened**: 40-60 words standard, 80 max (was 50-80/100)
+- **Prices banned**: "NIEMALS Preise oder Stundensätze nennen — auch nicht 'ab X€'" (was leaking 190€/h)
+- **Kursiv banned**: Explicit `*text*` prohibition added to VERBOTEN list
+- **Anti-pseudo-lists**: "Jeden Service als eigenen Absatz = versteckte Liste. Max 2 Absätze pro Antwort"
+- **YORI throttle**: Max 1x per conversation, never quote directly
 
-### ✅ Dark-Mode Visual Polish
-- Terminal card border glow: `rgba(120, 170, 255, 0.12)` accent + `40px` outer glow
-- `.terminal-cmd:hover` glow: `8px` spread in dark mode
-- `.terminal-grad-text` drop-shadow for gradient text glow
-- Removed duplicate dark-mode `box-shadow` rule that would override glow
+**Round 2 — Frontend + API fixes:**
+- **Kursiv sanitizer** (`main.ts`): `formatAiText` now strips remaining `*text*` → `text` after `**bold**` conversion
+- **max_tokens 1500→400** (`mistral.js` + `chat.ts`): Hard API-level enforcement of shorter responses
+
+**Verification results (3 tests on production):**
+- ✅ NEXUS/maschke.ai differentiation working
+- ✅ No raw `*kursiv*` markers visible
+- ✅ No prices mentioned
+- ✅ Fließtext (no pseudo-lists)
+- ⚠️ Word count 66-96 (improved from 100-150, services still slightly over 80)
 
 ## Astronaut YORI — Positioning System
 
@@ -71,11 +79,13 @@ Short session focused on P12 touch-target fix + dark-mode visual polish:
 ## NEXUS System Prompt
 
 **Server-side only** (`functions/api/mistral.js`). Key sections:
-1. Kontext, Voice, Format (STRIKTE REGELN: no headings/lists/code/emojis)
-2. Antwortlänge: 50-80 words, max 100
-3. Kern-Wissen: Teaser-level services as Fließtext
-4. **Gesprächsführung**: Simple tone guidance, NO message counter awareness
-5. UC-Bewusstsein, Guardrails (prompt injection, no code gen, context lock, role integrity)
+1. Identity: NEXUS = interface name, **maschke.ai** = agency name (never confuse)
+2. Voice, Format (STRIKTE REGELN: no headings/lists/code/emojis/**no kursiv**)
+3. Antwortlänge: 40-60 words standard, 80 max (hard-enforced via max_tokens=400)
+4. Kern-Wissen: Teaser-level services as Fließtext, **NIEMALS Preise**
+5. **Gesprächsführung**: Simple tone guidance, NO message counter awareness
+6. YORI: Max 1x per conversation, never quote directly
+7. UC-Bewusstsein, Guardrails (prompt injection, no code gen, context lock, role integrity)
 
 ## Invariants
 
@@ -85,25 +95,27 @@ Short session focused on P12 touch-target fix + dark-mode visual polish:
 4. **Reuse before recreate**: ALWAYS check main `maschkeai-chatbot` first
 5. **YORI Y-position**: Desktop `bottom: 78px`, mobile `bottom: 68px`. NEVER use large `--astroY` offsets
 6. **🚨 NO LOCAL DEV SERVER**: NEVER start `npm run dev`. Test ONLY on production after push. See `.agent/rules/NO_LOCAL_SERVER.md`
-7. **Brand**: `maschke.ai` always lowercase, `YORI` always uppercase
+7. **Brand**: `maschke.ai` always lowercase, `YORI` always uppercase, **NEXUS** = interface only
 8. **Message limit**: Technical enforcement only (in-memory counter in `chat.ts`). Model knows NOTHING about limits.
+9. **max_tokens**: 400 (both client and server). Keeps responses tight (~80 words max).
 
 ## Open Tasks
 
-- **P13: Real-user prompt tuning** — Robert self-tests 10 min, notes 3-5 pain points, then tune system prompt accordingly. No telemetry exists — manual testing is the path.
 - Consider: Performance audit (bundle size, lighthouse score)
+- Consider: Further prompt iteration if Robert finds more pain points in real use
 
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `2b94c3c`
-- **Session commits (ed39cf50):** 1
-  - `2b94c3c` fix: consent button touch target 36px (44px mobile) + dark-mode glow polish
+- **HEAD:** `d84b122`
+- **Session commits (83aecd6e):** 2
+  - `e956bc9` fix: sharpen system prompt — shorter answers, no prices, no pseudo-lists, NEXUS≠agency
+  - `d84b122` fix: strip raw *kursiv* markers in sanitizer + reduce max_tokens 1500→400
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
 - Vanilla CSS (no Tailwind)
-- Mistral Medium 3 via Cloudflare Pages Function proxy
+- Mistral Medium 3 via Cloudflare Pages Function proxy (max_tokens=400)
 - Cloudflare Pages deployment (auto-deploy from GitHub)
 
 ## Key Files in Main Project (Reference)
