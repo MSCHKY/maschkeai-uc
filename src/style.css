@@ -901,7 +901,7 @@ body {
 
 #terminal-input {
     flex: 0 1 auto;
-    min-width: 1ch;
+    min-width: 0;
     width: auto;
     background: transparent;
     border: none;

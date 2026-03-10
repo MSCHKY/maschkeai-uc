@@ -743,7 +743,7 @@ input.addEventListener('keydown', (e) => {
 
 // Auto-size input so block cursor follows typed text
 input.addEventListener('input', () => {
-    input.size = Math.max(1, input.value.length);
+    input.size = Math.max(0, input.value.length);
 });
 
 // Click anywhere to focus input
