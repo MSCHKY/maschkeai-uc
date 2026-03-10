@@ -23,11 +23,10 @@ export const BOOT_SEQUENCE: BootLine[] = [
     { text: 'ASCII_LOGO', cls: 'line-logo', delay: 0 }, // special: render logo
     { text: '', cls: '', delay: 300 },
     { text: ' maschke.ai · Kreativ-Agentur für Künstliche Intelligenz', cls: 'line-dim', delay: 60 },
-    { text: ' ──────────────────────────────────────────', cls: 'line-dim', delay: 40 },
-    { text: '', cls: '', delay: 200 },
-    { text: ' Status: UNDER CONSTRUCTION', cls: 'line-warn', delay: 100 },
-    { text: ' ETA:    Coming Soon™', cls: 'line-dim', delay: 80 },
     { text: '', cls: '', delay: 300 },
-    { text: " Tippe 'hilfe' für Befehle, oder sprich einfach mit NEXUS.", cls: 'line-dim', delay: 60 },
+    { text: '▓▓ UNDER CONSTRUCTION ▓▓', cls: 'line-uc-glitch', delay: 100 },
+    { text: '', cls: '', delay: 400 },
+    { text: "Die Website ist noch im Bau, aber die KI läuft schon.", cls: 'line-dim', delay: 60 },
+    { text: "Tippe services für mehr oder frag direkt — ich bin hier, um zu helfen.", cls: 'line-dim', delay: 60 },
     { text: '', cls: '', delay: 200 },
 ];

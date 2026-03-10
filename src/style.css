@@ -608,6 +608,73 @@ body {
     font-weight: 600;
 }
 
+/* UC Glitch Effect — chromatic aberration + jitter */
+.line-uc-glitch {
+    color: var(--terminal-accent);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    position: relative;
+    display: inline-block;
+    animation: uc-glitch 6s step-end infinite;
+}
+
+@keyframes uc-glitch {
+
+    0%,
+    4%,
+    8%,
+    92%,
+    100% {
+        text-shadow: none;
+        transform: none;
+        opacity: 1;
+    }
+
+    /* First burst */
+    4.5% {
+        text-shadow: -3px 0 var(--terminal-grad-to), 3px 0 var(--terminal-grad-from);
+        transform: skewX(2deg);
+    }
+
+    5% {
+        text-shadow: 4px 0 var(--terminal-grad-from), -2px 0 var(--terminal-grad-to);
+        transform: skewX(-1.5deg) translateX(-2px);
+    }
+
+    5.5% {
+        text-shadow: -2px 0 var(--terminal-grad-to);
+        transform: translateX(3px);
+        opacity: 0.8;
+    }
+
+    6% {
+        text-shadow: 3px 0 var(--terminal-grad-from), -3px 0 var(--terminal-grad-to);
+        transform: skewX(1deg);
+    }
+
+    6.5% {
+        text-shadow: -1px 0 var(--terminal-grad-to), 1px 0 var(--terminal-grad-from);
+        transform: none;
+    }
+
+    /* Second burst */
+    93% {
+        text-shadow: 3px 0 var(--terminal-grad-to), -3px 0 var(--terminal-grad-from);
+        transform: skewX(-2deg);
+    }
+
+    94% {
+        text-shadow: -4px 0 var(--terminal-grad-from), 2px 0 var(--terminal-grad-to);
+        transform: skewX(1.5deg) translateX(2px);
+        opacity: 0.85;
+    }
+
+    95% {
+        text-shadow: 2px 0 var(--terminal-grad-to);
+        transform: translateX(-2px);
+    }
+}
+
 /* Links */
 .line-link {
     color: var(--terminal-accent);
@@ -827,8 +894,8 @@ body {
     margin-top: 8px;
     flex-shrink: 0;
     opacity: 0;
-    background: var(--terminal-input-bg);
-    border: 1px solid var(--terminal-border-strong);
+    background: transparent;
+    border: 1px solid rgba(120, 170, 255, 0.08);
     border-radius: 3px;
     transition: opacity 0.3s ease, background-color 1.5s ease, border-color 1.5s ease;
 }
