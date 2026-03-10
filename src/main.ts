@@ -481,6 +481,7 @@ async function processInput(text: string) {
     // Echo
     echoInput(trimmed);
     input.value = '';
+    input.style.width = '1ch';
 
     const cmd = trimmed.toLowerCase();
 
@@ -743,7 +744,10 @@ input.addEventListener('keydown', (e) => {
 
 // Auto-size input so block cursor follows typed text
 input.addEventListener('input', () => {
-    input.size = Math.max(0, input.value.length);
+    // Use ch-based width for pixel-perfect cursor placement
+    const len = input.value.length;
+    input.style.width = len > 0 ? `${len}ch` : '1ch';
+    input.size = Math.max(1, len);
 });
 
 // Click anywhere to focus input
