@@ -19,14 +19,13 @@ export const BOOT_SEQUENCE: BootLine[] = [
     { text: 'BOOT: Protokoll-Stack… OK', cls: 'line-system', delay: 180 },
     { text: '', cls: '', delay: 200 }, // pause
     { text: 'PROGRESS_BAR', cls: 'progress-bar', delay: 0 }, // special: animated progress
-    { text: '', cls: '', delay: 300 },
+    { text: ' UNDER CONSTRUCTION', cls: 'line-uc-pulse', delay: 80 },
+    { text: '', cls: '', delay: 400 },
     { text: 'ASCII_LOGO', cls: 'line-logo', delay: 0 }, // special: render logo
     { text: '', cls: '', delay: 300 },
     { text: ' maschke.ai · Kreativ-Agentur für Künstliche Intelligenz', cls: 'line-dim', delay: 60 },
     { text: '', cls: '', delay: 300 },
-    { text: '▓▓ UNDER CONSTRUCTION ▓▓', cls: 'line-uc-glitch', delay: 100 },
-    { text: '', cls: '', delay: 400 },
-    { text: "Die Website ist noch im Bau, aber die KI läuft schon.", cls: 'line-dim', delay: 60 },
-    { text: "Tippe services für mehr oder frag direkt — ich bin hier, um zu helfen.", cls: 'line-dim', delay: 60 },
+    { text: 'ℹ Die Website ist noch im Bau, aber die KI läuft schon.', cls: 'line-dim', delay: 60 },
+    { text: '  Tippe services für mehr oder frag direkt.', cls: 'line-dim', delay: 60 },
     { text: '', cls: '', delay: 200 },
 ];

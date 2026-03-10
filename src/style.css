@@ -608,70 +608,23 @@ body {
     font-weight: 600;
 }
 
-/* UC Glitch Effect — chromatic aberration + jitter */
-.line-uc-glitch {
+/* UC Slow Pulse — subtle opacity breathing */
+.line-uc-pulse {
     color: var(--terminal-accent);
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    position: relative;
-    display: inline-block;
-    animation: uc-glitch 6s step-end infinite;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    animation: uc-pulse 3s ease-in-out infinite;
 }
 
-@keyframes uc-glitch {
+@keyframes uc-pulse {
 
     0%,
-    4%,
-    8%,
-    92%,
     100% {
-        text-shadow: none;
-        transform: none;
         opacity: 1;
     }
 
-    /* First burst */
-    4.5% {
-        text-shadow: -3px 0 var(--terminal-grad-to), 3px 0 var(--terminal-grad-from);
-        transform: skewX(2deg);
-    }
-
-    5% {
-        text-shadow: 4px 0 var(--terminal-grad-from), -2px 0 var(--terminal-grad-to);
-        transform: skewX(-1.5deg) translateX(-2px);
-    }
-
-    5.5% {
-        text-shadow: -2px 0 var(--terminal-grad-to);
-        transform: translateX(3px);
-        opacity: 0.8;
-    }
-
-    6% {
-        text-shadow: 3px 0 var(--terminal-grad-from), -3px 0 var(--terminal-grad-to);
-        transform: skewX(1deg);
-    }
-
-    6.5% {
-        text-shadow: -1px 0 var(--terminal-grad-to), 1px 0 var(--terminal-grad-from);
-        transform: none;
-    }
-
-    /* Second burst */
-    93% {
-        text-shadow: 3px 0 var(--terminal-grad-to), -3px 0 var(--terminal-grad-from);
-        transform: skewX(-2deg);
-    }
-
-    94% {
-        text-shadow: -4px 0 var(--terminal-grad-from), 2px 0 var(--terminal-grad-to);
-        transform: skewX(1.5deg) translateX(2px);
-        opacity: 0.85;
-    }
-
-    95% {
-        text-shadow: 2px 0 var(--terminal-grad-to);
-        transform: translateX(-2px);
+    50% {
+        opacity: 0.3;
     }
 }
 
@@ -884,6 +837,17 @@ body {
 }
 
 /* ============================================================
+   Separator — subtle line between output and input (Gemini CLI style)
+   ============================================================ */
+#terminal-separator {
+    height: 1px;
+    margin: 8px 0 4px 0;
+    background: var(--terminal-border);
+    opacity: 0.4;
+    flex-shrink: 0;
+}
+
+/* ============================================================
    Input Line — matches .terminal-input from main project
    ============================================================ */
 #terminal-input-line {
@@ -929,6 +893,31 @@ body {
 #terminal-input::placeholder {
     color: var(--terminal-sub);
     font-weight: inherit;
+}
+
+/* ============================================================
+   Status Bar — Gemini CLI-inspired info bar below input
+   ============================================================ */
+#terminal-status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 10px 0;
+    flex-shrink: 0;
+    font-size: 11px;
+    color: var(--terminal-sub);
+    opacity: 0.5;
+    letter-spacing: 0.04em;
+}
+
+#terminal-status-bar .status-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#terminal-status-bar .status-right {
+    margin-left: auto;
 }
 
 /* Accessibility: Focus visible styles for keyboard navigation */
