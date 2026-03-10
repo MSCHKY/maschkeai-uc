@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-10T19:30 (Session d8fc894b)
+> Last updated: 2026-03-11T00:18 (Session d8fc894b, continued)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -20,42 +20,45 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 
 | Component | File | Status |
 |-----------|------|--------|
-| HTML Shell | `index.html` | ✅ Done (block-cursor span, separators, status bar) |
-| Main Orchestrator | `src/main.ts` | ✅ Done (consent gate, formatAiText, talk anim, glitch scanline, dark default) |
-| Terminal CSS | `src/style.css` | ✅ Done (Gemini CLI polish, borderless input, block cursor, text gradient, glitch) |
+| HTML Shell | `index.html` | ✅ Done (block-cursor span, separators, status bar, `&nbsp;` prompt spacing) |
+| Main Orchestrator | `src/main.ts` | ✅ Done (consent auto-send, 95% progress bar, formatAiText, glitch scanline) |
+| Terminal CSS | `src/style.css` | ✅ Done (floating legal panel, Gemini CLI polish, borderless input, block cursor) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (new creative welcome text) |
 | Commands | `src/commands.ts` | ✅ Done (line-based output, no boxes) |
 | Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, max_tokens=400) |
-| Legal Content | `src/legal.ts` | ✅ Done (maschke.ai lowercase everywhere) |
+| Legal Content | `src/legal.ts` | ✅ Done (§5 DDG minimum, EU-OS-Link removed, floating panel) |
 | Mistral Proxy | `functions/api/mistral.js` | ✅ Done (server-side prompt, max_tokens=400) |
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
 | Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, talk) |
 
-## Recent Session Changes (d8fc894b -- 2026-03-10: Visual Fixes + Audit)
+## Recent Session Changes (d8fc894b -- 2026-03-10/11)
 
-### Cursor Fix (3 iterations)
-- Removed 8px flex gap + explicit `padding: 0` on input
-- ch-based width tracking (`width: ${len}ch` in JS) for pixel-perfect cursor
-- `flex: 0 0 auto` prevents flexbox expansion; width reset on submit
-- Final gap: 8px (= 1ch, natural terminal cursor position)
+### Legal Content Overhaul
+- ✅ Impressum + Datenschutz rechtlich vollständig finalisiert (DDG, VSBG, MStV, DSGVO)
+- ✅ Impressum auf gesetzliches Minimum reduziert (§ 5 DDG):
+  - Entfernt: Unternehmensform, Tätigkeitsbeschreibung, Kammer-Negation, Website-URL
+  - **EU-OS-Plattform-Link entfernt** (Plattform eingestellt seit 20.07.2025!)
+  - Haftungs-/Urheberrechtsklauseln gekürzt
+- ✅ Legal Overlay: Fullscreen → **Floating Panel** mit backdrop-blur
+  - `#legal-overlay-panel` wrapper div, max-width 680px, max-height 80vh
+  - Schriftgrad 0.78em, kompakte Abstände
+  - Click-to-close Backdrop + ESC + Close-Button
 
-### Glitch Scanline Tuned
-- 5px -> 3px height, 0.6 -> 0.8 opacity, 0.2s -> 0.15s flash
-- Added `pointer-events: none`; verified 2 triggers in 10s
+### UX Verbesserungen
+- ✅ **Progress bar bleibt bei 95%** — passt zum "Under Construction" Konzept
+- ✅ **Consent-Flow komplett überarbeitet**: User-Nachricht wird in `pendingMessage` gespeichert und nach AKZEPTIEREN-Click via `setTimeout(50)` automatisch an die KI gesendet — kein Doppel-Tippen mehr
+- ✅ **Prompt-Leerzeichen**: `&nbsp;` nach `%` im HTML verhindert Whitespace-Collapse
 
-### Impressum Verified
-- Already in sync with main project (`maschke.ai` lowercase)
+### Cursor & Scanline (aus erster Session-Hälfte)
+- ✅ ch-based cursor positioning, flex gap entfernt
+- ✅ Glitch scanline: 3px, 0.8 opacity, 0.15s flash
 
-### Lighthouse Audit
-| Category | Score |
-|----------|-------|
-| Performance | **99** |
-| Accessibility | **96** |
-| Best Practices | **100** |
-| SEO | **91** |
-
-FCP 1.0s, LCP 1.4s, TBT 0ms, CLS 0, Bundle: 15KB gzipped
+### Terminal Layout Experiment (OFFEN)
+- `feature/terminal-layout` Branch: max-width 960px, zentriert, 32px Padding
+- Preview: https://feature-terminal-layout.maschkeai-uc.pages.dev
+- **Robert überlegt noch** — erst abgetörnt, dann "je länger ich draufgucke..."
+- Reverted auf main, lebt nur in Feature-Branch
 
 ## Astronaut YORI -- Positioning System
 
@@ -100,9 +103,12 @@ FCP 1.0s, LCP 1.4s, TBT 0ms, CLS 0, Bundle: 15KB gzipped
 8. **Message limit**: Technical enforcement only (in-memory counter in `chat.ts`). Model knows NOTHING about limits.
 9. **max_tokens**: 400 (both client and server). Keeps responses tight (~80 words max).
 10. **Dark mode default**: Site always starts dark. Light mode only if user explicitly toggles.
+11. **EU-OS-Plattform**: Link ENTFERNT — Plattform eingestellt seit 20.07.2025. Nicht wieder hinzufügen!
 
 ## Open Tasks
 
+- **P1**: Terminal Layout entscheiden (`feature/terminal-layout` Branch — Robert überlegt)
+- **P1**: Astronaut YORI repositionieren falls Layout-Change kommt (ragt nach rechts raus)
 - **P2**: Mobile-specific visual polish pass
 - **P2**: Add `robots.txt` (Lighthouse flagged)
 - **P2**: Fix contrast ratio for `.line-dim` text (a11y)
@@ -111,11 +117,16 @@ FCP 1.0s, LCP 1.4s, TBT 0ms, CLS 0, Bundle: 15KB gzipped
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `9e9cb47`
-- **Session commits (d8fc894b):** 3
-  - `f7aa917` fix: cursor gap removed, scanline tuned for better visibility
-  - `4e0b5a6` fix: eliminate remaining cursor gap
-  - `9e9cb47` fix: ch-based cursor positioning
+- **HEAD:** `2117c39`
+- **Feature Branches:** `feature/terminal-layout` (max-width 960px experiment)
+- **Session commits (d8fc894b):** 8
+  - `0218ccd` feat: rechtlich vollständiges Impressum + Datenschutz
+  - `44e9269` feat: legal overlay als floating panel mit backdrop-blur
+  - `fc0eaa7` refactor: Impressum auf gesetzliches Minimum (§5 DDG)
+  - `11b8446` feat: progress bar stops at 95%
+  - `da7a7c9` fix: consent flow auto-sendet + Prompt-Leerzeichen
+  - `6e05430` style: terminal max-width (angewendet)
+  - `2117c39` Revert terminal max-width (zurück auf edge-to-edge)
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
