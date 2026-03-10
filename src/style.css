@@ -852,6 +852,14 @@ body {
     flex-shrink: 0;
 }
 
+#terminal-separator-bottom {
+    height: 1px;
+    margin: 4px 0 0 0;
+    background: var(--terminal-border);
+    opacity: 0.85;
+    flex-shrink: 0;
+}
+
 /* ============================================================
    Input Line — matches .terminal-input from main project
    ============================================================ */
