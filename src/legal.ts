@@ -13,14 +13,7 @@ export const IMPRESSUM_CONTENT = `
 <p><strong>Angaben gemäß § 5 DDG</strong></p>
 
 <p>
-<strong>maschke.ai</strong><br>
-Einzelunternehmen / Freiberufler
-</p>
-
-<p><strong>Inhaber:</strong> Robert Maschke</p>
-
-<p>
-<strong>Anschrift:</strong><br>
+Robert Maschke<br>
 Kirchstr. 7<br>
 52391 Vettweiß<br>
 Deutschland
@@ -28,33 +21,21 @@ Deutschland
 
 <p>
 <strong>Telefon:</strong> +49 (0) 172 / 25 25 775<br>
-<strong>E-Mail:</strong> <a href="mailto:kontakt@maschke.ai">kontakt@maschke.ai</a><br>
-<strong>Website:</strong> <a href="https://www.maschke.ai" target="_blank" rel="noopener noreferrer">https://www.maschke.ai</a>
+<strong>E-Mail:</strong> <a href="mailto:kontakt@maschke.ai">kontakt@maschke.ai</a>
 </p>
 
 <h2>Umsatzsteuer</h2>
-<p>Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz:<br>
+<p>Umsatzsteuer-Identifikationsnummer gemäß § 27 a UStG:<br>
 DE220961988</p>
 
 <h2>Inhaltlich verantwortlich gemäß § 18 Abs. 2 MStV</h2>
 <p>
 Robert Maschke<br>
 Kirchstr. 7<br>
-52391 Vettweiß<br>
-Deutschland
+52391 Vettweiß
 </p>
 
-<h2>Tätigkeitsbeschreibung</h2>
-<p>Strategische KI-Beratung, Konzeption und Implementierung von KI-gestützten Systemen, Workshops und Schulungen im Bereich Künstliche Intelligenz.<br>
-Es handelt sich um eine freiberufliche Tätigkeit.<br>
-Keine Kammerzugehörigkeit. Kein reglementierter Beruf.</p>
-
-<h2>EU-Streitschlichtung</h2>
-<p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:<br>
-<a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr/</a></p>
-<p>Unsere E-Mail-Adresse finden Sie oben im Impressum.</p>
-
-<h2>Verbraucherstreitbeilegung / Universalschlichtungsstelle</h2>
+<h2>Verbraucherstreitbeilegung</h2>
 <p>Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
 
 <h2>Haftung für Inhalte</h2>
@@ -62,12 +43,10 @@ Keine Kammerzugehörigkeit. Kein reglementierter Beruf.</p>
 <p>Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.</p>
 
 <h2>Haftung für Links</h2>
-<p>Unser Angebot enthält gegebenenfalls Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.</p>
-<p>Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</p>
+<p>Unser Angebot enthält gegebenenfalls Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.</p>
 
 <h2>Urheberrecht</h2>
-<p>Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.</p>
-<p>Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.</p>
+<p>Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
 `;
 
 export const DATENSCHUTZ_CONTENT = `
