@@ -101,7 +101,8 @@ async function animateProgressBar(): Promise<void> {
     div.className = 'line progress-bar';
     output.appendChild(div);
 
-    for (let i = 0; i <= total; i++) {
+    const maxFill = total - 1; // Stop at 95% — it's under construction after all
+    for (let i = 0; i <= maxFill; i++) {
         const filled = '█'.repeat(i);
         const empty = '░'.repeat(total - i);
         const pct = Math.round((i / total) * 100);
@@ -110,8 +111,8 @@ async function animateProgressBar(): Promise<void> {
         await sleep(30 + Math.random() * 40);
     }
 
-    // Append UC text inline after progress bar completes
-    div.innerHTML = `[${('█').repeat(total)}] 100%  <span class="line-uc-pulse">UNDER CONSTRUCTION</span>`;
+    // Append UC text inline — stays at 95%
+    div.innerHTML = `[${'█'.repeat(maxFill)}░] 95%  <span class="line-uc-pulse">UNDER CONSTRUCTION</span>`;
 }
 
 // ── Astronaut Speech Bubbles + Click-to-Fall (1:1 from main project) ──
