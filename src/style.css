@@ -874,7 +874,7 @@ body {
 #terminal-input-line {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0;
     padding: 3px 0;
     margin-top: 4px;
     flex-shrink: 0;
@@ -906,6 +906,7 @@ body {
     background: transparent;
     border: none;
     outline: none;
+    padding: 0;
     color: var(--terminal-ink);
     font: inherit;
     font-weight: inherit;
@@ -941,16 +942,17 @@ body {
 
 /* Glitch scanline — periodic interference line */
 .glitch-scanline {
-    height: 5px;
+    height: 3px;
     background: linear-gradient(90deg,
             transparent 0%,
-            rgba(120, 170, 255, 0.25) 10%,
-            rgba(120, 170, 255, 0.6) 50%,
-            rgba(120, 170, 255, 0.25) 90%,
+            rgba(120, 170, 255, 0.35) 10%,
+            rgba(120, 170, 255, 0.8) 50%,
+            rgba(120, 170, 255, 0.35) 90%,
             transparent 100%);
     margin: 0;
     opacity: 0;
-    animation: glitch-flash 0.2s ease-out forwards;
+    animation: glitch-flash 0.15s ease-out forwards;
+    pointer-events: none;
 }
 
 @keyframes glitch-flash {
@@ -959,14 +961,14 @@ body {
         height: 0;
     }
 
-    15% {
+    20% {
         opacity: 1;
-        height: 5px;
+        height: 3px;
     }
 
-    75% {
-        opacity: 1;
-        height: 5px;
+    70% {
+        opacity: 0.8;
+        height: 3px;
     }
 
     100% {
