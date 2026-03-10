@@ -908,12 +908,71 @@ body {
     color: var(--terminal-ink);
     font: inherit;
     font-weight: inherit;
-    caret-color: var(--terminal-accent);
+    caret-color: transparent;
+    /* hide native thin caret */
+}
+
+/* Block cursor — retro terminal style */
+#terminal-input-line::after {
+    content: '█';
+    color: var(--terminal-accent);
+    font: inherit;
+    animation: block-cursor-blink 1s step-end infinite;
+    pointer-events: none;
+    margin-left: -2px;
+}
+
+@keyframes block-cursor-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
 }
 
 #terminal-input::placeholder {
     color: var(--terminal-sub);
     font-weight: inherit;
+}
+
+/* Glitch scanline — periodic interference line */
+.glitch-scanline {
+    height: 2px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(120, 170, 255, 0.15) 10%,
+            rgba(120, 170, 255, 0.4) 50%,
+            rgba(120, 170, 255, 0.15) 90%,
+            transparent 100%);
+    margin: 0;
+    opacity: 0;
+    animation: glitch-flash 0.15s ease-out forwards;
+}
+
+@keyframes glitch-flash {
+    0% {
+        opacity: 0;
+        height: 0;
+    }
+
+    20% {
+        opacity: 1;
+        height: 2px;
+    }
+
+    80% {
+        opacity: 1;
+        height: 2px;
+    }
+
+    100% {
+        opacity: 0;
+        height: 0;
+    }
 }
 
 /* ============================================================

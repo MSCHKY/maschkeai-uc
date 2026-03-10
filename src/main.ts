@@ -305,6 +305,34 @@ function initAstroDebug() {
         });
     });
 }
+// ── Glitch Scanline — periodic CRT interference line ──
+function startGlitchScanline(): void {
+    const scheduleNext = () => {
+        // Random interval between 4-8 seconds
+        const delay = 4000 + Math.random() * 4000;
+        setTimeout(() => {
+            const lines = output.querySelectorAll('.line, .line-boot, .line-info, .line-version');
+            if (lines.length === 0) { scheduleNext(); return; }
+
+            // Pick a random position among existing lines
+            const targetIndex = Math.floor(Math.random() * lines.length);
+            const targetLine = lines[targetIndex];
+
+            // Create the glitch scanline element
+            const scanline = document.createElement('div');
+            scanline.className = 'glitch-scanline';
+            targetLine.parentNode?.insertBefore(scanline, targetLine);
+
+            // Remove after animation completes (150ms)
+            setTimeout(() => {
+                scanline.remove();
+            }, 150);
+
+            scheduleNext();
+        }, delay);
+    };
+    scheduleNext();
+}
 
 // ── Boot sequence ──
 async function runBootSequence(): Promise<void> {
@@ -357,6 +385,9 @@ async function runBootSequence(): Promise<void> {
     }
     // Initialize debug panel if ?debug=1 is in the URL
     initAstroDebug();
+
+    // Periodic glitch scanline — random interference line (like reference terminal site)
+    startGlitchScanline();
 }
 
 // ── Echo user input ──
