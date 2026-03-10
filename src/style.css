@@ -1198,7 +1198,7 @@ body {
    --astroY is just a small fine-tune offset, not the primary position. */
 :root {
     --astroX: -52px;
-    --astroY: 7px;
+    --astroY: -24px;
     --astroScale: 0.61;
     --astroFallX: 8px;
     --astroFallY: 1px;
