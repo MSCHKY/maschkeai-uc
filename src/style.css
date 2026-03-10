@@ -127,14 +127,12 @@ body {
 #terminal {
     position: fixed;
     top: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 48px);
-    max-width: 960px;
+    left: 24px;
+    right: 24px;
     bottom: 44px;
     display: flex;
     flex-direction: column;
-    padding: 32px;
+    padding: 24px;
     overflow: hidden;
     background: var(--terminal-card-bg, rgba(255, 255, 255, 0.35));
     border-radius: 8px;
