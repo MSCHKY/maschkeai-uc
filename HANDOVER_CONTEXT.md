@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-10T12:25 (Session 83aecd6e)
+> Last updated: 2026-03-10T14:52 (Session 83aecd6e)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -20,11 +20,11 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 
 | Component | File | Status |
 |-----------|------|--------|
-| HTML Shell | `index.html` | ✅ Done |
-| Main Orchestrator | `src/main.ts` | ✅ Done (consent gate, formatAiText + kursiv sanitizer, talk animation) |
-| Terminal CSS | `src/style.css` | ✅ Done (terminal card, mobile breakpoints, YORI overlay, dark-mode glow) |
+| HTML Shell | `index.html` | ✅ Done (block-cursor span, separators, status bar) |
+| Main Orchestrator | `src/main.ts` | ✅ Done (consent gate, formatAiText, talk anim, glitch scanline, dark default) |
+| Terminal CSS | `src/style.css` | ✅ Done (Gemini CLI polish, borderless input, block cursor, text gradient, glitch) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
-| Boot Sequence | `src/boot-sequence.ts` | ✅ Done (NEXUS OS v4.0.2, German) |
+| Boot Sequence | `src/boot-sequence.ts` | ✅ Done (new creative welcome text) |
 | Commands | `src/commands.ts` | ✅ Done (line-based output, no boxes) |
 | Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, max_tokens=400) |
 | Legal Content | `src/legal.ts` | ✅ Done (maschke.ai lowercase everywhere) |
@@ -32,29 +32,22 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
 | Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, talk) |
 
-## Recent Session Changes (83aecd6e — 2026-03-10)
+## Recent Session Changes (83aecd6e — 2026-03-10, Part 2: Visual Polish)
 
-### ✅ P13: System Prompt Tuning
-Tested 4 live AI responses, identified 6 issues, applied 2 rounds of fixes:
+### ✅ Gemini CLI-Inspired Terminal Polish (10 commits)
+Major visual refinement pass inspired by the Gemini CLI terminal aesthetic:
 
-**Round 1 — Prompt fixes (`mistral.js`):**
-- **NEXUS ≠ Agency**: Clear instruction that NEXUS is the interface name, **maschke.ai** is the agency. Bot now says "wir bei maschke.ai" not "wir bei NEXUS"
-- **Word limit tightened**: 40-60 words standard, 80 max (was 50-80/100)
-- **Prices banned**: "NIEMALS Preise oder Stundensätze nennen — auch nicht 'ab X€'" (was leaking 190€/h)
-- **Kursiv banned**: Explicit `*text*` prohibition added to VERBOTEN list
-- **Anti-pseudo-lists**: "Jeden Service als eigenen Absatz = versteckte Liste. Max 2 Absätze pro Antwort"
-- **YORI throttle**: Max 1x per conversation, never quote directly
-
-**Round 2 — Frontend + API fixes:**
-- **Kursiv sanitizer** (`main.ts`): `formatAiText` now strips remaining `*text*` → `text` after `**bold**` conversion
-- **max_tokens 1500→400** (`mistral.js` + `chat.ts`): Hard API-level enforcement of shorter responses
-
-**Verification results (3 tests on production):**
-- ✅ NEXUS/maschke.ai differentiation working
-- ✅ No raw `*kursiv*` markers visible
-- ✅ No prices mentioned
-- ✅ Fließtext (no pseudo-lists)
-- ⚠️ Word count 66-96 (improved from 100-150, services still slightly over 80)
+- ✅ **"UNDER CONSTRUCTION" text**: Repositioned inline next to progress bar (after 100%), with slow-pulse animation
+- ✅ **Borderless input field**: Removed box/border from command line, open left/right like Gemini CLI
+- ✅ **Separator lines**: Top separator increased opacity; added second separator below input
+- ✅ **Prompt font weight**: Reduced to 400 (was 600) for cleaner look
+- ✅ **Status bar**: Font-size reduced to 0.85em, removed stray `~` symbol
+- ✅ **Dark mode default**: Site always starts in dark mode (treats 'auto' as 'dark')
+- ✅ **Text gradient**: Terminal output text uses `--terminal-grad` via `background-clip: text` per-line (carried over from main chatbot project)
+- ✅ **Block cursor**: Retro blinking `█` cursor (HTML span + auto-sized input), replaces thin native caret
+- ✅ **Glitch scanline**: Periodic CRT interference line flashes through terminal output (4-8s interval, 5px, 200ms)
+- ✅ **Welcome text reworked**: "System initialisiert. Die Oberfläche wird noch kalibriert. Die KI läuft bereits — frag drauf los."
+- ✅ **Astronaut repositioned**: `--astroY: -24px`, anchored to input line (`bottom: 78px`)
 
 ## Astronaut YORI — Positioning System
 
@@ -63,7 +56,7 @@ Tested 4 live AI responses, identified 6 issues, applied 2 rounds of fixes:
 
 | Breakpoint | `--astroX` | `--astroY` | `--astroScale` | `--astroBubbleScale` |
 |------------|-----------|-----------|---------------|---------------------|
-| Desktop (>768px) | -52px | 0px | 0.61 | 1.4 |
+| Desktop (>768px) | -52px | -24px | 0.61 | 1.4 |
 | Tablet (≤768px) | -21px | 4px | 0.51 | 1.65 |
 | Mobile (≤480px) | -26px | 0px | 0.44 | 1.9 |
 
@@ -98,19 +91,31 @@ Tested 4 live AI responses, identified 6 issues, applied 2 rounds of fixes:
 7. **Brand**: `maschke.ai` always lowercase, `YORI` always uppercase, **NEXUS** = interface only
 8. **Message limit**: Technical enforcement only (in-memory counter in `chat.ts`). Model knows NOTHING about limits.
 9. **max_tokens**: 400 (both client and server). Keeps responses tight (~80 words max).
+10. **Dark mode default**: Site always starts dark. Light mode only if user explicitly toggles.
 
 ## Open Tasks
 
-- Consider: Performance audit (bundle size, lighthouse score)
-- Consider: Further prompt iteration if Robert finds more pain points in real use
+- **P1**: Verify glitch scanline visibility on production (may need tuning)
+- **P1**: Welcome text review — Robert to confirm or iterate on "System initialisiert" text
+- **P2**: Performance audit (bundle size, lighthouse score)
+- **P2**: Consider mobile-specific visual polish pass
+- **P3**: Further prompt iteration if Robert finds more pain points in real use
 
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `d84b122`
-- **Session commits (83aecd6e):** 2
-  - `e956bc9` fix: sharpen system prompt — shorter answers, no prices, no pseudo-lists, NEXUS≠agency
-  - `d84b122` fix: strip raw *kursiv* markers in sanitizer + reduce max_tokens 1500→400
+- **HEAD:** `631e25c`
+- **Session commits (83aecd6e, Part 2):** 10
+  - `f5965ab` feat: Gemini CLI-inspired polish — UC pulse after progress bar, separator, status bar
+  - `d8e31dc` fix: UC inline with progress bar, borderless input, thicker separator, lighter prompt, matched statusbar font
+  - `5759e51` fix: borderless input, inline UC text visibility, separator polish
+  - `b8e17f7` fix: add second separator below input, remove stray tilde from status bar
+  - `afba12e` feat: dark mode default, smaller status bar, terminal text tint, astronaut position
+  - `2d9c20d` fix: apply proper background-clip gradient to terminal output lines
+  - `e407518` fix: restore astronaut anchoring to input line, set --astroY: 7px
+  - `ca19998` fix: astroY offset to -24px (tuned via debug panel)
+  - `00a5bfe` feat: retro block cursor and periodic glitch scanline effect
+  - `631e25c` fix: cursor position, dark mode persistence, scanline visibility, welcome text
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
@@ -122,7 +127,6 @@ Tested 4 live AI responses, identified 6 issues, applied 2 rounds of fixes:
 - `maschkeai-chatbot/hooks/useAstronaut.ts` — Astronaut state machine
 - `maschkeai-chatbot/components/debug/AstronautControls.tsx` — Debug panel
 - `maschkeai-chatbot/components/TerminalBoard.tsx` — AstronautOverlay
-- `maschkeai-chatbot/tailwind.css` — All CSS variables
+- `maschkeai-chatbot/tailwind.css` — All CSS variables (terminal-grad, design tokens)
 - `maschkeai-chatbot/functions/api/mistral.js` — Full system prompt reference
 - `maschkeai-chatbot/components/useTerminalControllerV2.ts` — sanitizeAiText() reference
-
