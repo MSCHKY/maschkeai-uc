@@ -611,6 +611,10 @@ body {
 /* UC Slow Pulse — subtle opacity breathing */
 .line-uc-pulse {
     color: var(--terminal-accent);
+    -webkit-text-fill-color: var(--terminal-accent);
+    background-clip: border-box;
+    -webkit-background-clip: border-box;
+    background-image: none;
     font-weight: 500;
     letter-spacing: 0.12em;
     animation: uc-pulse 3s ease-in-out infinite;
@@ -834,6 +838,7 @@ body {
     background-clip: text;
     color: transparent;
     -webkit-text-fill-color: transparent;
+    white-space: nowrap;
 }
 
 /* ============================================================
@@ -843,7 +848,7 @@ body {
     height: 1px;
     margin: 8px 0 4px 0;
     background: var(--terminal-border);
-    opacity: 0.7;
+    opacity: 0.85;
     flex-shrink: 0;
 }
 
@@ -926,14 +931,14 @@ body {
     outline-offset: 2px;
 }
 
-/* Highlight the container when the input is focused */
+/* Highlight the container when the input is focused — borderless Gemini CLI style */
 #terminal-input-line:focus-within {
-    border-color: var(--terminal-accent);
-    box-shadow: 0 0 0 1px rgba(35, 92, 255, 0.15);
+    border-color: transparent;
+    box-shadow: none;
 }
 
 [data-theme="dark"] #terminal-input-line:focus-within {
-    box-shadow: 0 0 0 1px rgba(120, 170, 255, 0.2);
+    box-shadow: none;
 }
 
 #terminal-input:focus-visible {
