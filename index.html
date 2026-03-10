@@ -49,13 +49,15 @@
     <button id="theme-toggle" title="Toggle theme">◐</button>
   </footer>
 
-  <!-- Legal overlay (fullscreen) -->
+  <!-- Legal overlay (floating panel) -->
   <div id="legal-overlay">
-    <div id="legal-overlay-header">
-      <span id="legal-overlay-title"></span>
-      <button id="legal-overlay-close">[ESC] Schließen</button>
+    <div id="legal-overlay-panel">
+      <div id="legal-overlay-header">
+        <span id="legal-overlay-title"></span>
+        <button id="legal-overlay-close">[ESC] Schließen</button>
+      </div>
+      <div id="legal-overlay-content"></div>
     </div>
-    <div id="legal-overlay-content"></div>
   </div>
 
   <script type="module" src="/src/main.ts"></script>

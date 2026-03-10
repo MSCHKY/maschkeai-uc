@@ -778,6 +778,10 @@ document.addEventListener('keydown', (e) => {
         closeLegal();
     }
 });
+// Click backdrop (outside panel) to close
+legalOverlay.addEventListener('click', (e) => {
+    if (e.target === legalOverlay) closeLegal();
+});
 
 // ── Start ──
 runBootSequence();
