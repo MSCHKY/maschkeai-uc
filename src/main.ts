@@ -108,6 +108,9 @@ async function animateProgressBar(): Promise<void> {
         scrollToBottom();
         await sleep(30 + Math.random() * 40);
     }
+
+    // Append UC text inline after progress bar completes
+    div.innerHTML = `[${('█').repeat(total)}] 100%  <span class="line-uc-pulse">UNDER CONSTRUCTION</span>`;
 }
 
 // ── Astronaut Speech Bubbles + Click-to-Fall (1:1 from main project) ──

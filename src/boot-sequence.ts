@@ -18,8 +18,7 @@ export const BOOT_SEQUENCE: BootLine[] = [
     { text: 'BOOT: Uplink… OK', cls: 'line-system', delay: 200 },
     { text: 'BOOT: Protokoll-Stack… OK', cls: 'line-system', delay: 180 },
     { text: '', cls: '', delay: 200 }, // pause
-    { text: 'PROGRESS_BAR', cls: 'progress-bar', delay: 0 }, // special: animated progress
-    { text: ' UNDER CONSTRUCTION', cls: 'line-uc-pulse', delay: 80 },
+    { text: 'PROGRESS_BAR', cls: 'progress-bar', delay: 0 }, // special: animated progress (UC appended inline)
     { text: '', cls: '', delay: 400 },
     { text: 'ASCII_LOGO', cls: 'line-logo', delay: 0 }, // special: render logo
     { text: '', cls: '', delay: 300 },
