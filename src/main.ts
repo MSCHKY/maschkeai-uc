@@ -371,7 +371,7 @@ function escapeHtml(text: string): string {
         '"': '&quot;',
         "'": '&#039;'
     };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    return text.replace(/[&<>"']/g, function (m) { return map[m]; });
 }
 
 /**
@@ -408,7 +408,11 @@ function sanitizeAiText(raw: string): string {
 function formatAiText(raw: string): string {
     const sanitized = sanitizeAiText(raw);
     const escaped = escapeHtml(sanitized);
+    // **bold** → <strong>
     let formatted = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // Strip remaining *kursiv* markers (Mistral ignores the ban) → plain text
+    formatted = formatted.replace(/\*([^*]+?)\*/g, '$1');
+    // `command` → clickable chip
     formatted = formatted.replace(/`([^`]+)`/g, '<span class="cmd-chip" data-cmd="$1">$1</span>');
     return formatted;
 }

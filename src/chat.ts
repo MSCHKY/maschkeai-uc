@@ -59,7 +59,7 @@ export async function sendMessage(
                 messages,
                 model: 'mistral-medium-latest',
                 temperature: 0.6,
-                max_tokens: 1500,
+                max_tokens: 400,
                 stream: true,
             }),
         });
