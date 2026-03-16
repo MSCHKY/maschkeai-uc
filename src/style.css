@@ -188,6 +188,26 @@ body {
     white-space: pre-wrap;
     word-break: break-word;
     color: var(--terminal-ink);
+
+    /* Scroll-fade: text fades to transparent at top and bottom (from main project) */
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent 0px,
+        #000 80px,
+        #000 calc(100% - 60px),
+        transparent 100%
+    );
+    mask-image: linear-gradient(
+        to bottom,
+        transparent 0px,
+        #000 80px,
+        #000 calc(100% - 60px),
+        transparent 100%
+    );
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
 }
 
 /* Every line of terminal text uses the gradient text effect
