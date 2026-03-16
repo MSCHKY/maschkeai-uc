@@ -6,7 +6,7 @@
 import './style.css';
 import { renderNexusLogo } from './ascii-logo';
 import { BOOT_SEQUENCE } from './boot-sequence';
-import { handleCommand, isSpecialCommand, getCommandUrl } from './commands';
+import { handleCommand, isSpecialCommand, getCommandUrl, CAL_URL } from './commands';
 import { sendMessage, isLimitReached } from './chat';
 import {
     IMPRESSUM_CONTENT,
@@ -506,11 +506,11 @@ async function processInput(text: string) {
         }
 
         // Accept consent directly
-        if (cmd === 'akzeptieren' || cmd === 'accept' || cmd === 'zustimmen' || cmd === 'einverstanden') {
+        if (cmd === 'akzeptieren' || cmd === 'accept' || cmd === 'zustimmen' || cmd === 'einverstanden' || cmd === 'verstanden') {
             sessionStorage.setItem(CONSENT_KEY, 'true');
             isConsented = true;
             addLine('', '');
-            addLine('[OK] Datenschutz akzeptiert. NEXUS ist bereit.', 'line-success');
+            addLine('[OK] NEXUS ist bereit.', 'line-success');
             addLine('', '');
             isProcessing = false;
             return;
@@ -519,20 +519,27 @@ async function processInput(text: string) {
         // Any other input → save it, show consent, then auto-send after accept
         const pendingMessage = trimmed;
         addLine('', '');
-        addLine('KI-gestützt (Mistral) · Keine Daten gespeichert.', 'line-dim');
-        addLine('Keine sensiblen Daten teilen.', 'line-dim');
+        addLine('Bevor wir loslegen: NEXUS antwortet mit KI.', 'line-dim');
+        // Datenschutz hint with clickable command chip
+        const hintLine = document.createElement('div');
+        hintLine.className = 'line line-dim';
+        hintLine.innerHTML = 'Deine Nachrichten werden verarbeitet, aber nicht gespeichert. Details: <span class="cmd-chip" data-cmd="datenschutz">datenschutz</span>';
+        output.appendChild(hintLine);
+        hintLine.querySelector('.cmd-chip')?.addEventListener('click', () => {
+            processInput('datenschutz');
+        });
         addLine('', '');
         const consentLine = document.createElement('div');
         consentLine.className = 'line';
-        consentLine.innerHTML = `→ <button type="button" class="terminal-cmd" data-cmd="akzeptieren">AKZEPTIEREN</button> um fortzufahren.`;
+        consentLine.innerHTML = `→ <button type="button" class="terminal-cmd" data-cmd="verstanden">VERSTANDEN</button>`;
         output.appendChild(consentLine);
         consentLine.querySelector('.terminal-cmd')?.addEventListener('click', () => {
             // Accept and then auto-send the original message
             sessionStorage.setItem(CONSENT_KEY, 'true');
             isConsented = true;
-            echoInput('akzeptieren');
+            echoInput('verstanden');
             addLine('', '');
-            addLine('[OK] Datenschutz akzeptiert. NEXUS ist bereit.', 'line-success');
+            addLine('[OK] NEXUS ist bereit.', 'line-success');
             addLine('', '');
             scrollToBottom();
             isProcessing = false;
@@ -643,8 +650,21 @@ async function processInput(text: string) {
     // Chat with Mistral
     if (isLimitReached()) {
         addLine('', '');
-        addLine(' NEXUS ist noch in der Kalibrierung.', 'line-warn');
-        addLine(' Die volle Version kommt bald. Stay tuned.', 'line-dim');
+        const limitBox = document.createElement('div');
+        limitBox.className = 'line';
+        limitBox.innerHTML = `<div class="terminal-box">
+  <div class="terminal-box-title">Session-Limit erreicht</div>
+  <div class="terminal-box-body">
+    <p>NEXUS ist noch in der Kalibrierung — aber wir sind es nicht.</p>
+    <p>Die volle Version kommt bald. In der Zwischenzeit: lass uns reden.</p>
+    <div class="box-section">
+      <p><a href="mailto:kontakt@maschke.ai" class="terminal-box-link">✉ kontakt@maschke.ai</a></p>
+      <p><a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-box-link">☕ Kostenloses Erstgespräch buchen</a></p>
+    </div>
+  </div>
+</div>`;
+        output.appendChild(limitBox);
+        scrollToBottom();
         addLine('', '');
         isProcessing = false;
         return;
@@ -713,8 +733,18 @@ async function processInput(text: string) {
             // Stop YORI talking
             if (talkSprite) stopTalking(talkSprite);
             if (error === 'LIMIT_REACHED') {
-                responseDiv.textContent = 'NEXUS ist noch in der Kalibrierung. Die volle Version kommt bald.';
-                responseDiv.className = 'line line-warn';
+                responseDiv.innerHTML = `<div class="terminal-box">
+  <div class="terminal-box-title">Session-Limit erreicht</div>
+  <div class="terminal-box-body">
+    <p>NEXUS ist noch in der Kalibrierung — aber wir sind es nicht.</p>
+    <p>Die volle Version kommt bald. In der Zwischenzeit: lass uns reden.</p>
+    <div class="box-section">
+      <p><a href="mailto:kontakt@maschke.ai" class="terminal-box-link">✉ kontakt@maschke.ai</a></p>
+      <p><a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-box-link">☕ Kostenloses Erstgespräch buchen</a></p>
+    </div>
+  </div>
+</div>`;
+                responseDiv.className = 'line';
             } else {
                 responseDiv.textContent = `[FEHLER] ${error}`;
                 responseDiv.className = 'line line-accent';
