@@ -120,13 +120,13 @@ body::before {
     background:
         radial-gradient(
             ellipse 70% 60% at 50% 40%,
-            rgba(68, 137, 207, 0.10) 0%,
+            rgba(68, 137, 207, 0.20) 0%,
             transparent 70%
         ),
         radial-gradient(
             ellipse 120% 100% at 50% 50%,
             transparent 40%,
-            rgba(0, 0, 0, 0.06) 100%
+            rgba(0, 0, 0, 0.12) 100%
         );
     pointer-events: none;
     z-index: 0;
@@ -867,9 +867,10 @@ body::before {
 }
 
 .terminal-box {
-    padding: 8px 12px;
-    margin: 6px 0 10px 0;
+    padding: 10px 12px;
+    margin: 8px 0 12px 0;
     border: 1px solid var(--terminal-border);
+    border-left: 2px solid var(--terminal-accent);
     background: var(--terminal-surface);
     border-radius: 4px;
     max-width: 480px;
@@ -884,12 +885,12 @@ body::before {
 }
 
 .terminal-box-title {
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     font-size: 12px;
-    padding-bottom: 6px;
-    margin-bottom: 6px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
     border-bottom: 1px solid var(--terminal-border);
     /* Title keeps its gradient — intentional */
     background-image: var(--terminal-grad) !important;
