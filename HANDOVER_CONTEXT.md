@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-19T22:11 (Session b5160214)
+> Last updated: 2026-03-19T23:45 (Session df2c45ba)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -59,7 +59,7 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ### Visual Polish
 - ✅ **Scroll-fade**: Bottom mask reduced 60px → 20px + 24px padding-bottom on output
 - ✅ **Light mode**: Background brightened #9b9b9b → #c2c2c2
-- ✅ **Background spotlight + vignette**: Light mode 0.10 opacity, dark mode subtle glow
+- ✅ **Background spotlight + vignette**: Light mode boosted 0.10→0.20 spotlight, 0.06→0.12 vignette (was invisible on #c2c2c2)
 - ✅ **Ambient particles**: 12 floating dots with varied sizes, opacity, animation
 - ✅ **Box text visibility**: Fixed gradient `background-clip: text` inheritance on `.terminal-box` — body text now explicitly reset to `--terminal-ink`
 
@@ -73,9 +73,9 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 
 ## Open Tasks / Next Session
 
-- **P1**: ⚠️ **Light mode background effect not visible** — CSS specificity issue, needs debugging (radial-gradient may be overridden)
+- ~~**P1**: ⚠️ **Light mode background effect not visible**~~ — ✅ FIXED (opacity values too low, not specificity)
 - **P1**: **Terminal contact form** — Robert wants an in-terminal contact form (email). Needs: (a) technical implementation (form inside terminal output), (b) DSGVO compliance (consent, data handling, Verarbeitungsverzeichnis), (c) backend (Cloudflare Function → email delivery via API like Resend/Postmark)
-- **P2**: Box styling — Robert prefers main project's box aesthetic (the current UC boxes may need visual tuning)
+- ~~**P2**: Box styling~~ — ✅ FIXED (padding, font-weight 700, accent left-border)
 - **P2**: Mobile-specific visual polish pass
 - **P2**: Fix contrast ratio for `.line-dim` text (a11y)
 - **P3**: Prompt iteration if pain points found
@@ -131,13 +131,15 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `6e3686b`
+- **HEAD:** `f0b9d39`
 - **Feature Branches:** `feature/terminal-layout` (max-width 960px experiment — archived/dead)
 - **Session commits (b5160214):** 6
   - `9928ecf..3e54cf0` fix: scroll-fade, CTA box visibility, light mode contrast, AI typewriter pacing
   - `2abbfb1` fix: typewriter race condition, bottom readability, email-only CTA, less pushy AI
   - `d718412` feat: NEXUS OS branding, about text rewrite, light mode polish, email-only CTA
   - `6e3686b` fix: box text visibility — reset gradient text-clip on .terminal-box
+- **Session commits (df2c45ba):** 1
+  - `f0b9d39` fix: light mode spotlight/vignette visibility + box styling polish
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
