@@ -110,6 +110,128 @@ body {
     }
 }
 
+/* ============================================================
+   Background: Subtle spotlight gradient behind terminal
+   ============================================================ */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(
+        ellipse 70% 60% at 50% 40%,
+        rgba(120, 170, 255, 0.04) 0%,
+        transparent 70%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+[data-theme="dark"] body::before {
+    background: radial-gradient(
+        ellipse 70% 60% at 50% 40%,
+        rgba(120, 170, 255, 0.035) 0%,
+        transparent 70%
+    );
+}
+
+/* Light mode: warmer spotlight */
+:root body::before {
+    background: radial-gradient(
+        ellipse 70% 60% at 50% 40%,
+        rgba(68, 137, 207, 0.05) 0%,
+        transparent 70%
+    );
+}
+
+/* ============================================================
+   Ambient Floating Particles — data streams in the background
+   CSS-only, no JS, respects prefers-reduced-motion
+   ============================================================ */
+#bg-particles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--terminal-grad-to);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particle-float linear infinite;
+    will-change: transform, opacity;
+}
+
+/* Vary each particle's position, size, speed, and delay */
+.particle:nth-child(1)  { left: 8%;  bottom: -5%;  width: 2px; height: 2px; animation-duration: 18s; animation-delay: 0s; }
+.particle:nth-child(2)  { left: 15%; bottom: -8%;  width: 3px; height: 3px; animation-duration: 22s; animation-delay: 2s; }
+.particle:nth-child(3)  { left: 25%; bottom: -3%;  width: 2px; height: 2px; animation-duration: 20s; animation-delay: 5s; }
+.particle:nth-child(4)  { left: 35%; bottom: -6%;  width: 4px; height: 4px; animation-duration: 25s; animation-delay: 1s; }
+.particle:nth-child(5)  { left: 48%; bottom: -4%;  width: 2px; height: 2px; animation-duration: 19s; animation-delay: 8s; }
+.particle:nth-child(6)  { left: 58%; bottom: -7%;  width: 3px; height: 3px; animation-duration: 23s; animation-delay: 3s; }
+.particle:nth-child(7)  { left: 68%; bottom: -5%;  width: 2px; height: 2px; animation-duration: 21s; animation-delay: 6s; }
+.particle:nth-child(8)  { left: 78%; bottom: -8%;  width: 3px; height: 3px; animation-duration: 24s; animation-delay: 4s; }
+.particle:nth-child(9)  { left: 88%; bottom: -3%;  width: 2px; height: 2px; animation-duration: 17s; animation-delay: 7s; }
+.particle:nth-child(10) { left: 42%; bottom: -6%;  width: 4px; height: 4px; animation-duration: 26s; animation-delay: 10s; }
+.particle:nth-child(11) { left: 5%;  bottom: -4%;  width: 2px; height: 2px; animation-duration: 20s; animation-delay: 12s; }
+.particle:nth-child(12) { left: 92%; bottom: -5%;  width: 3px; height: 3px; animation-duration: 22s; animation-delay: 9s; }
+
+@keyframes particle-float {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    90% {
+        opacity: 0.2;
+    }
+    100% {
+        transform: translateY(-110vh) translateX(20px);
+        opacity: 0;
+    }
+}
+
+/* Alternate particles drift slightly left */
+.particle:nth-child(odd) {
+    animation-name: particle-float-alt;
+}
+
+@keyframes particle-float-alt {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.35;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    90% {
+        opacity: 0.15;
+    }
+    100% {
+        transform: translateY(-110vh) translateX(-15px);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .particle {
+        animation: none !important;
+        opacity: 0 !important;
+    }
+}
+
 /* Selection — from main project */
 ::selection {
     background: rgba(35, 92, 255, 0.22);
@@ -857,6 +979,62 @@ body {
 
 .status-bar-empty {
     opacity: 0.3;
+}
+
+/* ============================================================
+   CTA Box — Post-limit conversion box (cal.com / email)
+   "Mittelweg" — noticeable but terminal-native
+   ============================================================ */
+.terminal-cta-box {
+    max-width: 520px;
+    border-left: 3px solid var(--terminal-accent);
+    background: var(--terminal-surface);
+    position: relative;
+}
+
+.terminal-cta-box .terminal-box-title {
+    letter-spacing: 0.2em;
+}
+
+.cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 8px;
+}
+
+.cta-primary {
+    border-color: var(--terminal-accent) !important;
+    background: var(--terminal-surface-hover) !important;
+    text-decoration: none !important;
+    color: var(--terminal-ink) !important;
+    font-weight: 600;
+}
+
+.cta-primary:hover {
+    background: var(--terminal-accent) !important;
+    color: #0b0f12 !important;
+}
+
+[data-theme="dark"] .cta-primary:hover {
+    color: #0b0f12 !important;
+}
+
+.cta-secondary {
+    text-decoration: none !important;
+    color: var(--terminal-ink) !important;
+}
+
+/* Mid-chat CTA nudge — subtle */
+.line-nudge {
+    margin-top: 2px;
+    font-size: 0.92em;
+}
+
+[data-theme="dark"] .terminal-cta-box {
+    box-shadow:
+        0 0 20px rgba(120, 170, 255, 0.06),
+        0 0 0 1px rgba(120, 170, 255, 0.08);
 }
 
 /* Progress bar */

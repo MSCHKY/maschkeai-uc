@@ -7,7 +7,7 @@ import './style.css';
 import { renderNexusLogo } from './ascii-logo';
 import { BOOT_SEQUENCE } from './boot-sequence';
 import { handleCommand, isSpecialCommand, getCommandUrl, CAL_URL } from './commands';
-import { sendMessage, isLimitReached } from './chat';
+import { sendMessage, isLimitReached, getRemainingMessages } from './chat';
 import {
     IMPRESSUM_CONTENT,
     DATENSCHUTZ_CONTENT,
@@ -33,6 +33,7 @@ const legalClose = document.getElementById('legal-overlay-close')!;
 let isProcessing = false;
 let commandHistory: string[] = [];
 let historyIndex = -1;
+let ctaNudgeShown = false;
 
 // ── DSGVO Consent (pattern from main project: useTerminalControllerV2.ts) ──
 const CONSENT_KEY = 'nexus_uc_consent_v1';
@@ -94,6 +95,19 @@ function sleep(ms: number): Promise<void> {
     return new Promise((r) => setTimeout(r, ms));
 }
 
+// ── Typewriter effect for boot lines ──
+async function typewriteLine(text: string, cls: string, charDelay = 15): Promise<void> {
+    const div = document.createElement('div');
+    div.className = `line ${cls}`.trim();
+    div.textContent = '';
+    output.appendChild(div);
+    scrollToBottom();
+    for (let i = 0; i < text.length; i++) {
+        div.textContent += text[i];
+        await sleep(charDelay);
+    }
+}
+
 // ── Progress bar animation ──
 async function animateProgressBar(): Promise<void> {
     const total = 24;
@@ -125,33 +139,46 @@ const ASTRO_CLICK_WARNINGS = [
 ] as const;
 
 const YORI_LINES = [
-    // Under-construction meta humor
+    // Meta-Humor (YORI's perspective as the floating mascot)
     'Wird noch gebaut…',
     'Bald™ fertig!',
-    'Coming Soon*ish',
-    'Noch 99 Bugs…',
     'Schöne Baustelle hier',
     'Vorsicht, nasser Lack!',
-    'KI braucht Kaffee',
     'Ich schweb hier nur rum',
+    'Gibt\'s WLAN im Orbit?',
+    'Ich warte hier schon seit v3…',
+    'Null Gravitation, null Stress',
+    'Schweben ist mein Cardio',
+
+    // Nudges (YORI points users to NEXUS — distinct personas)
+    'Tippe einfach drauf los!',
+    'NEXUS weiß mehr als ich',
+    'Schon mal services getippt?',
+    'Erstgespräch? → termin',
+    'Die KI beißt nicht',
+
+    // Brand
+    'KI trifft Kreativität',
+    'maschke.ai — bald komplett',
+    'Kreativ-Agentur mit Raketenantrieb',
 
     // Tech-remixed German proverbs
-    'Des Devs Website ist immer UC',
-    'Auch GPT wurde nicht in einem Sprint trainiert',
     'Guter Code will Weile haben',
-    'Was lange trainiert, wird endlich gut',
-    'Wer API sagt, muss auch Doku sagen',
-    'Kein LLM ist vom Himmel gefallen',
-    'Training macht das Model',
-    'Viele Prompts verderben den Output',
     'Nie den Deploy vor dem Test loben',
-    'In der Latenz liegt die Kraft',
+    'Viele Prompts verderben den Output',
 
     // Easter Egg hints
-    'Tippe mal hilfe',
     'Psst… probier matrix',
-    'Geheimer Befehl: hack',
     'Was passiert bei sudo?',
+    'Geheimer Befehl: hack',
+];
+
+// Inactivity nudge lines (YORI prods user after 30s idle)
+const YORI_NUDGE_LINES = [
+    'Noch da? NEXUS wartet…',
+    'Tippe hilfe für Ideen',
+    'Trau dich, frag was!',
+    'Langweilig hier oben…',
 ];
 
 let bubblePool = [...YORI_LINES];
@@ -159,6 +186,8 @@ let bubbleTimers: { show?: number; hide?: number } = {};
 let isFalling = false;
 let isPerfuming = false;
 let isTalking = false;
+let inactivityTimer: number | null = null;
+let inactivityNudgeShown = false;
 
 // ── Perfume animation (ported from main project's useAstronaut.ts) ──
 const PERFUME_CHECK_MS = 28_000;  // check every 28 seconds
@@ -225,6 +254,25 @@ function startBubbleRotation(bubble: HTMLElement) {
     }
 
     showNext();
+}
+
+// ── Inactivity nudge: YORI prods user after 30s idle ──
+function resetInactivityTimer(bubble: HTMLElement) {
+    if (inactivityTimer) window.clearTimeout(inactivityTimer);
+    inactivityNudgeShown = false;
+    inactivityTimer = window.setTimeout(() => {
+        if (inactivityNudgeShown) return;
+        inactivityNudgeShown = true;
+        const nudge = YORI_NUDGE_LINES[Math.floor(Math.random() * YORI_NUDGE_LINES.length)];
+        // Interrupt current bubble rotation briefly
+        if (bubbleTimers.show) window.clearTimeout(bubbleTimers.show);
+        if (bubbleTimers.hide) window.clearTimeout(bubbleTimers.hide);
+        showBubble(bubble, nudge);
+        bubbleTimers.hide = window.setTimeout(() => {
+            hideBubble(bubble);
+            bubbleTimers.show = window.setTimeout(() => startBubbleRotation(bubble), 8_000);
+        }, 6_000);
+    }, 30_000);
 }
 
 function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
@@ -338,7 +386,8 @@ function startGlitchScanline(): void {
 
 // ── Boot sequence ──
 async function runBootSequence(): Promise<void> {
-    for (const line of BOOT_SEQUENCE) {
+    for (let i = 0; i < BOOT_SEQUENCE.length; i++) {
+        const line = BOOT_SEQUENCE[i];
         if (line.text === 'PROGRESS_BAR') {
             await animateProgressBar();
             continue;
@@ -356,7 +405,12 @@ async function runBootSequence(): Promise<void> {
             await sleep(line.delay);
         }
 
-        addLine(line.text, line.cls);
+        // Typewriter effect for BOOT: lines (lines 2-4 in sequence)
+        if (line.text.startsWith('BOOT:')) {
+            await typewriteLine(line.text, line.cls);
+        } else {
+            addLine(line.text, line.cls);
+        }
     }
 
     // Consent is NOT shown here — it appears on first user input
@@ -377,6 +431,8 @@ async function runBootSequence(): Promise<void> {
             sprite.addEventListener('click', () => triggerFall(sprite, bubble));
             // Start speech bubble rotation after astronaut slides in
             setTimeout(() => startBubbleRotation(bubble), 3000);
+            // Start inactivity nudge timer
+            resetInactivityTimer(bubble);
             // Start random perfume check (28s interval, 2% chance)
             setInterval(() => {
                 if (!isFalling && !isPerfuming) {
@@ -473,6 +529,10 @@ async function processInput(text: string) {
 
     isProcessing = true;
     const trimmed = text.trim();
+
+    // Reset YORI inactivity timer on user input
+    const yoriBubble = document.getElementById('astronaut-bubble');
+    if (yoriBubble) resetInactivityTimer(yoriBubble);
 
     // Save to history
     commandHistory.unshift(trimmed);
@@ -650,20 +710,22 @@ async function processInput(text: string) {
     // Chat with Mistral
     if (isLimitReached()) {
         addLine('', '');
-        const limitBox = document.createElement('div');
-        limitBox.className = 'line';
-        limitBox.innerHTML = `<div class="terminal-box">
-  <div class="terminal-box-title">Session-Limit erreicht</div>
+        // Show conversion CTA box instead of dead-end message
+        const ctaBox = document.createElement('div');
+        ctaBox.className = 'line';
+        ctaBox.innerHTML = `<div class="terminal-box terminal-cta-box">
+  <div class="terminal-box-title">Nexus Limit</div>
   <div class="terminal-box-body">
-    <p>NEXUS ist noch in der Kalibrierung — aber wir sind es nicht.</p>
-    <p>Die volle Version kommt bald. In der Zwischenzeit: lass uns reden.</p>
-    <div class="box-section">
-      <p><a href="mailto:kontakt@maschke.ai" class="terminal-box-link">✉ kontakt@maschke.ai</a></p>
-      <p><a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-box-link">☕ Kostenloses Erstgespräch buchen</a></p>
+    <p>5/5 Nachrichten — du hast <strong>NEXUS</strong> getestet.</p>
+    <p>Bereit für den nächsten Schritt?</p>
+    <div class="cta-actions">
+      <a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-cmd cta-primary">→ Termin buchen</a>
+      <a href="mailto:kontakt@maschke.ai" class="terminal-cmd cta-secondary">✉ Email senden</a>
     </div>
+    <p class="box-label">Kostenloses 15-Min Erstgespräch. Unverbindlich.</p>
   </div>
 </div>`;
-        output.appendChild(limitBox);
+        output.appendChild(ctaBox);
         scrollToBottom();
         addLine('', '');
         isProcessing = false;
@@ -721,6 +783,21 @@ async function processInput(text: string) {
                     processInput(cmd);
                 });
             });
+            // Mid-funnel CTA nudge after 3rd message (2 remaining)
+            if (!ctaNudgeShown && getRemainingMessages() === 2) {
+                ctaNudgeShown = true;
+                addHTML(
+                    'Tipp: Tippe <span class="cmd-chip" data-cmd="termin">termin</span> für ein kostenloses Erstgespräch.',
+                    'line-dim line-nudge'
+                );
+                // Make the nudge chip clickable too
+                const nudgeLine = output.lastElementChild;
+                nudgeLine?.querySelector('.cmd-chip')?.addEventListener('click', () => {
+                    const cmd = 'termin';
+                    input.value = cmd;
+                    processInput(cmd);
+                });
+            }
             addLine('', '');
             isProcessing = false;
         },
@@ -733,18 +810,24 @@ async function processInput(text: string) {
             // Stop YORI talking
             if (talkSprite) stopTalking(talkSprite);
             if (error === 'LIMIT_REACHED') {
-                responseDiv.innerHTML = `<div class="terminal-box">
-  <div class="terminal-box-title">Session-Limit erreicht</div>
+                responseDiv.remove();
+                // Show the same CTA box as the pre-check
+                const ctaBox = document.createElement('div');
+                ctaBox.className = 'line';
+                ctaBox.innerHTML = `<div class="terminal-box terminal-cta-box">
+  <div class="terminal-box-title">Nexus Limit</div>
   <div class="terminal-box-body">
-    <p>NEXUS ist noch in der Kalibrierung — aber wir sind es nicht.</p>
-    <p>Die volle Version kommt bald. In der Zwischenzeit: lass uns reden.</p>
-    <div class="box-section">
-      <p><a href="mailto:kontakt@maschke.ai" class="terminal-box-link">✉ kontakt@maschke.ai</a></p>
-      <p><a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-box-link">☕ Kostenloses Erstgespräch buchen</a></p>
+    <p>5/5 Nachrichten — du hast <strong>NEXUS</strong> getestet.</p>
+    <p>Bereit für den nächsten Schritt?</p>
+    <div class="cta-actions">
+      <a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-cmd cta-primary">→ Termin buchen</a>
+      <a href="mailto:kontakt@maschke.ai" class="terminal-cmd cta-secondary">✉ Email senden</a>
     </div>
+    <p class="box-label">Kostenloses 15-Min Erstgespräch. Unverbindlich.</p>
   </div>
 </div>`;
-                responseDiv.className = 'line';
+                output.appendChild(ctaBox);
+                scrollToBottom();
             } else {
                 responseDiv.textContent = `[FEHLER] ${error}`;
                 responseDiv.className = 'line line-accent';
