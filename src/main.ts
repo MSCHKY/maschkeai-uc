@@ -6,8 +6,8 @@
 import './style.css';
 import { renderNexusLogo } from './ascii-logo';
 import { BOOT_SEQUENCE } from './boot-sequence';
-import { handleCommand, isSpecialCommand, getCommandUrl, CAL_URL } from './commands';
-import { sendMessage, isLimitReached, getRemainingMessages } from './chat';
+import { handleCommand, isSpecialCommand, getCommandUrl } from './commands';
+import { sendMessage, isLimitReached } from './chat';
 import {
     IMPRESSUM_CONTENT,
     DATENSCHUTZ_CONTENT,
@@ -33,7 +33,7 @@ const legalClose = document.getElementById('legal-overlay-close')!;
 let isProcessing = false;
 let commandHistory: string[] = [];
 let historyIndex = -1;
-let ctaNudgeShown = false;
+
 
 // ── DSGVO Consent (pattern from main project: useTerminalControllerV2.ts) ──
 const CONSENT_KEY = 'nexus_uc_consent_v1';
@@ -719,10 +719,9 @@ async function processInput(text: string) {
     <p>5/5 Nachrichten — du hast <strong>NEXUS</strong> getestet.</p>
     <p>Bereit für den nächsten Schritt?</p>
     <div class="cta-actions">
-      <a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-cmd cta-primary">→ Termin buchen</a>
-      <a href="mailto:kontakt@maschke.ai" class="terminal-cmd cta-secondary">✉ Email senden</a>
+      <a href="mailto:kontakt@maschke.ai" class="terminal-cmd cta-primary">✉ Schreib uns</a>
     </div>
-    <p class="box-label">Kostenloses 15-Min Erstgespräch. Unverbindlich.</p>
+    <p class="box-label">kontakt@maschke.ai — wir melden uns.</p>
   </div>
 </div>`;
         output.appendChild(ctaBox);
@@ -745,8 +744,26 @@ async function processInput(text: string) {
     const talkSprite = document.getElementById('astronaut-sprite');
 
     // Typewriter throttle: render AI text char-by-char at ~30 chars/sec
+    // The key insight: onDone must NOT render immediately — it sets a flag,
+    // and the typewriter drains to completion before finalizing.
     const TYPEWRITER_INTERVAL = 33; // ms per character
     let typewriterTimer: number | null = null;
+    let streamingDone = false;
+
+    function finalize() {
+        // Final render with click handlers
+        if (talkSprite) stopTalking(talkSprite);
+        responseDiv.innerHTML = formatAiText(rawAiText);
+        responseDiv.querySelectorAll('.cmd-chip').forEach((chip) => {
+            chip.addEventListener('click', () => {
+                const cmd = (chip as HTMLElement).dataset.cmd || '';
+                input.value = cmd;
+                processInput(cmd);
+            });
+        });
+        addLine('', '');
+        isProcessing = false;
+    }
 
     function startTypewriter() {
         if (typewriterTimer) return;
@@ -755,6 +772,11 @@ async function processInput(text: string) {
                 displayedChars += 1;
                 responseDiv.innerHTML = formatAiText(rawAiText.substring(0, displayedChars));
                 scrollToBottom();
+            } else if (streamingDone) {
+                // Typewriter caught up and streaming is done — finalize
+                window.clearInterval(typewriterTimer!);
+                typewriterTimer = null;
+                finalize();
             }
         }, TYPEWRITER_INTERVAL);
     }
@@ -775,38 +797,15 @@ async function processInput(text: string) {
             rawAiText += chunk;
             startTypewriter();
         },
-        // onDone — final format pass + attach click handlers
+        // onDone — DON'T render immediately; let typewriter finish
         (_fullText: string) => {
-            // Stop typewriter and do final synchronous render
-            stopTypewriter();
-            // Stop YORI talking
-            if (talkSprite) stopTalking(talkSprite);
-            responseDiv.innerHTML = formatAiText(rawAiText);
-            // Make command chips clickable
-            responseDiv.querySelectorAll('.cmd-chip').forEach((chip) => {
-                chip.addEventListener('click', () => {
-                    const cmd = (chip as HTMLElement).dataset.cmd || '';
-                    input.value = cmd;
-                    processInput(cmd);
-                });
-            });
-            // Mid-funnel CTA nudge after 3rd message (2 remaining)
-            if (!ctaNudgeShown && getRemainingMessages() === 2) {
-                ctaNudgeShown = true;
-                addHTML(
-                    'Tipp: Tippe <span class="cmd-chip" data-cmd="termin">termin</span> für ein kostenloses Erstgespräch.',
-                    'line-dim line-nudge'
-                );
-                // Make the nudge chip clickable too
-                const nudgeLine = output.lastElementChild;
-                nudgeLine?.querySelector('.cmd-chip')?.addEventListener('click', () => {
-                    const cmd = 'termin';
-                    input.value = cmd;
-                    processInput(cmd);
-                });
+            streamingDone = true;
+            // If typewriter already caught up (very short response), finalize now
+            if (displayedChars >= rawAiText.length) {
+                stopTypewriter();
+                finalize();
             }
-            addLine('', '');
-            isProcessing = false;
+            // Otherwise typewriter interval will handle finalization
         },
         // onError
         (error: string) => {
@@ -815,7 +814,6 @@ async function processInput(text: string) {
             if (talkSprite) stopTalking(talkSprite);
             if (error === 'LIMIT_REACHED') {
                 responseDiv.remove();
-                // Show the same CTA box as the pre-check
                 const ctaBox = document.createElement('div');
                 ctaBox.className = 'line';
                 ctaBox.innerHTML = `<div class="terminal-box terminal-cta-box">
@@ -824,10 +822,9 @@ async function processInput(text: string) {
     <p>5/5 Nachrichten — du hast <strong>NEXUS</strong> getestet.</p>
     <p>Bereit für den nächsten Schritt?</p>
     <div class="cta-actions">
-      <a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-cmd cta-primary">→ Termin buchen</a>
-      <a href="mailto:kontakt@maschke.ai" class="terminal-cmd cta-secondary">✉ Email senden</a>
+      <a href="mailto:kontakt@maschke.ai" class="terminal-cmd cta-primary">✉ Schreib uns</a>
     </div>
-    <p class="box-label">Kostenloses 15-Min Erstgespräch. Unverbindlich.</p>
+    <p class="box-label">kontakt@maschke.ai — wir melden uns.</p>
   </div>
 </div>`;
                 output.appendChild(ctaBox);

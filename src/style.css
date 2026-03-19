@@ -310,6 +310,7 @@ body::before {
     white-space: pre-wrap;
     word-break: break-word;
     color: var(--terminal-ink);
+    padding-bottom: 24px;
 
     /* Scroll-fade: text fades to transparent at top and bottom (from main project) */
     -webkit-mask-image: linear-gradient(
