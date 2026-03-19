@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-11T00:18 (Session d8fc894b, continued)
+> Last updated: 2026-03-19T22:11 (Session b5160214)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -20,47 +20,67 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 
 | Component | File | Status |
 |-----------|------|--------|
-| HTML Shell | `index.html` | ✅ Done (block-cursor span, separators, status bar, `&nbsp;` prompt spacing) |
-| Main Orchestrator | `src/main.ts` | ✅ Done (consent auto-send, 95% progress bar, formatAiText, glitch scanline) |
-| Terminal CSS | `src/style.css` | ✅ Done (floating legal panel, Gemini CLI polish, borderless input, block cursor) |
+| HTML Shell | `index.html` | ✅ Done (block-cursor, status bar: nexus://uplink) |
+| Main Orchestrator | `src/main.ts` | ✅ Done (typewriter AI rendering, consent auto-send, CTA flow) |
+| Terminal CSS | `src/style.css` | ✅ Done (particles, spotlight+vignette, floating legal panel, scroll-fade) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
-| Boot Sequence | `src/boot-sequence.ts` | ✅ Done (new creative welcome text) |
-| Commands | `src/commands.ts` | ✅ Done (line-based output, no boxes) |
+| Boot Sequence | `src/boot-sequence.ts` | ✅ Done (typewriter boot text) |
+| Commands | `src/commands.ts` | ✅ Done (box-based output, email-only contact) |
 | Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, max_tokens=400) |
-| Legal Content | `src/legal.ts` | ✅ Done (§5 DDG minimum, EU-OS-Link removed, floating panel) |
-| Mistral Proxy | `functions/api/mistral.js` | ✅ Done (server-side prompt, max_tokens=400) |
+| Legal Content | `src/legal.ts` | ✅ Done (§5 DDG minimum, floating panel) |
+| Mistral Proxy | `functions/api/mistral.js` | ✅ Done (server-side prompt, email-only, no model disclosure) |
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
 | Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, talk) |
+| Background Particles | `index.html` + `src/style.css` | ✅ Done (12 floating particles) |
 
-## Recent Session Changes (d8fc894b -- 2026-03-10/11)
+## Recent Session Changes (b5160214 — 2026-03-19)
 
-### Legal Content Overhaul
-- ✅ Impressum + Datenschutz rechtlich vollständig finalisiert (DDG, VSBG, MStV, DSGVO)
-- ✅ Impressum auf gesetzliches Minimum reduziert (§ 5 DDG):
-  - Entfernt: Unternehmensform, Tätigkeitsbeschreibung, Kammer-Negation, Website-URL
-  - **EU-OS-Plattform-Link entfernt** (Plattform eingestellt seit 20.07.2025!)
-  - Haftungs-/Urheberrechtsklauseln gekürzt
-- ✅ Legal Overlay: Fullscreen → **Floating Panel** mit backdrop-blur
-  - `#legal-overlay-panel` wrapper div, max-width 680px, max-height 80vh
-  - Schriftgrad 0.78em, kompakte Abstände
-  - Click-to-close Backdrop + ESC + Close-Button
+### AI Response Typewriter
+- ✅ AI responses now render via typewriter throttle (30 chars/sec) instead of instant rAF dump
+- ✅ **Fixed race condition**: `onDone` sets `streamingDone` flag, typewriter drains to completion before `finalize()` — no more instant full-render killing the effect
 
-### UX Verbesserungen
-- ✅ **Progress bar bleibt bei 95%** — passt zum "Under Construction" Konzept
-- ✅ **Consent-Flow komplett überarbeitet**: User-Nachricht wird in `pendingMessage` gespeichert und nach AKZEPTIEREN-Click via `setTimeout(50)` automatisch an die KI gesendet — kein Doppel-Tippen mehr
-- ✅ **Prompt-Leerzeichen**: `&nbsp;` nach `%` im HTML verhindert Whitespace-Collapse
+### CTA / Conversion Flow
+- ✅ **Email-only CTA**: All CTA boxes now show only `kontakt@maschke.ai`, no cal.com
+- ✅ **Mid-chat nudge removed**: The "Tippe termin" line after 3rd message was too pushy
+- ✅ CTA box: compact styling, fade-in animation, buttons with forced visible text
+- ✅ System prompt: NEXUS now mentions email max every 3rd response
+- ✅ `termin` command still exists but redirects to email
 
-### Cursor & Scanline (aus erster Session-Hälfte)
-- ✅ ch-based cursor positioning, flex gap entfernt
-- ✅ Glitch scanline: 3px, 0.8 opacity, 0.15s flash
+### NEXUS OS Branding
+- ✅ Status bar: `nexus://uplink (secure)` left, `NEXUS OS · UC` right
+- ✅ **Model name (Mistral Medium 3) removed everywhere** — security: no free intel for attackers
+- ✅ Stats Easter egg: `Engine: NEXUS OS` instead of model name
 
-### Terminal Layout Experiment (OFFEN)
-- `feature/terminal-layout` Branch: max-width 960px, zentriert, 32px Padding
-- Preview: https://feature-terminal-layout.maschkeai-uc.pages.dev
-- **Robert überlegt noch** — erst abgetörnt, dann "je länger ich draufgucke..."
-- Reverted auf main, lebt nur in Feature-Branch
+### About Text
+- ✅ Removed Vettweiß address
+- ✅ Added: Fokus, Erfahrung (15+ Jahre, neurodivers), Motto ("Bend the Reality")
+- ✅ Punchline: "Wir bauen KI-Lösungen, die sich anfühlen, als hätte sie jemand mit Hirn gemacht."
 
-## Astronaut YORI -- Positioning System
+### Visual Polish
+- ✅ **Scroll-fade**: Bottom mask reduced 60px → 20px + 24px padding-bottom on output
+- ✅ **Light mode**: Background brightened #9b9b9b → #c2c2c2
+- ✅ **Background spotlight + vignette**: Light mode 0.10 opacity, dark mode subtle glow
+- ✅ **Ambient particles**: 12 floating dots with varied sizes, opacity, animation
+- ✅ **Box text visibility**: Fixed gradient `background-clip: text` inheritance on `.terminal-box` — body text now explicitly reset to `--terminal-ink`
+
+### YORI Bubble Content
+- ✅ Rewritten to be persona-correct (YORI ≠ NEXUS)
+- ✅ Meta-humor, brand reinforcement, easter egg hints
+- ✅ Inactivity nudge after 30 seconds
+
+### Other
+- ✅ Added `robots.txt` (Allow all)
+
+## Open Tasks / Next Session
+
+- **P1**: ⚠️ **Light mode background effect not visible** — CSS specificity issue, needs debugging (radial-gradient may be overridden)
+- **P1**: **Terminal contact form** — Robert wants an in-terminal contact form (email). Needs: (a) technical implementation (form inside terminal output), (b) DSGVO compliance (consent, data handling, Verarbeitungsverzeichnis), (c) backend (Cloudflare Function → email delivery via API like Resend/Postmark)
+- **P2**: Box styling — Robert prefers main project's box aesthetic (the current UC boxes may need visual tuning)
+- **P2**: Mobile-specific visual polish pass
+- **P2**: Fix contrast ratio for `.line-dim` text (a11y)
+- **P3**: Prompt iteration if pain points found
+
+## Astronaut YORI — Positioning System
 
 **Desktop/Tablet:** Anchored via `bottom: 78px`, `right: 24px`.
 **Mobile (<=480px):** Anchored via `bottom: 68px`, `right: 10px` (matching card insets).
@@ -87,9 +107,10 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 2. Voice, Format (STRIKTE REGELN: no headings/lists/code/emojis/**no kursiv**)
 3. Antwortlaenge: 40-60 words standard, 80 max (hard-enforced via max_tokens=400)
 4. Kern-Wissen: Teaser-level services as Fliesstext, **NIEMALS Preise**
-5. **Gespraechsfuehrung**: Simple tone guidance, NO message counter awareness
+5. **Gespraechsfuehrung**: Subtle, email max every 3rd response, NO termin/cal.com pushing
 6. YORI: Max 1x per conversation, never quote directly
 7. UC-Bewusstsein, Guardrails (prompt injection, no code gen, context lock, role integrity)
+8. **Model name NOT disclosed** — security decision
 
 ## Invariants
 
@@ -104,34 +125,24 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 9. **max_tokens**: 400 (both client and server). Keeps responses tight (~80 words max).
 10. **Dark mode default**: Site always starts dark. Light mode only if user explicitly toggles.
 11. **EU-OS-Plattform**: Link ENTFERNT — Plattform eingestellt seit 20.07.2025. Nicht wieder hinzufügen!
-
-## Open Tasks
-
-- **P1**: Terminal Layout entscheiden (`feature/terminal-layout` Branch — Robert überlegt)
-- **P1**: Astronaut YORI repositionieren falls Layout-Change kommt (ragt nach rechts raus)
-- **P2**: Mobile-specific visual polish pass
-- **P2**: Add `robots.txt` (Lighthouse flagged)
-- **P2**: Fix contrast ratio for `.line-dim` text (a11y)
-- **P3**: Prompt iteration if pain points found
+12. **No model disclosure**: Never reveal Mistral Medium 3 in UI, status bar, or system prompt hints.
+13. **Email-only CTA**: UC site uses only email (kontakt@maschke.ai), no cal.com links.
 
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `2117c39`
-- **Feature Branches:** `feature/terminal-layout` (max-width 960px experiment)
-- **Session commits (d8fc894b):** 8
-  - `0218ccd` feat: rechtlich vollständiges Impressum + Datenschutz
-  - `44e9269` feat: legal overlay als floating panel mit backdrop-blur
-  - `fc0eaa7` refactor: Impressum auf gesetzliches Minimum (§5 DDG)
-  - `11b8446` feat: progress bar stops at 95%
-  - `da7a7c9` fix: consent flow auto-sendet + Prompt-Leerzeichen
-  - `6e05430` style: terminal max-width (angewendet)
-  - `2117c39` Revert terminal max-width (zurück auf edge-to-edge)
+- **HEAD:** `6e3686b`
+- **Feature Branches:** `feature/terminal-layout` (max-width 960px experiment — archived/dead)
+- **Session commits (b5160214):** 6
+  - `9928ecf..3e54cf0` fix: scroll-fade, CTA box visibility, light mode contrast, AI typewriter pacing
+  - `2abbfb1` fix: typewriter race condition, bottom readability, email-only CTA, less pushy AI
+  - `d718412` feat: NEXUS OS branding, about text rewrite, light mode polish, email-only CTA
+  - `6e3686b` fix: box text visibility — reset gradient text-clip on .terminal-box
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
 - Vanilla CSS (no Tailwind)
-- Mistral Medium 3 via Cloudflare Pages Function proxy (max_tokens=400)
+- Mistral Medium 3 via Cloudflare Pages Function proxy (max_tokens=400) — **model name not disclosed to users**
 - Cloudflare Pages deployment (auto-deploy from GitHub)
 
 ## Key Files in Main Project (Reference)
