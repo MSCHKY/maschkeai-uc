@@ -58,12 +58,12 @@ const COMMANDS: Record<string, () => CommandResult> = {
             { text: 'maschke.ai — Kreativ-Agentur für Künstliche Intelligenz.', cls: '' },
             { text: '', cls: '' },
             { text: '  Gründer:   Robert Maschke', cls: 'line-dim' },
-            { text: '  Fokus:     KI als kreatives Werkzeug, nicht als Selbstzweck', cls: 'line-dim' },
+            { text: '  Fokus:     KI als Werkzeug für echte Arbeit, nicht als Selbstzweck', cls: 'line-dim' },
             { text: '  Erfahrung: 15+ Jahre Kreativbranche, neurodiverse Perspektive', cls: 'line-dim' },
             { text: '  Motto:     "Bend the Reality"', cls: 'line-dim' },
             { text: '', cls: '' },
-            { text: '  Wir bauen keine Standard-Chatbots. Wir bauen KI-Lösungen,', cls: '' },
-            { text: '  die sich anfühlen, als hätte sie jemand mit Hirn gemacht.', cls: '' },
+            { text: '  Wir bauen keine alten Programme mit KI-Aufkleber, sondern', cls: '' },
+            { text: '  Systeme, die sich anfühlen, als hätte sie jemand mit Hirn gemacht.', cls: '' },
             { text: '', cls: '' },
         ],
     }),
@@ -72,29 +72,25 @@ const COMMANDS: Record<string, () => CommandResult> = {
         lines: [
             { text: '', cls: '' },
             { text: '◆ KI-Beratung & Strategie', cls: 'line-accent' },
-            { text: '  Von der Idee zur Implementierung', cls: 'line-dim' },
+            { text: '  Von Nebel zu Richtung, Struktur und Entscheidung', cls: 'line-dim' },
             { text: '◆ Workshops & Training', cls: 'line-accent' },
-            { text: '  KI verstehen, anwenden, meistern', cls: 'line-dim' },
+            { text: '  KI verstehen, anwenden und sinnvoll in Arbeit übersetzen', cls: 'line-dim' },
             { text: '◆ Kreative KI-Projekte', cls: 'line-accent' },
-            { text: '  Wenn Maschine auf Muse trifft', cls: 'line-dim' },
+            { text: '  Wenn kreative Idee, Systemdenken und Maschine sauber zusammenkommen', cls: 'line-dim' },
             { text: '◆ AI-Act Compliance', cls: 'line-accent' },
-            { text: '  EU-konforme KI-Implementierung', cls: 'line-dim' },
+            { text: '  EU-konforme KI ohne Papierfriedhof', cls: 'line-dim' },
             { text: '', cls: '' },
         ],
     }),
 
     contact: () => ({
-        html: box('Kontakt', `
-            <p><a href="mailto:kontakt@maschke.ai" class="terminal-box-link">✉ kontakt@maschke.ai</a></p>
-            <p class="box-label">Wir melden uns. Versprochen.</p>
-        `),
+        html: box('Kontakt', `<p><a href="mailto:kontakt@maschke.ai" class="terminal-box-link">✉ kontakt@maschke.ai</a></p>
+<p class="box-label">Wir melden uns. Versprochen.</p>`),
     }),
 
     termin: () => ({
-        html: box('Erstgespräch', `
-            <p>15 Min. kennenlernen — kostenlos, unverbindlich.</p>
-            <p>Schreib uns: <a href="mailto:kontakt@maschke.ai" class="terminal-box-link">kontakt@maschke.ai</a></p>
-        `),
+        html: box('Erstgespräch', `<p>15 Min. kennenlernen — kostenlos, unverbindlich.</p>
+<p>Schreib uns: <a href="mailto:kontakt@maschke.ai" class="terminal-box-link">kontakt@maschke.ai</a></p>`),
     }),
 
     status: () => {
@@ -105,16 +101,14 @@ const COMMANDS: Record<string, () => CommandResult> = {
             return `<span class="status-bar"><span class="status-bar-fill">${f}</span><span class="status-bar-empty">${e}</span> ${pct}%</span>`;
         };
         return {
-            html: box('System Status', `
-                <p><span class="box-label">NEXUS Core:</span>     ${bar(6, 10)}</p>
-                <p><span class="box-label">UI Interface:</span>   ${bar(4, 10)}</p>
-                <p><span class="box-label">AI Engine:</span>      ${bar(8, 10)}</p>
-                <p><span class="box-label">Creative Suite:</span> ${bar(3, 10)}</p>
-                <div class="box-section">
-                    <p><span class="box-highlight">Overall: UNDER CONSTRUCTION</span></p>
-                    <p class="box-label">ETA: Coming Soon™</p>
-                </div>
-            `),
+            html: box('System Status', `<p><span class="box-label">NEXUS Core:</span>     ${bar(6, 10)}</p>
+<p><span class="box-label">UI Interface:</span>   ${bar(4, 10)}</p>
+<p><span class="box-label">AI Engine:</span>      ${bar(8, 10)}</p>
+<p><span class="box-label">Creative Suite:</span> ${bar(3, 10)}</p>
+<div class="box-section">
+<p><span class="box-highlight">Overall: UNDER CONSTRUCTION</span></p>
+<p class="box-label">ETA: Coming Soon™</p>
+</div>`),
         };
     },
 

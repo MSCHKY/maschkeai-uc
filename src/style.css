@@ -868,9 +868,8 @@ body::before {
 
 .terminal-box {
     padding: 10px 12px;
-    margin: 8px 0 12px 0;
+    margin: 10px 0 14px 0;
     border: 1px solid var(--terminal-border);
-    border-left: 2px solid var(--terminal-accent);
     background: var(--terminal-surface);
     border-radius: 4px;
     max-width: 480px;
@@ -890,7 +889,7 @@ body::before {
     text-transform: uppercase;
     font-size: 12px;
     padding-bottom: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     border-bottom: 1px solid var(--terminal-border);
     /* Title keeps its gradient — intentional */
     background-image: var(--terminal-grad) !important;
