@@ -40,7 +40,6 @@ const COMMANDS: Record<string, () => CommandResult> = {
             { text: '  about       Wer ist maschke.ai?', cls: 'line-dim' },
             { text: '  services    Was wir machen', cls: 'line-dim' },
             { text: '  contact     Kontakt aufnehmen', cls: 'line-dim' },
-            { text: '  termin      Kostenloses Erstgespräch', cls: 'line-dim' },
             { text: '  status      Baustellen-Status', cls: 'line-dim' },
             { text: '', cls: '' },
             { text: '  dark/light  Theme wechseln', cls: 'line-dim' },
@@ -57,10 +56,14 @@ const COMMANDS: Record<string, () => CommandResult> = {
         lines: [
             { text: '', cls: '' },
             { text: 'maschke.ai — Kreativ-Agentur für Künstliche Intelligenz.', cls: '' },
-            { text: 'KI nicht als Werkzeug, sondern als kreative Partnerin.', cls: '' },
             { text: '', cls: '' },
             { text: '  Gründer:   Robert Maschke', cls: 'line-dim' },
-            { text: '  Standort:  Vettweiß, Deutschland', cls: 'line-dim' },
+            { text: '  Fokus:     KI als kreatives Werkzeug, nicht als Selbstzweck', cls: 'line-dim' },
+            { text: '  Erfahrung: 15+ Jahre Kreativbranche, neurodiverse Perspektive', cls: 'line-dim' },
+            { text: '  Motto:     "Bend the Reality"', cls: 'line-dim' },
+            { text: '', cls: '' },
+            { text: '  Wir bauen keine Standard-Chatbots. Wir bauen KI-Lösungen,', cls: '' },
+            { text: '  die sich anfühlen, als hätte sie jemand mit Hirn gemacht.', cls: '' },
             { text: '', cls: '' },
         ],
     }),
@@ -83,15 +86,14 @@ const COMMANDS: Record<string, () => CommandResult> = {
     contact: () => ({
         html: box('Kontakt', `
             <p><a href="mailto:kontakt@maschke.ai" class="terminal-box-link">✉ kontakt@maschke.ai</a></p>
-            <p class="box-label">Kostenloses Erstgespräch (15 min):</p>
-            <p><a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-box-link">→ cal.eu/maschke-ai</a></p>
+            <p class="box-label">Wir melden uns. Versprochen.</p>
         `),
     }),
 
     termin: () => ({
-        html: box('Erstgespräch buchen', `
-            <p>15 Min. kennenlernen — kostenlos. Unverbindlich, ohne Verpflichtung.</p>
-            <p><a href="${CAL_URL}" target="_blank" rel="noopener noreferrer" class="terminal-box-link">→ Termin vereinbaren</a></p>
+        html: box('Erstgespräch', `
+            <p>15 Min. kennenlernen — kostenlos, unverbindlich.</p>
+            <p>Schreib uns: <a href="mailto:kontakt@maschke.ai" class="terminal-box-link">kontakt@maschke.ai</a></p>
         `),
     }),
 
@@ -141,7 +143,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
                 { text: `Uptime:    ${uptime} min`, cls: 'line-dim' },
                 { text: `Memory:    ${mem} MB / 512 MB`, cls: 'line-dim' },
                 { text: `Sessions:  ${sessions}`, cls: 'line-dim' },
-                { text: 'Model:     Mistral Medium 3', cls: 'line-dim' },
+                { text: 'Engine:    NEXUS OS', cls: 'line-dim' },
                 { text: 'Status:    Under Construction', cls: 'line-warn' },
                 { text: '', cls: '' },
             ],
