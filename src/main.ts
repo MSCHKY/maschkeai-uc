@@ -739,39 +739,46 @@ async function processInput(text: string) {
     output.appendChild(responseDiv);
 
     let rawAiText = '';
+    let displayedChars = 0;
 
     // Start talk animation when AI starts streaming
     const talkSprite = document.getElementById('astronaut-sprite');
 
-    let renderFrameId = 0;
+    // Typewriter throttle: render AI text char-by-char at ~30 chars/sec
+    const TYPEWRITER_INTERVAL = 33; // ms per character
+    let typewriterTimer: number | null = null;
+
+    function startTypewriter() {
+        if (typewriterTimer) return;
+        typewriterTimer = window.setInterval(() => {
+            if (displayedChars < rawAiText.length) {
+                displayedChars += 1;
+                responseDiv.innerHTML = formatAiText(rawAiText.substring(0, displayedChars));
+                scrollToBottom();
+            }
+        }, TYPEWRITER_INTERVAL);
+    }
+
+    function stopTypewriter() {
+        if (typewriterTimer) {
+            window.clearInterval(typewriterTimer);
+            typewriterTimer = null;
+        }
+    }
 
     await sendMessage(
         trimmed,
-        // onChunk — accumulate raw text and render with formatting
+        // onChunk — accumulate raw text, typewriter renders it
         (chunk: string) => {
             // Start YORI talking on first chunk
             if (talkSprite && !isTalking) startTalking(talkSprite);
             rawAiText += chunk;
-
-            // ⚡ Bolt: Batch rapid DOM updates and layout recalcs during streaming
-            // This prevents main-thread blocking by debouncing innerHTML assignments
-            // and synchronous scrollToBottom() to the display refresh rate (max 60fps)
-            if (!renderFrameId) {
-                renderFrameId = requestAnimationFrame(() => {
-                    responseDiv.innerHTML = formatAiText(rawAiText);
-                    scrollToBottom();
-                    renderFrameId = 0;
-                });
-            }
+            startTypewriter();
         },
         // onDone — final format pass + attach click handlers
         (_fullText: string) => {
-            // ⚡ Bolt: Prevent race condition by cancelling any pending frame
-            // before the final synchronous render pass and event listeners
-            if (renderFrameId) {
-                cancelAnimationFrame(renderFrameId);
-                renderFrameId = 0;
-            }
+            // Stop typewriter and do final synchronous render
+            stopTypewriter();
             // Stop YORI talking
             if (talkSprite) stopTalking(talkSprite);
             responseDiv.innerHTML = formatAiText(rawAiText);
@@ -803,10 +810,7 @@ async function processInput(text: string) {
         },
         // onError
         (error: string) => {
-            if (renderFrameId) {
-                cancelAnimationFrame(renderFrameId);
-                renderFrameId = 0;
-            }
+            stopTypewriter();
             // Stop YORI talking
             if (talkSprite) stopTalking(talkSprite);
             if (error === 'LIMIT_REACHED') {

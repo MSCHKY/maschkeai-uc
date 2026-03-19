@@ -29,7 +29,7 @@
     --terminal-letter-spacing: 0.006em;
     --terminal-word-spacing: 0.018em;
 
-    --bg-page: #9b9b9b;
+    --bg-page: #c2c2c2;
 }
 
 /* — Dark Mode — exact tokens from main project dark theme — */
@@ -316,14 +316,14 @@ body::before {
         to bottom,
         transparent 0px,
         #000 80px,
-        #000 calc(100% - 60px),
+        #000 calc(100% - 20px),
         transparent 100%
     );
     mask-image: linear-gradient(
         to bottom,
         transparent 0px,
         #000 80px,
-        #000 calc(100% - 60px),
+        #000 calc(100% - 20px),
         transparent 100%
     );
     -webkit-mask-repeat: no-repeat;
@@ -983,46 +983,67 @@ body::before {
 
 /* ============================================================
    CTA Box — Post-limit conversion box (cal.com / email)
-   "Mittelweg" — noticeable but terminal-native
+   Compact, inline-like — noticeable but not massive
    ============================================================ */
 .terminal-cta-box {
-    max-width: 520px;
-    border-left: 3px solid var(--terminal-accent);
+    border-left: none;
     background: var(--terminal-surface);
     position: relative;
+    padding: 10px 14px !important;
+    animation: ctaFadeIn 0.6s ease forwards;
+}
+
+@keyframes ctaFadeIn {
+    0% { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 .terminal-cta-box .terminal-box-title {
-    letter-spacing: 0.2em;
+    letter-spacing: 0.15em;
+    font-size: 0.85em;
+    margin-bottom: 4px;
+}
+
+.terminal-cta-box .terminal-box-body p {
+    margin: 0 0 1px 0;
+    font-size: 0.93em;
 }
 
 .cta-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin: 10px 0 8px;
+    gap: 6px;
+    margin: 8px 0 4px;
+}
+
+/* CRITICAL: Force visible text on CTA buttons — override gradient text-clip inheritance */
+.cta-primary,
+.cta-secondary {
+    text-decoration: none !important;
+    -webkit-text-fill-color: var(--terminal-ink) !important;
+    background-image: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    color: var(--terminal-ink) !important;
+    font-size: 0.88em;
+    padding: 4px 10px !important;
+    min-height: 28px !important;
 }
 
 .cta-primary {
     border-color: var(--terminal-accent) !important;
     background: var(--terminal-surface-hover) !important;
-    text-decoration: none !important;
-    color: var(--terminal-ink) !important;
     font-weight: 600;
 }
 
 .cta-primary:hover {
     background: var(--terminal-accent) !important;
+    -webkit-text-fill-color: #0b0f12 !important;
     color: #0b0f12 !important;
 }
 
-[data-theme="dark"] .cta-primary:hover {
-    color: #0b0f12 !important;
-}
-
-.cta-secondary {
-    text-decoration: none !important;
-    color: var(--terminal-ink) !important;
+.cta-secondary:hover {
+    border-color: var(--terminal-accent) !important;
 }
 
 /* Mid-chat CTA nudge — subtle */
@@ -1032,9 +1053,12 @@ body::before {
 }
 
 [data-theme="dark"] .terminal-cta-box {
-    box-shadow:
-        0 0 20px rgba(120, 170, 255, 0.06),
-        0 0 0 1px rgba(120, 170, 255, 0.08);
+    box-shadow: 0 0 12px rgba(120, 170, 255, 0.04);
+}
+
+[data-theme="dark"] .cta-primary:hover {
+    -webkit-text-fill-color: #0b0f12 !important;
+    color: #0b0f12 !important;
 }
 
 /* Progress bar */
