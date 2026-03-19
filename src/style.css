@@ -875,6 +875,12 @@ body::before {
     max-width: 480px;
     opacity: 0;
     animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    /* CRITICAL: Reset inherited gradient text-clip from .line parent */
+    -webkit-text-fill-color: var(--terminal-ink);
+    background-image: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    color: var(--terminal-ink);
 }
 
 .terminal-box-title {
@@ -885,14 +891,16 @@ body::before {
     padding-bottom: 6px;
     margin-bottom: 6px;
     border-bottom: 1px solid var(--terminal-border);
-    background-image: var(--terminal-grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    /* Title keeps its gradient — intentional */
+    background-image: var(--terminal-grad) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
 }
 
 .terminal-box-body {
     color: var(--terminal-ink);
+    -webkit-text-fill-color: var(--terminal-ink);
     line-height: 1.35;
     font-size: inherit;
 }
