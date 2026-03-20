@@ -124,24 +124,24 @@ body::before {
     position: fixed;
     inset: 0;
     background:
-        /* Soft radial glow behind terminal area */
+        /* Radial glow behind terminal — visible blue halo */
         radial-gradient(
-            ellipse 70% 60% at 50% 40%,
-            rgba(68, 137, 207, 0.18) 0%,
+            ellipse 80% 65% at 50% 38%,
+            rgba(68, 137, 207, 0.35) 0%,
             transparent 70%
         ),
-        /* Atmospheric top-down gradient — subtle sky feel */
+        /* Atmospheric sky gradient — top-down blue wash */
         linear-gradient(
             180deg,
-            rgba(140, 170, 210, 0.22) 0%,
-            rgba(160, 175, 200, 0.08) 40%,
-            transparent 70%
+            rgba(120, 155, 210, 0.38) 0%,
+            rgba(150, 175, 210, 0.18) 35%,
+            transparent 65%
         ),
-        /* Vignette — stronger for light mode */
+        /* Vignette — darken edges for depth */
         radial-gradient(
             ellipse 120% 100% at 50% 50%,
-            transparent 40%,
-            rgba(0, 0, 0, 0.10) 100%
+            transparent 35%,
+            rgba(0, 0, 0, 0.18) 100%
         );
     pointer-events: none;
     z-index: 0;
