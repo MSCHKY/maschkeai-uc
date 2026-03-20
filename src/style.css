@@ -872,16 +872,13 @@ body::before {
     border: 1px solid var(--terminal-border);
     background: var(--terminal-surface);
     border-radius: 4px;
-    max-width: 480px;
     white-space: normal;
     opacity: 0;
     animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    /* CRITICAL: Reset inherited gradient text-clip from .line parent */
-    -webkit-text-fill-color: var(--terminal-ink);
+    /* Reset inherited gradient text-clip so box background renders properly */
     background-image: none;
     -webkit-background-clip: unset;
     background-clip: unset;
-    color: var(--terminal-ink);
 }
 
 .terminal-box-title {
@@ -900,8 +897,10 @@ body::before {
 }
 
 .terminal-box-body {
-    color: var(--terminal-ink);
-    -webkit-text-fill-color: var(--terminal-ink);
+    background-image: var(--terminal-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     line-height: 1.35;
     font-size: inherit;
 }
