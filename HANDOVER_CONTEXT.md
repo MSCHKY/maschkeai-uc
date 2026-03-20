@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-20T11:45 (Session bb9141c0 continued)
+> Last updated: 2026-03-20T12:52 (Session 2e5b0d65)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -122,11 +122,35 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - 📋 6 recommended (XSS fix, DOM reflow, 4 test suites), 3 skip (duplicates, micro-opt)
 - 📄 Review matrix saved → `pr_review.md` artifact
 
+## Recent Session Changes (2e5b0d65 — 2026-03-20)
+
+### Jules PR Integration (6 of 9)
+- ✅ **#13 XSS Fix**: `sanitizeHtml()` — DOMParser-based, strips `<script>`, `<iframe>`, `on*`, `javascript:`
+- ✅ **#10 DOM Reflow**: `addLines()` — DocumentFragment batch insert, eliminates O(N) reflows
+- ✅ **#9 Chat Exports**: `incrementMessageCount`, `decrementMessageCount`, `getRemainingMessages`, `_resetChatStateForTesting` exported
+- ✅ **#5 Network Test**: Network failure test for `sendMessage`
+- ✅ **#6 Commands Tests**: 90 LOC test suite for `handleCommand` + `isSpecialCommand`
+- ✅ **#7 Logo Tests**: ASCII logo unit tests with MockHTMLElement DOM mocking
+- ❌ **#8, #11, #12**: Closed without merge (duplicates / irrelevant micro-opt)
+- ✅ **All 9 PRs closed** on GitHub
+
+### Test Suite
+- ✅ **Test runner**: `node --experimental-strip-types --test` (node:test, no deps)
+- ✅ **16/16 tests passing** — chat limits, network failure, commands, logo
+- ✅ **`npm test`** script added to package.json
+
+### NEXUS Prompt Live Test
+- ✅ Persona verified: German, ~60-80 words, no headings/lists/code
+- ✅ No model disclosure (Mistral not mentioned)
+- ✅ Clickable chips (`services`, `about`, `contact`) work correctly
+- ⚠️ **Known cosmetic issue**: During typewriter rendering, `**bold**` markers briefly visible as raw asterisks (finalize() renders correctly)
+
 ## Open Tasks / Next Session
 
-- **P1**: **Jules PRs integrieren** — 6 empfohlene PRs cherry-picken (#13 XSS, #10 DOM reflow, #9/#5/#6/#7 tests)
-- **P1**: NEXUS Prompt live testen und iterieren (Pitch-Drift prüfen)
-- **P1**: **Terminal contact form** — in-terminal form → email, DSGVO-konform
+- **P1**: **Terminal contact form** — in-terminal form → email, DSGVO-konform, "richtig" (mit Backend)
+- **P2**: Bold-Rendering im Typewriter fixen (Sternchen kurz sichtbar während Streaming)
+- ~~P1: Jules PRs integrieren~~ ✅ Done
+- ~~P1: NEXUS Prompt live testen~~ ✅ Done
 - ~~P2: Reduced-Motion~~ ✅ Done
 - ~~P2: `line-dim` Kontrast~~ ✅ Done
 - ~~P2: CSP-Header~~ ✅ Done
@@ -183,14 +207,11 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `8c180a1`
-- **Session commits (bb9141c0 continued):** 6
-  - `724f410` fix: a11y contrast, comprehensive reduced-motion, mobile density, CSP template
-  - `7aee025` security: activate CSP header, remove inline JS from copy button
-  - `47321b3` → `160152c` fix: CSP header syntax iterations
-  - `6d7d1a0` security: hardcode API params server-side (Closes #4)
-  - `451cdf3` → `30aa2f9` → `b709cc9` style: light mode atmospheric background iterations
-  - `1e92bf5` → `8c180a1` feat: animated plasma gradient behind terminal
+- **HEAD:** `88d14bf`
+- **Session commits (2e5b0d65):** 1
+  - `88d14bf` feat: integrate 6 Jules PRs — XSS sanitizer, DOM reflow, test suite
+- **Previous session (bb9141c0):** 6 commits
+  - `724f410` → `8c180a1` (see previous HANDOVER entries)
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
