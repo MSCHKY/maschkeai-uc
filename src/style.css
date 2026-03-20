@@ -1199,6 +1199,71 @@ body::before {
     color: #0b0f12 !important;
 }
 
+/* ============================================================
+   Contact Form — Step-by-step terminal flow
+   Reuses .terminal-box and .terminal-cmd patterns
+   ============================================================ */
+.contact-summary {
+    min-width: 280px;
+}
+
+.contact-summary .box-label {
+    display: inline-block;
+    min-width: 80px;
+    font-weight: 600;
+}
+
+.contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 4px;
+    padding-top: 8px;
+    border-top: 1px solid var(--terminal-border);
+}
+
+/* Force visible text on contact buttons — override gradient text-clip inheritance */
+.contact-btn-send,
+.contact-btn-cancel {
+    -webkit-text-fill-color: var(--terminal-ink) !important;
+    background-image: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    color: var(--terminal-ink) !important;
+    font-size: 0.88em;
+    padding: 4px 12px !important;
+}
+
+.contact-btn-send {
+    border-color: var(--terminal-accent) !important;
+    background: var(--terminal-surface-hover) !important;
+    font-weight: 600;
+}
+
+.contact-btn-send:hover {
+    background: var(--terminal-accent) !important;
+    -webkit-text-fill-color: #0b0f12 !important;
+    color: #0b0f12 !important;
+}
+
+.contact-btn-cancel {
+    opacity: 0.7;
+}
+
+.contact-btn-cancel:hover {
+    opacity: 1;
+}
+
+/* Honeypot field — invisible to humans, visible to bots */
+.contact-honeypot {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+}
+
 /* Progress bar */
 .progress-bar {
     background-image: var(--terminal-grad);

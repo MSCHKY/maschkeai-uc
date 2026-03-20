@@ -16,6 +16,8 @@ export interface CommandResult {
     lines?: { text: string; cls: string }[];
     /** HTML block output (CSS-styled boxes — main info commands) */
     html?: string;
+    /** If true, triggers the interactive contact form flow */
+    startContactForm?: boolean;
 }
 
 // UC site is email-only — no cal.com/cal.eu links (Invariant #13)
@@ -70,14 +72,11 @@ const COMMANDS: Record<string, () => CommandResult> = {
     }),
 
     contact: () => ({
-        html: box('Kontakt', `<p><a href="mailto:kontakt@maschke.ai" class="terminal-box-link">✉ kontakt@maschke.ai</a></p>
-<p class="box-label"><button type="button" class="terminal-cmd" data-copy-email="kontakt@maschke.ai">📋 kopieren</button></p>
-<p class="box-label">Wir melden uns. Versprochen.</p>`),
+        startContactForm: true,
     }),
 
     termin: () => ({
-        html: box('Erstgespräch', `<p>15 Min. kennenlernen — kostenlos, unverbindlich.</p>
-<p>Schreib uns: <a href="mailto:kontakt@maschke.ai" class="terminal-box-link">kontakt@maschke.ai</a></p>`),
+        startContactForm: true,
     }),
 
     status: () => {

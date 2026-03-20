@@ -9,6 +9,14 @@ import { BOOT_SEQUENCE } from './boot-sequence';
 import { handleCommand, isSpecialCommand } from './commands';
 import { sendMessage, isLimitReached } from './chat';
 import {
+    isContactFormActive,
+    startContactForm,
+    handleContactInput,
+    confirmSend,
+    cancelForm,
+    type ContactFormResult,
+} from './contact-form';
+import {
     IMPRESSUM_CONTENT,
     DATENSCHUTZ_CONTENT,
     IMPRESSUM_TERMINAL,
@@ -561,6 +569,91 @@ function closeLegal() {
     input.focus();
 }
 
+// ── Contact form helpers ──
+
+async function submitContactForm(data: { name: string; email: string; message: string }): Promise<void> {
+    try {
+        const response = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: data.name,
+                email: data.email,
+                message: data.message,
+                website: '', // honeypot — always empty for real users
+            }),
+        });
+
+        if (response.ok) {
+            addLine('', '');
+            addLine('[OK] Nachricht gesendet. Wir melden uns.', 'line-success');
+            addLine('', '');
+        } else {
+            const err = await response.json().catch(() => ({ error: 'Unbekannter Fehler' }));
+            addLine('', '');
+            addLine(`[FEHLER] ${err.error || 'Nachricht konnte nicht gesendet werden.'}`, 'line-accent');
+            addLine('Alternativ: kontakt@maschke.ai', 'line-dim');
+            addLine('', '');
+        }
+    } catch {
+        addLine('', '');
+        addLine('[FEHLER] Verbindung fehlgeschlagen. Bitte versuche es später.', 'line-accent');
+        addLine('Alternativ: kontakt@maschke.ai', 'line-dim');
+        addLine('', '');
+    }
+    scrollToBottom();
+}
+
+async function renderContactResult(formResult: ContactFormResult): Promise<void> {
+    if (formResult.lines) {
+        for (const line of formResult.lines) {
+            addLine(line.text, line.cls);
+            await sleep(30);
+        }
+    }
+
+    if (formResult.html) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'line';
+        wrapper.innerHTML = sanitizeHtml(formResult.html);
+        output.appendChild(wrapper);
+        scrollToBottom();
+
+        // Attach click handlers for SENDEN / ABBRECHEN buttons
+        wrapper.querySelectorAll('[data-contact-action]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                const action = (btn as HTMLElement).dataset.contactAction;
+                if (action === 'send') {
+                    const sendResult = confirmSend();
+                    if (sendResult.lines) {
+                        for (const line of sendResult.lines) {
+                            addLine(line.text, line.cls);
+                        }
+                    }
+                    if (sendResult.submitData) {
+                        await submitContactForm(sendResult.submitData);
+                    }
+                } else if (action === 'cancel') {
+                    const cancelResult = cancelForm();
+                    if (cancelResult.lines) {
+                        for (const line of cancelResult.lines) {
+                            addLine(line.text, line.cls);
+                        }
+                    }
+                }
+                scrollToBottom();
+            });
+        });
+    }
+
+    // If form completed with submitData (text-based confirm), trigger submit
+    if (formResult.submitData) {
+        await submitContactForm(formResult.submitData);
+    }
+
+    scrollToBottom();
+}
+
 // ── Input handling ──
 async function processInput(text: string) {
     if (!text.trim() || isProcessing) return;
@@ -655,6 +748,14 @@ async function processInput(text: string) {
     // User has consented — echo the input now
     echoInput(trimmed);
 
+    // ── Contact form flow (intercepts input when active) ──
+    if (isContactFormActive()) {
+        const formResult = handleContactInput(trimmed);
+        await renderContactResult(formResult);
+        isProcessing = false;
+        return;
+    }
+
     // Special commands
     if (isSpecialCommand(trimmed)) {
         if (cmd === 'clear') {
@@ -712,6 +813,14 @@ async function processInput(text: string) {
     // Local commands
     const result = handleCommand(trimmed);
     if (result) {
+
+        // Contact form trigger
+        if (result.startContactForm) {
+            const formStart = startContactForm();
+            await renderContactResult(formStart);
+            isProcessing = false;
+            return;
+        }
 
         if (result.html) {
             // HTML block output (CSS-styled boxes)
