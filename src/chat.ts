@@ -58,13 +58,7 @@ export async function sendMessage(
         const response = await fetch('/api/mistral', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                messages,
-                model: 'mistral-medium-latest',
-                temperature: 0.6,
-                max_tokens: 250,
-                stream: true,
-            }),
+            body: JSON.stringify({ messages }),
         });
 
         if (!response.ok) {

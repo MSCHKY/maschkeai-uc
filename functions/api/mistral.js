@@ -213,7 +213,14 @@ export async function onRequestPost(context) {
 
     try {
         const body = await request.json();
-        const { messages, model, temperature, max_tokens, stream } = body;
+        const { messages } = body;
+
+        // Security: Hardcode model parameters server-side to prevent client injection
+        // (fixes API parameter injection vulnerability — Jules/Sentinel PR #4)
+        const model = 'mistral-medium-latest';
+        const temperature = 0.6;
+        const max_tokens = 250;
+        const stream = true;
 
         // Validate
         if (!messages || !Array.isArray(messages) || messages.length === 0) {
