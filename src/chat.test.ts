@@ -1,3 +1,4 @@
+// @ts-nocheck
 import test from 'node:test';
 import assert from 'node:assert';
 import { sendMessage } from './chat.ts';
@@ -22,8 +23,8 @@ test('sendMessage handles network failure correctly', async () => {
 
         await sendMessage(
             'Test message',
-            (text) => { chunkCalled = true; },
-            (text) => { doneCalled = true; },
+            () => { chunkCalled = true; },
+            () => { doneCalled = true; },
             (err) => { errorMsg = err; }
         );
 
