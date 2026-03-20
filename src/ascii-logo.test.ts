@@ -1,14 +1,13 @@
-import test from 'node:test';
+// @ts-nocheck
+import test, { after } from 'node:test';
 import assert from 'node:assert';
-import { after } from 'node:test';
+import { renderNexusLogo } from './ascii-logo.ts';
 
 const originalDocument = globalThis.document;
 
 after(() => {
     globalThis.document = originalDocument;
 });
-
-import { renderNexusLogo } from './ascii-logo.ts';
 
 class MockHTMLElement {
     tagName: string;
