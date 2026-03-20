@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-20T07:05 (Session bb9141c0)
+> Last updated: 2026-03-20T11:45 (Session bb9141c0 continued)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -22,7 +22,7 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 |-----------|------|--------|
 | HTML Shell | `index.html` | ✅ Done (block-cursor, status bar: nexus://uplink) |
 | Main Orchestrator | `src/main.ts` | ✅ Done (typewriter AI rendering, consent auto-send, CTA flow) |
-| Terminal CSS | `src/style.css` | ✅ Done (particles, spotlight+vignette, floating legal panel, scroll-fade) |
+| Terminal CSS | `src/style.css` | ✅ Done (CRT scanlines, plasma gradient blobs, spotlight+vignette, floating legal panel, scroll-fade) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (typewriter boot text) |
 | Commands | `src/commands.ts` | ✅ Done (box-based output, email-only contact) |
@@ -31,7 +31,9 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Mistral Proxy | `functions/api/mistral.js` | ✅ Done (server-side prompt, email-only, no model disclosure) |
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
 | Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, talk) |
-| Background Particles | `index.html` + `src/style.css` | ✅ Done (12 floating particles) |
+| Background Particles | `index.html` + `src/style.css` | ✅ Done (12 particles dark-only, CRT scanlines light-only) |
+| Plasma Gradient | `index.html` + `src/style.css` | ✅ Done (3 animated blobs behind terminal, GPU-only) |
+| Security Headers | `public/_headers` | ✅ Done (CSP, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy) |
 
 ## Recent Session Changes (b5160214 — 2026-03-19)
 
@@ -92,44 +94,42 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
   - Antwortlänge: 40–60 Wörter (max 80)
   - Gesprächsführung statt nur coole Antworten
 
-## Recent Session Changes (bb9141c0 — 2026-03-20)
+## Recent Session Changes (bb9141c0 continued — 2026-03-20)
 
-### Multi-Agent Audit → Systematic Fix
-- ✅ Reviewed audits from Opus, Sonnet, and Codex (Codex was strategically deepest)
-- ✅ **BUG-01**: Cal.com-URL bei `termin` entfernt (Invariant #13)
-- ✅ **BUG-02**: Modellname aus Datenschutz entfernt (Invariant #12)
-- ✅ **BUG-03**: Cal.com-Abschnitt in Datenschutz durch Email-only ersetzt
-- ✅ Audit-Dateien archiviert → `docs/audit/`
+### Security Hardening
+- ✅ **CSP Header**: Full Content-Security-Policy via `public/_headers` for Cloudflare Pages
+- ✅ **CSP Compliance**: Removed inline `onclick` from copy button, implemented event delegation
+- ✅ **Security Headers**: X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy
+- ✅ **API Injection Fix**: Server-side hardcoded model/temp/max_tokens/stream — client can't override
+- ✅ **Jules PR #4**: Cherry-picked, max_tokens kept at 250 (not 400), PR auto-closed
 
-### Trust & Gesprächsökonomie
-- ✅ **Consent-UX**: User-Eingabe wird NICHT mehr vor Einwilligung ins Terminal geschrieben
-- ✅ **Typewriter**: 33ms → 16ms (~60 chars/sec — doppelt so schnell)
-- ✅ **Message-Fairness**: Fehlgeschlagene Requests kosten keine Turns mehr
-- ✅ **Datenschutz**: Duplikat-Block gelöscht, 1-13 sauber nummeriert, Abschnitt 6 erweitert
-- ✅ **Command-History**: ArrowUp/Down aktualisiert Input-Width (Cursor-Tracking)
+### Light Mode Visual Effects
+- ✅ **Atmospheric gradient**: 3-layer background (radial glow + sky gradient + vignette)
+- ✅ **CRT scanlines**: Subtle horizontal lines in light mode body::before
+- ✅ **Particles**: Hidden in light mode (display:none), dark mode only
+- ✅ **Plasma gradient**: 3 animated blobs behind terminal (body-level, position:fixed)
+  - GPU-only (transform), no blur, no JS, 22-28s drift cycles
+  - Light 25% opacity, Dark 35% opacity
+  - Disabled on mobile ≤480px and prefers-reduced-motion
 
-### NEXUS Journey & CTA
-- ✅ **Services**: Fließtext-Box statt flache Aufzählung (passt zu NEXUS-Voice)
-- ✅ **Contact**: Copy-Button für Email-Adresse
-- ✅ **YORI**: CTA-Nudges entschärft ("Erstgespräch? → termin" entfernt)
-- ✅ **max_tokens**: 400 → 250 (Client + Server)
-- ✅ **Dead Code**: `getCommandUrl()`, `getRemainingMessages()` entfernt
+### Accessibility
+- ✅ **line-dim contrast**: Opacity 0.6 → 0.72 for WCAG AA
+- ✅ **prefers-reduced-motion**: All animations disabled (page fade, glitches, cursor blink, plasma)
+- ✅ **Mobile density**: Status bar hidden on ≤480px
 
-### Polish & Metadaten
-- ✅ **OG-Image**: Social preview card generiert (1200×630)
-- ✅ **Favicon**: SVG terminal cursor (>_)
-- ✅ **Meta-Tags**: og:image, twitter:card, canonical
-- ✅ **SEO**: robots → noindex/nofollow + robots.txt Disallow für UC-Phase
-- ✅ **Theme-Toggle**: Titel eingedeutscht
+### Jules PR Review
+- ✅ Reviewed all 9 new Jules PRs (#5-#13)
+- 📋 6 recommended (XSS fix, DOM reflow, 4 test suites), 3 skip (duplicates, micro-opt)
+- 📄 Review matrix saved → `pr_review.md` artifact
 
 ## Open Tasks / Next Session
 
-- **P1**: **Terminal contact form** — in-terminal form → email, DSGVO-konform
+- **P1**: **Jules PRs integrieren** — 6 empfohlene PRs cherry-picken (#13 XSS, #10 DOM reflow, #9/#5/#6/#7 tests)
 - **P1**: NEXUS Prompt live testen und iterieren (Pitch-Drift prüfen)
-- **P2**: Mobile Dichte unten reduzieren
-- **P2**: Reduced-Motion vollständig umsetzen
-- **P2**: `line-dim` Kontrast a11y
-- **P2**: CSP-Header via `_headers`
+- **P1**: **Terminal contact form** — in-terminal form → email, DSGVO-konform
+- ~~P2: Reduced-Motion~~ ✅ Done
+- ~~P2: `line-dim` Kontrast~~ ✅ Done
+- ~~P2: CSP-Header~~ ✅ Done
 
 ## Astronaut YORI — Positioning System
 
@@ -173,7 +173,7 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 6. **NO LOCAL DEV SERVER**: NEVER start `npm run dev`. Test ONLY on production after push. See `.agent/rules/NO_LOCAL_SERVER.md`
 7. **Brand**: `maschke.ai` always lowercase, `YORI` always uppercase, **NEXUS** = interface only
 8. **Message limit**: Technical enforcement only (in-memory counter in `chat.ts`). Model knows NOTHING about limits.
-9. **max_tokens**: 250 (both client and server). Keeps responses tight (~60 words max).
+9. **max_tokens**: 250 (server-side only since API injection fix). Client sends no model params.
 10. **Dark mode default**: Site always starts dark. Light mode only if user explicitly toggles.
 11. **EU-OS-Plattform**: Link ENTFERNT — Plattform eingestellt seit 20.07.2025. Nicht wieder hinzufügen!
 12. **No model disclosure**: Never reveal Mistral Medium 3 in UI, status bar, or system prompt hints.
@@ -183,11 +183,14 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **Session commits (bb9141c0):** 4
-  - `fcc4dc3` fix: remove cal.com links, hide model name, clean legal text (BUG-01/02/03)
-  - `5f5ca8a` fix: consent UX, typewriter speed, message fairness, legal cleanup
-  - `93eb510` feat: services rewrite, contact copy-button, YORI softened, dead code cleanup
-  - `6e5f00f` feat: OG-image, favicon, twitter card, noindex for UC phase
+- **HEAD:** `8c180a1`
+- **Session commits (bb9141c0 continued):** 6
+  - `724f410` fix: a11y contrast, comprehensive reduced-motion, mobile density, CSP template
+  - `7aee025` security: activate CSP header, remove inline JS from copy button
+  - `47321b3` → `160152c` fix: CSP header syntax iterations
+  - `6d7d1a0` security: hardcode API params server-side (Closes #4)
+  - `451cdf3` → `30aa2f9` → `b709cc9` style: light mode atmospheric background iterations
+  - `1e92bf5` → `8c180a1` feat: animated plasma gradient behind terminal
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
