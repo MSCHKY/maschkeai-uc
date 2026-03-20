@@ -89,21 +89,19 @@ Wir verarbeiten Ihre Daten ausschließlich im Rahmen der Datenschutz-Grundverord
 <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einem sicheren und stabilen Betrieb der Website)</p>
 <p>Weitere Informationen: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Datenschutzerklärung von Cloudflare</a></p>
 
-<h2>6. Terminbuchung über Cal.com</h2>
-<p>Für die Terminvereinbarung nutzen wir den Dienst Cal.com, Inc., 340 S Lemon Ave #1139, Walnut, CA 91789, USA. Bei der Buchung eines Termins werden personenbezogene Daten (z. B. Name, E-Mail-Adresse, Terminwunsch) an Cal.com übermittelt und dort verarbeitet.</p>
-<p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen)</p>
-<p>Weitere Informationen: <a href="https://cal.com/privacy" target="_blank" rel="noopener noreferrer">Datenschutzerklärung von Cal.com</a></p>
+<h2>6. Kontaktaufnahme</h2>
+<p>Kontakt ausschließlich per E-Mail an: <a href="mailto:kontakt@maschke.ai">kontakt@maschke.ai</a>. Auf dieser Website werden keine externen Terminbuchungs-Tools eingesetzt.</p>
 
-<h2>7. KI-Chatbot (Mistral)</h2>
-<p>Auf dieser Website wird ein KI-Chatbot eingesetzt, der auf dem Sprachmodell von Mistral AI, SAS, 15 rue des Halles, 75001 Paris, Frankreich, basiert.</p>
+<h2>7. KI-Chatbot (Mistral AI)</h2>
+<p>Auf dieser Website wird ein KI-Chatbot eingesetzt, der auf einem Sprachmodell von Mistral AI, SAS, 15 rue des Halles, 75001 Paris, Frankreich, basiert.</p>
 <p><strong>Technische Ausgestaltung:</strong></p>
 <ul>
-<li>Verwendetes Sprachmodell: Mistral Medium 3 (Mistral AI, Paris, Frankreich)</li>
+<li>KI-Anbieter: Mistral AI (Paris, Frankreich — europäisches Unternehmen)</li>
 <li>Verarbeitung ausschließlich zur unmittelbaren Beantwortung von Anfragen</li>
 <li>Keine dauerhafte Speicherung der Eingaben — Chatverlauf existiert nur während der aktiven Browsersitzung</li>
 <li>Kein Training des Modells mit Nutzerdaten</li>
 <li>Keine Weitergabe der Inhalte an Dritte</li>
-<li>Datenverarbeitung innerhalb der EU (Mistral AI ist ein europäisches Unternehmen)</li>
+<li>Datenverarbeitung innerhalb der EU</li>
 </ul>
 <p>Die Nutzung des Chatbots erfolgt freiwillig und erst nach ausdrücklicher Zustimmung durch den Nutzer. Bitte geben Sie keine sensiblen oder personenbezogenen Daten in den Chat ein.</p>
 <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO (Einwilligung) — die Nutzung des Chatbots erfolgt erst nach Zustimmung des Nutzers</p>
@@ -115,7 +113,7 @@ Wir verarbeiten Ihre Daten ausschließlich im Rahmen der Datenschutz-Grundverord
 <h2>9. Cookies</h2>
 <p>Diese Website setzt keine eigenen Cookies. Cloudflare kann technisch notwendige Sicherheits-Cookies setzen (z. B. <code>__cflb</code>, <code>__cf_bm</code>). Diese dienen ausschließlich der Abwehr von Bot-Angriffen und der Lastverteilung. Es findet kein Tracking, keine Analyse und keine Profilbildung statt.</p>
 
-<h2>10. Kontaktaufnahme</h2>
+<h2>8. Session Storage</h2>
 <p>Wenn Sie uns per E-Mail kontaktieren, werden Ihre Angaben (Name, E-Mail-Adresse, Inhalt der Anfrage) zur Bearbeitung der Anfrage gespeichert. Eine Weitergabe an Dritte findet nicht statt. Die Daten werden gelöscht, sobald sie für die Erreichung des Zweckes ihrer Erhebung nicht mehr erforderlich sind — in der Regel nach Abschluss der Korrespondenz, spätestens nach 6 Monaten.</p>
 <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) bzw. Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Beantwortung von Anfragen)</p>
 
@@ -181,7 +179,6 @@ export const DATENSCHUTZ_TERMINAL_HTML = `<div class="terminal-box">
     <div class="box-section">
       <p><span class="box-label">Hosting:</span> Cloudflare (EU-US DPF, AVV)</p>
       <p><span class="box-label">Chat-AI:</span> Mistral AI (EU, DSGVO-konform)</p>
-      <p><span class="box-label">Termine:</span> Cal.com (Art. 6 Abs. 1b)</p>
       <p><span class="box-label">Cookies:</span> Keine eigenen — nur Cloudflare Security</p>
       <p><span class="box-label">Storage:</span> Session Storage (Zähler, lokal)</p>
     </div>

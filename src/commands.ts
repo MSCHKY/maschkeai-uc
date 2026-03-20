@@ -18,8 +18,8 @@ export interface CommandResult {
     html?: string;
 }
 
-/** URL for the free 15-min intro call (shared with main project) */
-export const CAL_URL = 'https://www.cal.eu/maschke-ai';
+// UC site is email-only — no cal.com/cal.eu links (Invariant #13)
+// CAL_URL intentionally omitted. Contact via kontakt@maschke.ai only.
 
 // ── Helper: Build a styled terminal box ──────────────────────────────
 function box(title: string, body: string): string {
@@ -202,13 +202,10 @@ export function handleCommand(input: string): CommandResult | null {
 
 /**
  * Check if command needs to open an external URL.
- * Returns the URL to open, or null.
+ * UC site is email-only — no external booking links (Invariant #13).
+ * Always returns null.
  */
-export function getCommandUrl(input: string): string | null {
-    const cmd = input.trim().toLowerCase();
-    if (cmd === 'termin' || cmd === 'call' || cmd === 'intro' || cmd === 'cal' || cmd === 'buchen') {
-        return CAL_URL;
-    }
+export function getCommandUrl(_input: string): string | null {
     return null;
 }
 
