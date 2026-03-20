@@ -872,6 +872,8 @@ body::before {
     border: 1px solid var(--terminal-border);
     background: var(--terminal-surface);
     border-radius: 4px;
+    width: fit-content;
+    max-width: 68ch;
     white-space: normal;
     opacity: 0;
     animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
