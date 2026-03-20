@@ -17,16 +17,25 @@ interface ChatMessage {
 let chatHistory: ChatMessage[] = [];
 let messageCount = 0;
 
-function incrementMessageCount(): void {
+export function incrementMessageCount(): void {
     messageCount++;
 }
 
-function decrementMessageCount(): void {
+export function decrementMessageCount(): void {
     if (messageCount > 0) messageCount--;
 }
 
 export function isLimitReached(): boolean {
     return messageCount >= MAX_MESSAGES;
+}
+
+export function getRemainingMessages(): number {
+    return Math.max(0, MAX_MESSAGES - messageCount);
+}
+
+export function _resetChatStateForTesting(): void {
+    messageCount = 0;
+    chatHistory = [];
 }
 
 
