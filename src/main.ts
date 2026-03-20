@@ -691,7 +691,18 @@ async function processInput(text: string) {
             // Attach click handlers to terminal-cmd buttons inside the box
             wrapper.querySelectorAll('.terminal-cmd').forEach((btn) => {
                 btn.addEventListener('click', () => {
-                    const cmdName = (btn as HTMLElement).dataset.cmd || '';
+                    const el = btn as HTMLElement;
+                    // Copy-email button (CSP-safe — no inline onclick)
+                    const email = el.dataset.copyEmail;
+                    if (email) {
+                        navigator.clipboard.writeText(email).then(() => {
+                            el.textContent = '✓ kopiert';
+                            setTimeout(() => { el.textContent = '📋 kopieren'; }, 2000);
+                        });
+                        return;
+                    }
+                    // Regular command button
+                    const cmdName = el.dataset.cmd || '';
                     input.value = cmdName;
                     processInput(cmdName);
                 });

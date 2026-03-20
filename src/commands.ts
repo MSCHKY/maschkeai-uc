@@ -71,7 +71,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
 
     contact: () => ({
         html: box('Kontakt', `<p><a href="mailto:kontakt@maschke.ai" class="terminal-box-link">✉ kontakt@maschke.ai</a></p>
-<p class="box-label"><button type="button" class="terminal-cmd" onclick="navigator.clipboard.writeText('kontakt@maschke.ai').then(()=>{this.textContent='✓ kopiert';setTimeout(()=>{this.textContent='📋 kopieren'},2000)})">📋 kopieren</button></p>
+<p class="box-label"><button type="button" class="terminal-cmd" data-copy-email="kontakt@maschke.ai">📋 kopieren</button></p>
 <p class="box-label">Wir melden uns. Versprochen.</p>`),
     }),
 
