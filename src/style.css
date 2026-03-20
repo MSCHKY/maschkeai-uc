@@ -261,6 +261,9 @@ body::before {
         animation: none !important;
         opacity: 0 !important;
     }
+    .plasma-blob {
+        animation: none !important;
+    }
 }
 
 /* Selection — from main project */
@@ -292,6 +295,104 @@ body::before {
     box-shadow:
         0 2px 16px rgba(0, 0, 0, 0.08),
         0 0 0 1px rgba(0, 0, 0, 0.04);
+    z-index: 1;
+}
+
+/* ============================================================
+   Plasma: Animated gradient blobs behind terminal content
+   GPU-only (transform), no blur, no JS
+   ============================================================ */
+#terminal-plasma {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+    opacity: 0.12;
+}
+
+.plasma-blob {
+    position: absolute;
+    border-radius: 50%;
+    will-change: transform;
+}
+
+.plasma-blob-1 {
+    width: 120%;
+    height: 80%;
+    top: -20%;
+    left: -30%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(80, 130, 200, 0.8) 0%,
+        rgba(80, 130, 200, 0.2) 40%,
+        transparent 70%
+    );
+    animation: plasma-drift-1 22s ease-in-out infinite;
+}
+
+.plasma-blob-2 {
+    width: 100%;
+    height: 100%;
+    top: 10%;
+    right: -40%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(100, 80, 180, 0.7) 0%,
+        rgba(100, 80, 180, 0.15) 40%,
+        transparent 70%
+    );
+    animation: plasma-drift-2 28s ease-in-out infinite;
+}
+
+.plasma-blob-3 {
+    width: 90%;
+    height: 70%;
+    bottom: -15%;
+    left: 10%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(50, 160, 180, 0.6) 0%,
+        rgba(50, 160, 180, 0.1) 40%,
+        transparent 70%
+    );
+    animation: plasma-drift-3 25s ease-in-out infinite;
+}
+
+@keyframes plasma-drift-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(15%, 10%) scale(1.1); }
+    66%  { transform: translate(-10%, 5%) scale(0.95); }
+}
+
+@keyframes plasma-drift-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(-20%, -8%) scale(1.05); }
+    66%  { transform: translate(10%, 12%) scale(1.1); }
+}
+
+@keyframes plasma-drift-3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(12%, -15%) scale(1.08); }
+    66%  { transform: translate(-8%, 8%) scale(0.92); }
+}
+
+/* Dark mode: brighter, more vivid plasma */
+[data-theme="dark"] #terminal-plasma {
+    opacity: 0.20;
+}
+
+/* Mobile: disable plasma (perf + density) */
+@media (max-width: 480px) {
+    #terminal-plasma { display: none; }
+}
+
+/* Terminal content sits above the plasma */
+#terminal-output,
+#terminal-separator,
+#terminal-separator-bottom,
+#terminal-input-line,
+#terminal-status-bar {
+    position: relative;
     z-index: 1;
 }
 
