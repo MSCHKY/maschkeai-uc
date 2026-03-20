@@ -21,6 +21,10 @@ function incrementMessageCount(): void {
     messageCount++;
 }
 
+function decrementMessageCount(): void {
+    if (messageCount > 0) messageCount--;
+}
+
 export function isLimitReached(): boolean {
     return messageCount >= MAX_MESSAGES;
 }
@@ -65,6 +69,9 @@ export async function sendMessage(
         });
 
         if (!response.ok) {
+            // Rollback message count — failed requests shouldn't consume limited turns
+            decrementMessageCount();
+            chatHistory.pop(); // remove the user message we just added
             if (response.status === 403) {
                 onError('Deine Anfrage wurde aus Sicherheitsgründen blockiert. Bitte formuliere sie anders.');
                 return;
@@ -79,6 +86,8 @@ export async function sendMessage(
 
         const reader = response.body?.getReader();
         if (!reader) {
+            decrementMessageCount();
+            chatHistory.pop();
             onError('Stream nicht verfügbar.');
             return;
         }
@@ -116,6 +125,8 @@ export async function sendMessage(
         chatHistory.push({ role: 'assistant', content: fullText });
         onDone(fullText);
     } catch (err) {
+        decrementMessageCount();
+        chatHistory.pop();
         onError('Verbindung zu NEXUS fehlgeschlagen. Ist das Internet da?');
         console.error('[chat] Error:', err);
     }

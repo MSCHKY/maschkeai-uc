@@ -539,8 +539,7 @@ async function processInput(text: string) {
     if (commandHistory.length > 50) commandHistory.pop();
     historyIndex = -1;
 
-    // Echo
-    echoInput(trimmed);
+    // Clear input immediately (echo happens after consent check)
     input.value = '';
     input.style.width = '1ch';
 
@@ -551,6 +550,7 @@ async function processInput(text: string) {
     if (!isConsented) {
         // Allow impressum/datenschutz even before consent (legal requirement: always accessible)
         if (cmd === 'impressum' || cmd === 'datenschutz') {
+            echoInput(trimmed);
             const htmlContent = cmd === 'impressum' ? IMPRESSUM_TERMINAL_HTML : DATENSCHUTZ_TERMINAL_HTML;
             const wrapper = document.createElement('div');
             wrapper.className = 'line';
@@ -567,6 +567,7 @@ async function processInput(text: string) {
 
         // Accept consent directly
         if (cmd === 'akzeptieren' || cmd === 'accept' || cmd === 'zustimmen' || cmd === 'einverstanden' || cmd === 'verstanden') {
+            echoInput(trimmed);
             sessionStorage.setItem(CONSENT_KEY, 'true');
             isConsented = true;
             addLine('', '');
@@ -577,6 +578,9 @@ async function processInput(text: string) {
         }
 
         // Any other input → save it, show consent, then auto-send after accept
+        // NOTE: Do NOT echo the user's message here — it would look like data
+        // was sent before consent was given. The message is held as pendingMessage
+        // and only sent (with echo) AFTER the user accepts.
         const pendingMessage = trimmed;
         addLine('', '');
         addLine('Bevor wir loslegen: NEXUS antwortet mit KI.', 'line-dim');
@@ -611,6 +615,9 @@ async function processInput(text: string) {
         isProcessing = false;
         return;
     }
+
+    // User has consented — echo the input now
+    echoInput(trimmed);
 
     // Special commands
     if (isSpecialCommand(trimmed)) {
@@ -746,7 +753,7 @@ async function processInput(text: string) {
     // Typewriter throttle: render AI text char-by-char at ~30 chars/sec
     // The key insight: onDone must NOT render immediately — it sets a flag,
     // and the typewriter drains to completion before finalizing.
-    const TYPEWRITER_INTERVAL = 33; // ms per character
+    const TYPEWRITER_INTERVAL = 16; // ms per character (~60 chars/sec)
     let typewriterTimer: number | null = null;
     let streamingDone = false;
 
@@ -854,6 +861,10 @@ input.addEventListener('keydown', (e) => {
         if (historyIndex < commandHistory.length - 1) {
             historyIndex++;
             input.value = commandHistory[historyIndex];
+            // Update width so block cursor tracks correctly
+            const len = input.value.length;
+            input.style.width = len > 0 ? `${len}ch` : '1ch';
+            input.size = Math.max(1, len);
         }
     }
     if (e.key === 'ArrowDown') {
@@ -861,9 +872,14 @@ input.addEventListener('keydown', (e) => {
         if (historyIndex > 0) {
             historyIndex--;
             input.value = commandHistory[historyIndex];
+            const len = input.value.length;
+            input.style.width = len > 0 ? `${len}ch` : '1ch';
+            input.size = Math.max(1, len);
         } else {
             historyIndex = -1;
             input.value = '';
+            input.style.width = '1ch';
+            input.size = 1;
         }
     }
 });

@@ -90,7 +90,9 @@ Wir verarbeiten Ihre Daten ausschließlich im Rahmen der Datenschutz-Grundverord
 <p>Weitere Informationen: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Datenschutzerklärung von Cloudflare</a></p>
 
 <h2>6. Kontaktaufnahme</h2>
-<p>Kontakt ausschließlich per E-Mail an: <a href="mailto:kontakt@maschke.ai">kontakt@maschke.ai</a>. Auf dieser Website werden keine externen Terminbuchungs-Tools eingesetzt.</p>
+<p>Kontakt ist ausschließlich per E-Mail an <a href="mailto:kontakt@maschke.ai">kontakt@maschke.ai</a> möglich. Auf dieser Website werden keine externen Terminbuchungs-Tools eingesetzt.</p>
+<p>Wenn Sie uns per E-Mail kontaktieren, werden Ihre Angaben (Name, E-Mail-Adresse, Inhalt der Anfrage) zur Bearbeitung der Anfrage gespeichert. Eine Weitergabe an Dritte findet nicht statt. Die Daten werden gelöscht, sobald sie für die Erreichung des Zweckes ihrer Erhebung nicht mehr erforderlich sind — in der Regel nach Abschluss der Korrespondenz, spätestens nach 6 Monaten.</p>
+<p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) bzw. Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Beantwortung von Anfragen)</p>
 
 <h2>7. KI-Chatbot (Mistral AI)</h2>
 <p>Auf dieser Website wird ein KI-Chatbot eingesetzt, der auf einem Sprachmodell von Mistral AI, SAS, 15 rue des Halles, 75001 Paris, Frankreich, basiert.</p>
@@ -113,11 +115,7 @@ Wir verarbeiten Ihre Daten ausschließlich im Rahmen der Datenschutz-Grundverord
 <h2>9. Cookies</h2>
 <p>Diese Website setzt keine eigenen Cookies. Cloudflare kann technisch notwendige Sicherheits-Cookies setzen (z. B. <code>__cflb</code>, <code>__cf_bm</code>). Diese dienen ausschließlich der Abwehr von Bot-Angriffen und der Lastverteilung. Es findet kein Tracking, keine Analyse und keine Profilbildung statt.</p>
 
-<h2>8. Session Storage</h2>
-<p>Wenn Sie uns per E-Mail kontaktieren, werden Ihre Angaben (Name, E-Mail-Adresse, Inhalt der Anfrage) zur Bearbeitung der Anfrage gespeichert. Eine Weitergabe an Dritte findet nicht statt. Die Daten werden gelöscht, sobald sie für die Erreichung des Zweckes ihrer Erhebung nicht mehr erforderlich sind — in der Regel nach Abschluss der Korrespondenz, spätestens nach 6 Monaten.</p>
-<p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) bzw. Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Beantwortung von Anfragen)</p>
-
-<h2>11. Rechte der betroffenen Personen</h2>
+<h2>10. Rechte der betroffenen Personen</h2>
 <p>Sie haben jederzeit das Recht auf:</p>
 <ul>
 <li><strong>Auskunft</strong> (Art. 15 DSGVO) über Ihre gespeicherten Daten</li>
@@ -129,10 +127,10 @@ Wir verarbeiten Ihre Daten ausschließlich im Rahmen der Datenschutz-Grundverord
 </ul>
 <p>Zur Ausübung Ihrer Rechte wenden Sie sich bitte an: <a href="mailto:kontakt@maschke.ai">kontakt@maschke.ai</a></p>
 
-<h2>12. Widerruf Ihrer Einwilligung</h2>
+<h2>11. Widerruf Ihrer Einwilligung</h2>
 <p>Viele Datenverarbeitungsvorgänge sind nur mit Ihrer ausdrücklichen Einwilligung möglich. Sie können eine bereits erteilte Einwilligung jederzeit widerrufen. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt vom Widerruf unberührt.</p>
 
-<h2>13. Beschwerderecht bei der Aufsichtsbehörde</h2>
+<h2>12. Beschwerderecht bei der Aufsichtsbehörde</h2>
 <p>Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren. Die für uns zuständige Aufsichtsbehörde ist:</p>
 <p>
 Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen<br>
@@ -141,7 +139,7 @@ Postfach 20 04 44<br>
 <a href="https://www.ldi.nrw.de" target="_blank" rel="noopener noreferrer">https://www.ldi.nrw.de</a>
 </p>
 
-<h2>14. Aktualität</h2>
+<h2>13. Aktualität</h2>
 <p>Stand: März 2026</p>
 <p>Wir behalten uns vor, diese Datenschutzerklärung bei Bedarf anzupassen, um sie an geänderte Rechtslagen oder bei Änderungen des Dienstes sowie der Datenverarbeitung anzupassen.</p>
 `;
