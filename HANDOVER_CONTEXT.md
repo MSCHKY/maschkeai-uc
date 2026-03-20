@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-20T01:25 (Session df2c45ba)
+> Last updated: 2026-03-20T07:05 (Session bb9141c0)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -26,8 +26,8 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (typewriter boot text) |
 | Commands | `src/commands.ts` | ✅ Done (box-based output, email-only contact) |
-| Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, max_tokens=400) |
-| Legal Content | `src/legal.ts` | ✅ Done (§5 DDG minimum, floating panel) |
+| Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, max_tokens=250, error rollback) |
+| Legal Content | `src/legal.ts` | ✅ Done (§5 DDG, sauber nummeriert 1-13) |
 | Mistral Proxy | `functions/api/mistral.js` | ✅ Done (server-side prompt, email-only, no model disclosure) |
 | Astronaut Assets | `public/gfx/yori_anim/` | ✅ Done (idle + fall + perfume sprites) |
 | Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, talk) |
@@ -92,16 +92,44 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
   - Antwortlänge: 40–60 Wörter (max 80)
   - Gesprächsführung statt nur coole Antworten
 
+## Recent Session Changes (bb9141c0 — 2026-03-20)
+
+### Multi-Agent Audit → Systematic Fix
+- ✅ Reviewed audits from Opus, Sonnet, and Codex (Codex was strategically deepest)
+- ✅ **BUG-01**: Cal.com-URL bei `termin` entfernt (Invariant #13)
+- ✅ **BUG-02**: Modellname aus Datenschutz entfernt (Invariant #12)
+- ✅ **BUG-03**: Cal.com-Abschnitt in Datenschutz durch Email-only ersetzt
+- ✅ Audit-Dateien archiviert → `docs/audit/`
+
+### Trust & Gesprächsökonomie
+- ✅ **Consent-UX**: User-Eingabe wird NICHT mehr vor Einwilligung ins Terminal geschrieben
+- ✅ **Typewriter**: 33ms → 16ms (~60 chars/sec — doppelt so schnell)
+- ✅ **Message-Fairness**: Fehlgeschlagene Requests kosten keine Turns mehr
+- ✅ **Datenschutz**: Duplikat-Block gelöscht, 1-13 sauber nummeriert, Abschnitt 6 erweitert
+- ✅ **Command-History**: ArrowUp/Down aktualisiert Input-Width (Cursor-Tracking)
+
+### NEXUS Journey & CTA
+- ✅ **Services**: Fließtext-Box statt flache Aufzählung (passt zu NEXUS-Voice)
+- ✅ **Contact**: Copy-Button für Email-Adresse
+- ✅ **YORI**: CTA-Nudges entschärft ("Erstgespräch? → termin" entfernt)
+- ✅ **max_tokens**: 400 → 250 (Client + Server)
+- ✅ **Dead Code**: `getCommandUrl()`, `getRemainingMessages()` entfernt
+
+### Polish & Metadaten
+- ✅ **OG-Image**: Social preview card generiert (1200×630)
+- ✅ **Favicon**: SVG terminal cursor (>_)
+- ✅ **Meta-Tags**: og:image, twitter:card, canonical
+- ✅ **SEO**: robots → noindex/nofollow + robots.txt Disallow für UC-Phase
+- ✅ **Theme-Toggle**: Titel eingedeutscht
+
 ## Open Tasks / Next Session
 
-> **NEXT SESSION: Comprehensive Audit before Go-Live**
-
-- **P0**: 🔍 **Full Audit** — TypeScript, Build, Dead Code, Bundle Size, a11y, mobile, cross-browser
-- **P1**: **Terminal contact form** — in-terminal form → email, DSGVO-konform (Verarbeitungsverzeichnis, Consent, backend via Resend/Postmark)
-- **P2**: Mobile-specific visual polish pass
-- **P2**: Fix contrast ratio for `.line-dim` text (a11y)
-- **P2**: Box styling needs further tuning (still not pixel-perfect vs main project)
-- **P3**: Prompt iteration if pain points found during live testing
+- **P1**: **Terminal contact form** — in-terminal form → email, DSGVO-konform
+- **P1**: NEXUS Prompt live testen und iterieren (Pitch-Drift prüfen)
+- **P2**: Mobile Dichte unten reduzieren
+- **P2**: Reduced-Motion vollständig umsetzen
+- **P2**: `line-dim` Kontrast a11y
+- **P2**: CSP-Header via `_headers`
 
 ## Astronaut YORI — Positioning System
 
@@ -128,7 +156,7 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 **Server-side only** (`functions/api/mistral.js`). Key sections:
 1. Identity: NEXUS = interface name, **maschke.ai** = agency name (never confuse)
 2. Voice, Format (STRIKTE REGELN: no headings/lists/code/emojis/**no kursiv**)
-3. Antwortlaenge: 40-60 words standard, 80 max (hard-enforced via max_tokens=400)
+3. Antwortlaenge: 40-60 words standard, 80 max (hard-enforced via max_tokens=250)
 4. Kern-Wissen: Teaser-level services as Fliesstext, **NIEMALS Preise**
 5. **Gespraechsfuehrung**: Subtle, email max every 3rd response, NO termin/cal.com pushing
 6. YORI: Max 1x per conversation, never quote directly
@@ -145,35 +173,26 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 6. **NO LOCAL DEV SERVER**: NEVER start `npm run dev`. Test ONLY on production after push. See `.agent/rules/NO_LOCAL_SERVER.md`
 7. **Brand**: `maschke.ai` always lowercase, `YORI` always uppercase, **NEXUS** = interface only
 8. **Message limit**: Technical enforcement only (in-memory counter in `chat.ts`). Model knows NOTHING about limits.
-9. **max_tokens**: 400 (both client and server). Keeps responses tight (~80 words max).
+9. **max_tokens**: 250 (both client and server). Keeps responses tight (~60 words max).
 10. **Dark mode default**: Site always starts dark. Light mode only if user explicitly toggles.
 11. **EU-OS-Plattform**: Link ENTFERNT — Plattform eingestellt seit 20.07.2025. Nicht wieder hinzufügen!
 12. **No model disclosure**: Never reveal Mistral Medium 3 in UI, status bar, or system prompt hints.
 13. **Email-only CTA**: UC site uses only email (kontakt@maschke.ai), no cal.com links.
+14. **noindex**: UC site is noindex/nofollow + robots.txt Disallow. Switch to index when main site launches.
 
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `c45df83`
-- **Feature Branches:** `feature/terminal-layout` (max-width 960px experiment — archived/dead)
-- **Session commits (b5160214):** 6
-  - `9928ecf..3e54cf0` fix: scroll-fade, CTA box visibility, light mode contrast, AI typewriter pacing
-  - `2abbfb1` fix: typewriter race condition, bottom readability, email-only CTA, less pushy AI
-  - `d718412` feat: NEXUS OS branding, about text rewrite, light mode polish, email-only CTA
-  - `6e3686b` fix: box text visibility — reset gradient text-clip on .terminal-box
-- **Session commits (df2c45ba):** 7
-  - `f0b9d39` fix: light mode spotlight/vignette visibility + box styling polish
-  - `92f2cef` fix: box styling 1:1 from main project — remove accent border, fix template whitespace
-  - `d52f8b3` fix: terminal-cmd buttons 1:1 from main project — compact padding, no min-height
-  - `7caafee` fix: font-weight 400→600 — match main project terminal typography
-  - `15337e1` fix: box title height — white-space: pre-wrap inheritance was inflating boxes
-  - `940428c` fix: box width + body text color — match main project 1:1
-  - `c45df83` fix: box width — fit-content + max-width: 68ch to match AI text width
+- **Session commits (bb9141c0):** 4
+  - `fcc4dc3` fix: remove cal.com links, hide model name, clean legal text (BUG-01/02/03)
+  - `5f5ca8a` fix: consent UX, typewriter speed, message fairness, legal cleanup
+  - `93eb510` feat: services rewrite, contact copy-button, YORI softened, dead code cleanup
+  - `6e5f00f` feat: OG-image, favicon, twitter card, noindex for UC phase
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
 - Vanilla CSS (no Tailwind)
-- Mistral Medium 3 via Cloudflare Pages Function proxy (max_tokens=400) — **model name not disclosed to users**
+- Mistral Medium 3 via Cloudflare Pages Function proxy (max_tokens=250) — **model name not disclosed to users**
 - Cloudflare Pages deployment (auto-deploy from GitHub)
 
 ## Key Files in Main Project (Reference)
