@@ -124,6 +124,14 @@ body::before {
     position: fixed;
     inset: 0;
     background:
+        /* CRT scanlines — subtle horizontal lines */
+        repeating-linear-gradient(
+            180deg,
+            transparent 0px,
+            transparent 3px,
+            rgba(0, 0, 0, 0.035) 3px,
+            rgba(0, 0, 0, 0.035) 4px
+        ),
         /* Radial glow behind terminal — visible blue halo */
         radial-gradient(
             ellipse 80% 65% at 50% 38%,
@@ -171,6 +179,11 @@ body::before {
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
+    /* Light mode: hide particles, scanlines carry the effect */
+    display: none;
+}
+[data-theme="dark"] #bg-particles {
+    display: block;
 }
 
 .particle {
