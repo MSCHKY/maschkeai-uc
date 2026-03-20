@@ -29,9 +29,8 @@ export function isLimitReached(): boolean {
     return messageCount >= MAX_MESSAGES;
 }
 
-export function getRemainingMessages(): number {
-    return Math.max(0, MAX_MESSAGES - messageCount);
-}
+
+
 
 /**
  * Send a message to Mistral and stream the response.
@@ -63,7 +62,7 @@ export async function sendMessage(
                 messages,
                 model: 'mistral-medium-latest',
                 temperature: 0.6,
-                max_tokens: 400,
+                max_tokens: 250,
                 stream: true,
             }),
         });

@@ -6,7 +6,7 @@
 import './style.css';
 import { renderNexusLogo } from './ascii-logo';
 import { BOOT_SEQUENCE } from './boot-sequence';
-import { handleCommand, isSpecialCommand, getCommandUrl } from './commands';
+import { handleCommand, isSpecialCommand } from './commands';
 import { sendMessage, isLimitReached } from './chat';
 import {
     IMPRESSUM_CONTENT,
@@ -150,11 +150,10 @@ const YORI_LINES = [
     'Null Gravitation, null Stress',
     'Schweben ist mein Cardio',
 
-    // Nudges (YORI points users to NEXUS — distinct personas)
+    // Nudges (softer — curiosity over CTA)
     'Tippe einfach drauf los!',
     'NEXUS weiß mehr als ich',
-    'Schon mal services getippt?',
-    'Erstgespräch? → termin',
+    'Probier mal about oder services',
     'Die KI beißt nicht',
 
     // Brand
@@ -680,11 +679,6 @@ async function processInput(text: string) {
     // Local commands
     const result = handleCommand(trimmed);
     if (result) {
-        // Check if this command should also open a URL (e.g. termin → Cal)
-        const url = getCommandUrl(trimmed);
-        if (url) {
-            window.open(url, '_blank', 'noopener,noreferrer');
-        }
 
         if (result.html) {
             // HTML block output (CSS-styled boxes)

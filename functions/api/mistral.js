@@ -271,7 +271,7 @@ export async function onRequestPost(context) {
                 model: model || 'mistral-medium-latest',
                 messages: fullMessages,
                 temperature: temperature ?? 0.6,
-                max_tokens: max_tokens ?? 400,
+                max_tokens: max_tokens ?? 250,
                 stream: stream ?? true,
             }),
         });

@@ -19,7 +19,6 @@ export interface CommandResult {
 }
 
 // UC site is email-only — no cal.com/cal.eu links (Invariant #13)
-// CAL_URL intentionally omitted. Contact via kontakt@maschke.ai only.
 
 // ── Helper: Build a styled terminal box ──────────────────────────────
 function box(title: string, body: string): string {
@@ -66,22 +65,13 @@ const COMMANDS: Record<string, () => CommandResult> = {
     }),
 
     services: () => ({
-        lines: [
-            { text: '', cls: '' },
-            { text: '◆ KI-Beratung & Strategie', cls: 'line-accent' },
-            { text: '  Von Nebel zu Richtung, Struktur und Entscheidung', cls: 'line-dim' },
-            { text: '◆ Workshops & Training', cls: 'line-accent' },
-            { text: '  KI verstehen, anwenden und sinnvoll in Arbeit übersetzen', cls: 'line-dim' },
-            { text: '◆ Kreative KI-Projekte', cls: 'line-accent' },
-            { text: '  Wenn kreative Idee, Systemdenken und Maschine sauber zusammenkommen', cls: 'line-dim' },
-            { text: '◆ AI-Act Compliance', cls: 'line-accent' },
-            { text: '  EU-konforme KI ohne Papierfriedhof', cls: 'line-dim' },
-            { text: '', cls: '' },
-        ],
+        html: box('Leistungsfelder', `<p><strong>KI-Beratung & Strategie</strong> — von Nebel zu Richtung und Entscheidung. <strong>Workshops & Training</strong> — KI verstehen, anwenden und in echte Arbeit übersetzen. <strong>Kreative KI-Projekte</strong> — wenn Idee, Systemdenken und Maschine sauber zusammenkommen. <strong>AI-Act Compliance</strong> — EU-konforme KI ohne Papierfriedhof.</p>
+<p class="box-label">Keine Preisliste. Schreib uns, was dich beschäftigt: <a href="mailto:kontakt@maschke.ai" class="terminal-box-link">kontakt@maschke.ai</a></p>`),
     }),
 
     contact: () => ({
         html: box('Kontakt', `<p><a href="mailto:kontakt@maschke.ai" class="terminal-box-link">✉ kontakt@maschke.ai</a></p>
+<p class="box-label"><button type="button" class="terminal-cmd" onclick="navigator.clipboard.writeText('kontakt@maschke.ai').then(()=>{this.textContent='✓ kopiert';setTimeout(()=>{this.textContent='📋 kopieren'},2000)})">📋 kopieren</button></p>
 <p class="box-label">Wir melden uns. Versprochen.</p>`),
     }),
 
@@ -197,15 +187,6 @@ export function handleCommand(input: string): CommandResult | null {
         return COMMANDS[ALIASES[cmd]]();
     }
 
-    return null;
-}
-
-/**
- * Check if command needs to open an external URL.
- * UC site is email-only — no external booking links (Invariant #13).
- * Always returns null.
- */
-export function getCommandUrl(_input: string): string | null {
     return null;
 }
 
