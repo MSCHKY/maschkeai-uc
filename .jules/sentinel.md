@@ -1,0 +1,4 @@
+## 2024-03-20 - XSS via innerHTML Assignment
+**Vulnerability:** A Cross-Site Scripting (XSS) vulnerability was present in `src/main.ts` where unvalidated HTML string (`result.html`) was directly assigned to an element's `innerHTML`.
+**Learning:** This occurred because the HTML strings were originally considered safe (hardcoded in `commands.ts`), but direct `innerHTML` assignment is inherently risky if the data source ever changes to include user input or external content.
+**Prevention:** Always sanitize dynamically constructed HTML before inserting it into the DOM. In restricted environments where `DOMPurify` cannot be installed, utilize the browser's native `DOMParser` to parse the string, strip dangerous tags (`<script>`, `<iframe>`, etc.), and remove unsafe attributes (`on*`, `javascript:`) before re-serializing or appending the nodes.

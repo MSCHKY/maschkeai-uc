@@ -466,6 +466,31 @@ function escapeHtml(text: string): string {
 }
 
 /**
+ * Sanitize HTML to prevent XSS.
+ * Removes dangerous tags and unsafe attributes.
+ */
+function sanitizeHtml(html: string): string {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    const dangerousTags = ['script', 'iframe', 'object', 'embed', 'base', 'style', 'link', 'meta'];
+    dangerousTags.forEach(tag => {
+        doc.querySelectorAll(tag).forEach(el => el.remove());
+    });
+
+    doc.querySelectorAll('*').forEach(el => {
+        Array.from(el.attributes).forEach(attr => {
+            if (attr.name.toLowerCase().startsWith('on') || attr.value.toLowerCase().includes('javascript:')) {
+                el.removeAttribute(attr.name);
+            }
+        });
+    });
+
+    return doc.body.innerHTML;
+}
+
+
+/**
  * Sanitize raw AI text — strip Markdown artifacts that Mistral
  * occasionally outputs despite system prompt instructions.
  * Ported 1:1 from main project's sanitizeAiText().
@@ -684,7 +709,7 @@ async function processInput(text: string) {
             // HTML block output (CSS-styled boxes)
             const wrapper = document.createElement('div');
             wrapper.className = 'line';
-            wrapper.innerHTML = result.html;
+            wrapper.innerHTML = sanitizeHtml(result.html);
             output.appendChild(wrapper);
             scrollToBottom();
 
