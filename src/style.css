@@ -303,11 +303,15 @@ body::before {
    GPU-only (transform), no blur, no JS
    ============================================================ */
 #terminal-plasma {
-    position: absolute;
-    inset: 0;
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    right: 24px;
+    bottom: 44px;
     overflow: hidden;
+    border-radius: 8px;
     z-index: 0;
-    opacity: 0.12;
+    opacity: 0.25;
 }
 
 .plasma-blob {
@@ -378,7 +382,7 @@ body::before {
 
 /* Dark mode: brighter, more vivid plasma */
 [data-theme="dark"] #terminal-plasma {
-    opacity: 0.20;
+    opacity: 0.35;
 }
 
 /* Mobile: disable plasma (perf + density) */
@@ -386,15 +390,7 @@ body::before {
     #terminal-plasma { display: none; }
 }
 
-/* Terminal content sits above the plasma */
-#terminal-output,
-#terminal-separator,
-#terminal-separator-bottom,
-#terminal-input-line,
-#terminal-status-bar {
-    position: relative;
-    z-index: 1;
-}
+
 
 /* Subtle text gradient on terminal output lines — carried over from main chatbot site */
 #terminal-output>* {
