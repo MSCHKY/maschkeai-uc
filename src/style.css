@@ -353,9 +353,9 @@ body::before {
     -webkit-text-fill-color: transparent;
 }
 
-/* Dim text — secondary info */
+/* Dim text — secondary info (a11y: min 0.72 for WCAG AA contrast) */
 .line-dim {
-    opacity: 0.6;
+    opacity: 0.72;
 }
 
 /* Sub text — tertiary info */
@@ -1380,6 +1380,11 @@ body::before {
         padding: 4px 10px;
         font-size: 12px;
     }
+
+    /* Reduce density at bottom on mobile — hide status bar */
+    #terminal-status-bar {
+        display: none;
+    }
 }
 
 /* ============================================================
@@ -1498,24 +1503,65 @@ body::before {
     text-decoration-color: var(--terminal-link-decoration);
 }
 
-/* Reduced motion */
+/* Reduced motion — comprehensive disable for vestibular disorders */
 @media (prefers-reduced-motion: reduce) {
-    .line {
+    /* Disable all slide/fade/pulse animations */
+    .line,
+    .terminal-consent,
+    .terminal-box,
+    .terminal-cta-box {
         animation: none !important;
         opacity: 1 !important;
     }
 
-    .terminal-cursor-blink {
+    /* Disable page fade-in */
+    html, body {
         animation: none !important;
         opacity: 1 !important;
     }
 
+    /* Disable all glitch effects on NEXUS logo */
+    .terminal-nexus-stack,
+    .terminal-nexus--glitch-1,
+    .terminal-nexus--glitch-2 {
+        animation: none !important;
+    }
+
+    /* Keep NEXUS logo gradient static */
+    .terminal-nexus.terminal-grad-text {
+        animation: none !important;
+        background-size: 100% 100% !important;
+    }
+
+    /* Disable UC pulse */
+    .line-uc-pulse {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+
+    /* Disable cursor blink */
+    .terminal-cursor-blink,
+    #block-cursor {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+
+    /* Disable CTA fade */
+    .terminal-cta-box {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+
+    /* Particles already handled at line 231 */
+
+    /* Astronaut: keep idle sprite (step-based, not vestibular), disable slide-in */
     #astronaut-overlay {
-        animation: none !important;
+        transition: none !important;
     }
 
-    #astronaut-sprite {
-        animation: astro-idle 8s steps(1, end) infinite !important;
+    /* Shorten all remaining transitions */
+    * {
+        transition-duration: 0.01s !important;
     }
 }
 

@@ -1,0 +1,36 @@
+/*
+  Cloudflare Pages Headers
+  https://developers.cloudflare.com/pages/configuration/headers/
+*/
+
+/*
+  Content Security Policy for maschke.ai UC site
+  - default-src 'self': only own origin
+  - script-src 'self': no inline scripts (Vite injects via module)
+  - style-src 'self' 'unsafe-inline': Vite injects styles, plus inline box styles
+  - img-src 'self' data:: sprites + data URIs
+  - font-src 'self': system fonts only, no external
+  - connect-src 'self' https://api.mistral.ai: API proxy + Mistral upstream
+  - frame-ancestors 'none': no iframe embedding
+  - base-uri 'self': prevent base tag hijacking
+  - form-action 'self': no external form submissions
+*/
+/*
+  /*.html
+    Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.mistral.ai; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+    Referrer-Policy: strict-origin-when-cross-origin
+    Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+*/
+
+/*
+  Security headers for all routes
+*/
+/*
+  /*
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+    Referrer-Policy: strict-origin-when-cross-origin
+    Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+*/
