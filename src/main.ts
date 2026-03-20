@@ -79,6 +79,20 @@ function addLine(text: string, cls: string = '') {
     scrollToBottom();
 }
 
+// Optimization: Batch DOM insertions using DocumentFragment to minimize synchronous reflows.
+// (PR #10 — Jules: ~1.4x speedup on rendering multiple lines)
+function addLines(lines: {text: string, cls?: string}[]) {
+    const fragment = document.createDocumentFragment();
+    for (const line of lines) {
+        const div = document.createElement('div');
+        div.className = `line ${line.cls || ''}`.trim();
+        div.textContent = line.text;
+        fragment.appendChild(div);
+    }
+    output.appendChild(fragment);
+    scrollToBottom();
+}
+
 function addHTML(html: string, cls: string = '') {
     const div = document.createElement('div');
     div.className = `line ${cls}`.trim();
@@ -466,6 +480,31 @@ function escapeHtml(text: string): string {
 }
 
 /**
+ * Sanitize HTML to prevent XSS.
+ * Removes dangerous tags and unsafe attributes.
+ * (PR #13 — Jules: DOMParser-based, no external deps)
+ */
+function sanitizeHtml(html: string): string {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    const dangerousTags = ['script', 'iframe', 'object', 'embed', 'base', 'style', 'link', 'meta'];
+    dangerousTags.forEach(tag => {
+        doc.querySelectorAll(tag).forEach(el => el.remove());
+    });
+
+    doc.querySelectorAll('*').forEach(el => {
+        Array.from(el.attributes).forEach(attr => {
+            if (attr.name.toLowerCase().startsWith('on') || attr.value.toLowerCase().includes('javascript:')) {
+                el.removeAttribute(attr.name);
+            }
+        });
+    });
+
+    return doc.body.innerHTML;
+}
+
+/**
  * Sanitize raw AI text — strip Markdown artifacts that Mistral
  * occasionally outputs despite system prompt instructions.
  * Ported 1:1 from main project's sanitizeAiText().
@@ -553,13 +592,11 @@ async function processInput(text: string) {
             const htmlContent = cmd === 'impressum' ? IMPRESSUM_TERMINAL_HTML : DATENSCHUTZ_TERMINAL_HTML;
             const wrapper = document.createElement('div');
             wrapper.className = 'line';
-            wrapper.innerHTML = htmlContent;
+            wrapper.innerHTML = sanitizeHtml(htmlContent);
             output.appendChild(wrapper);
             scrollToBottom();
             const footerLines = cmd === 'impressum' ? IMPRESSUM_TERMINAL : DATENSCHUTZ_TERMINAL;
-            for (const line of footerLines) {
-                addLine(line.text, line.cls);
-            }
+            addLines(footerLines);
             isProcessing = false;
             return;
         }
@@ -628,24 +665,20 @@ async function processInput(text: string) {
         if (cmd === 'impressum') {
             const wrapper = document.createElement('div');
             wrapper.className = 'line';
-            wrapper.innerHTML = IMPRESSUM_TERMINAL_HTML;
+            wrapper.innerHTML = sanitizeHtml(IMPRESSUM_TERMINAL_HTML);
             output.appendChild(wrapper);
             scrollToBottom();
-            for (const line of IMPRESSUM_TERMINAL) {
-                addLine(line.text, line.cls);
-            }
+            addLines(IMPRESSUM_TERMINAL);
             isProcessing = false;
             return;
         }
         if (cmd === 'datenschutz') {
             const wrapper = document.createElement('div');
             wrapper.className = 'line';
-            wrapper.innerHTML = DATENSCHUTZ_TERMINAL_HTML;
+            wrapper.innerHTML = sanitizeHtml(DATENSCHUTZ_TERMINAL_HTML);
             output.appendChild(wrapper);
             scrollToBottom();
-            for (const line of DATENSCHUTZ_TERMINAL) {
-                addLine(line.text, line.cls);
-            }
+            addLines(DATENSCHUTZ_TERMINAL);
             isProcessing = false;
             return;
         }
@@ -684,7 +717,7 @@ async function processInput(text: string) {
             // HTML block output (CSS-styled boxes)
             const wrapper = document.createElement('div');
             wrapper.className = 'line';
-            wrapper.innerHTML = result.html;
+            wrapper.innerHTML = sanitizeHtml(result.html);
             output.appendChild(wrapper);
             scrollToBottom();
 
