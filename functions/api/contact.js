@@ -94,7 +94,21 @@ export async function onRequestPost(context) {
         const cleanName = name.trim();
         const cleanEmail = email.trim().toLowerCase();
         const cleanMessage = message.trim();
-        const timestamp = new Date().toISOString();
+
+        // Human-readable German timestamp
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('de-DE', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            timeZone: 'Europe/Berlin',
+        });
+        const timeStr = now.toLocaleTimeString('de-DE', {
+            hour: '2-digit', minute: '2-digit',
+            timeZone: 'Europe/Berlin',
+        });
+        const readableTime = `${dateStr}, ${timeStr} Uhr`;
+
+        // Escape HTML in user input
+        const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
         // --- Send via Brevo API ---
         const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -104,23 +118,53 @@ export async function onRequestPost(context) {
                 'api-key': apiKey,
             },
             body: JSON.stringify({
-                sender: { name: 'NEXUS Kontaktform', email: 'noreply@maschke.ai' },
+                sender: { name: 'NEXUS · maschke.ai', email: 'noreply@maschke.ai' },
                 to: [{ email: 'kontakt@maschke.ai', name: 'maschke.ai' }],
                 replyTo: { email: cleanEmail, name: cleanName },
-                subject: `[NEXUS] Kontaktanfrage von ${cleanName}`,
+                subject: `Neue Anfrage von ${cleanName}`,
+                htmlContent: `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 560px; margin: 0 auto; color: #1a1a1a;">
+                        <div style="border-bottom: 2px solid #235cff; padding-bottom: 12px; margin-bottom: 20px;">
+                            <span style="font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: #888;">NEXUS · Kontaktanfrage</span>
+                        </div>
+
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                            <tr>
+                                <td style="padding: 6px 0; color: #888; width: 80px; vertical-align: top; font-size: 13px;">Name</td>
+                                <td style="padding: 6px 0; font-weight: 600; font-size: 14px;">${esc(cleanName)}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 0; color: #888; vertical-align: top; font-size: 13px;">E-Mail</td>
+                                <td style="padding: 6px 0; font-size: 14px;"><a href="mailto:${esc(cleanEmail)}" style="color: #235cff; text-decoration: none;">${esc(cleanEmail)}</a></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 0; color: #888; vertical-align: top; font-size: 13px;">Wann</td>
+                                <td style="padding: 6px 0; font-size: 14px;">${readableTime}</td>
+                            </tr>
+                        </table>
+
+                        <div style="background: #f5f5f7; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
+                            <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 8px;">Nachricht</div>
+                            <div style="font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${esc(cleanMessage)}</div>
+                        </div>
+
+                        <div style="font-size: 12px; color: #888; border-top: 1px solid #e5e5e5; padding-top: 12px;">
+                            Einfach auf diese E-Mail antworten — geht direkt an <strong>${esc(cleanName)}</strong>.
+                        </div>
+                    </div>
+                `,
                 textContent: [
-                    `Neue Kontaktanfrage über NEXUS (UC-Site)`,
-                    `────────────────────────────────────────`,
-                    `Name:      ${cleanName}`,
-                    `E-Mail:    ${cleanEmail}`,
-                    `Zeitpunkt: ${timestamp}`,
-                    `IP:        ${ip}`,
+                    `Neue Kontaktanfrage über NEXUS`,
+                    ``,
+                    `Name:    ${cleanName}`,
+                    `E-Mail:  ${cleanEmail}`,
+                    `Wann:    ${readableTime}`,
                     ``,
                     `Nachricht:`,
                     `${cleanMessage}`,
                     ``,
-                    `────────────────────────────────────────`,
-                    `Antworte direkt auf diese E-Mail (Reply-To ist gesetzt).`,
+                    `---`,
+                    `Einfach auf diese E-Mail antworten — geht direkt an ${cleanName}.`,
                 ].join('\n'),
             }),
         });
