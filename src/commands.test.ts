@@ -5,7 +5,10 @@ import { handleCommand } from './commands.ts';
 describe('handleCommand', () => {
     it('returns a CommandResult for a valid command', () => {
         const result = handleCommand('hilfe');
-        assert.ok(result); // Narrows the type of result for TypeScript
+        if (!result) {
+            assert.fail('result should not be null');
+            return;
+        }
         assert.ok(result.lines || result.html);
     });
 
