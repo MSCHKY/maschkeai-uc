@@ -23,10 +23,7 @@ export const CAL_URL = 'https://www.cal.eu/maschke-ai';
 
 // ── Helper: Build a styled terminal box ──────────────────────────────
 function box(title: string, body: string): string {
-    return `<div class="terminal-box">
-  <div class="terminal-box-title">${title}</div>
-  <div class="terminal-box-body">${body}</div>
-</div>`;
+    return `<div class="terminal-box"><div class="terminal-box-title">${title}</div><div class="terminal-box-body">${body}</div></div>`;
 }
 
 // ── Commands ─────────────────────────────────────────────────────────
