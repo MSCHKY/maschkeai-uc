@@ -1,0 +1,4 @@
+## 2024-05-24 - API Parameter Injection Vulnerability
+**Vulnerability:** The API proxy `functions/api/mistral.js` accepts `model`, `max_tokens`, `temperature`, and `stream` directly from the client request payload.
+**Learning:** This is a severe security vulnerability. A malicious actor can easily intercept the request or use `curl` to send arbitrarily large `max_tokens` or use a very expensive/different Mistral `model`. Since the proxy merely forwards these parameters using the server's API key, this could lead to massive API billings, resource exhaustion (DoS), and model manipulation. The proxy must enforce strict boundaries for these parameters.
+**Prevention:** API proxies exposing third-party services must strictly validate and enforce allowed values (e.g., hardcoding the model name, capping `max_tokens`) server-side, ignoring client-provided overrides entirely unless strictly necessary and validated.
