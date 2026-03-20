@@ -454,19 +454,15 @@ function echoInput(text: string) {
     );
 }
 
-// Optimization: Move the map object outside of the escapeHtml function to avoid
-// unnecessary memory allocations on every invocation. This yields a small performance
-// benefit with no downside to code readability.
-const escapeHtmlMap: { [key: string]: string } = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
-};
-
 function escapeHtml(text: string): string {
-    return text.replace(/[&<>"']/g, function (m) { return escapeHtmlMap[m]; });
+    const map: { [key: string]: string } = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function (m) { return map[m]; });
 }
 
 /**
