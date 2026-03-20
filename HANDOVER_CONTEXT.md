@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-19T23:45 (Session df2c45ba)
+> Last updated: 2026-03-20T01:25 (Session df2c45ba)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -71,14 +71,37 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ### Other
 - ✅ Added `robots.txt` (Allow all)
 
+## Recent Session Changes (df2c45ba — 2026-03-20)
+
+### Visual Polish — Box Styling
+- ✅ **Light mode spotlight/vignette**: Opacity boosted 0.10→0.20 / 0.06→0.12 (was invisible on #c2c2c2)
+- ✅ **Font-weight**: `--terminal-font-weight: 400` → `600` (root cause of thin text + weak gradient)
+- ✅ **Box title height**: Fixed `white-space: pre-wrap` inheritance from `#terminal-output` inflating boxes
+- ✅ **Box width**: `width: fit-content` + `max-width: 68ch` (matches AI text width)
+- ✅ **Box body text**: Now uses gradient like all terminal text (was solid `--terminal-ink`)
+- ✅ **terminal-cmd buttons**: 1:1 from main project (`padding: 2px 8px`, no `min-height`)
+- ✅ **Template whitespace**: `box()` helper collapsed to single line, no stray whitespace nodes
+
+### NEXUS Persona & System Prompt Overhaul
+- ✅ **NEXUS_PERSONA.md**: Created persona brief with Denke, Negativliste, Gesprächsführung-Philosophie
+- ✅ **System Prompt rewritten** in `functions/api/mistral.js`:
+  - Mikro-Journey (Msg 1-2: Orientierung, Msg 3: Kompetenz, Msg 4-5: Kontaktübergang)
+  - "Die Denke von maschke.ai" — KI als Werkzeug, kein Hype
+  - "Wie NEXUS nicht spricht" — explizite Negativliste
+  - Kontextabhängige CTA-Logik (direkt vs. weich)
+  - Antwortlänge: 40–60 Wörter (max 80)
+  - Gesprächsführung statt nur coole Antworten
+
 ## Open Tasks / Next Session
 
-- ~~**P1**: ⚠️ **Light mode background effect not visible**~~ — ✅ FIXED (opacity values too low, not specificity)
-- **P1**: **Terminal contact form** — Robert wants an in-terminal contact form (email). Needs: (a) technical implementation (form inside terminal output), (b) DSGVO compliance (consent, data handling, Verarbeitungsverzeichnis), (c) backend (Cloudflare Function → email delivery via API like Resend/Postmark)
-- ~~**P2**: Box styling~~ — ✅ FIXED (padding, font-weight 700, accent left-border)
+> **NEXT SESSION: Comprehensive Audit before Go-Live**
+
+- **P0**: 🔍 **Full Audit** — TypeScript, Build, Dead Code, Bundle Size, a11y, mobile, cross-browser
+- **P1**: **Terminal contact form** — in-terminal form → email, DSGVO-konform (Verarbeitungsverzeichnis, Consent, backend via Resend/Postmark)
 - **P2**: Mobile-specific visual polish pass
 - **P2**: Fix contrast ratio for `.line-dim` text (a11y)
-- **P3**: Prompt iteration if pain points found
+- **P2**: Box styling needs further tuning (still not pixel-perfect vs main project)
+- **P3**: Prompt iteration if pain points found during live testing
 
 ## Astronaut YORI — Positioning System
 
@@ -131,15 +154,21 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `f0b9d39`
+- **HEAD:** `c45df83`
 - **Feature Branches:** `feature/terminal-layout` (max-width 960px experiment — archived/dead)
 - **Session commits (b5160214):** 6
   - `9928ecf..3e54cf0` fix: scroll-fade, CTA box visibility, light mode contrast, AI typewriter pacing
   - `2abbfb1` fix: typewriter race condition, bottom readability, email-only CTA, less pushy AI
   - `d718412` feat: NEXUS OS branding, about text rewrite, light mode polish, email-only CTA
   - `6e3686b` fix: box text visibility — reset gradient text-clip on .terminal-box
-- **Session commits (df2c45ba):** 1
+- **Session commits (df2c45ba):** 7
   - `f0b9d39` fix: light mode spotlight/vignette visibility + box styling polish
+  - `92f2cef` fix: box styling 1:1 from main project — remove accent border, fix template whitespace
+  - `d52f8b3` fix: terminal-cmd buttons 1:1 from main project — compact padding, no min-height
+  - `7caafee` fix: font-weight 400→600 — match main project terminal typography
+  - `15337e1` fix: box title height — white-space: pre-wrap inheritance was inflating boxes
+  - `940428c` fix: box width + body text color — match main project 1:1
+  - `c45df83` fix: box width — fit-content + max-width: 68ch to match AI text width
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
