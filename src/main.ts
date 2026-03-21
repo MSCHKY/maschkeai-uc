@@ -555,6 +555,29 @@ function formatAiText(raw: string): string {
     return formatted;
 }
 
+/**
+ * Typewriter-safe text rendering:
+ * Strips all Markdown markers (bold, italic, backtick) as plain text
+ * so incomplete markers don't flash as raw asterisks during animation.
+ * Full formatting (bold → <strong>, backtick → chip) is applied only in finalize().
+ */
+function typewriterText(raw: string): string {
+    const sanitized = sanitizeAiText(raw);
+    const escaped = escapeHtml(sanitized);
+    // Strip complete **bold** pairs → show text only
+    let text = escaped.replace(/\*\*(.+?)\*\*/g, '$1');
+    // Strip any remaining lone ** markers
+    text = text.replace(/\*\*/g, '');
+    // Strip complete `command` pairs → show text only
+    text = text.replace(/`([^`]+)`/g, '$1');
+    // Strip any remaining lone backticks
+    text = text.replace(/`/g, '');
+    // Strip remaining *italic* markers
+    text = text.replace(/\*([^*]+?)\*/g, '$1');
+    text = text.replace(/\*/g, '');
+    return text;
+}
+
 
 
 // ── Legal overlay ──
@@ -924,7 +947,7 @@ async function processInput(text: string) {
         typewriterTimer = window.setInterval(() => {
             if (displayedChars < rawAiText.length) {
                 displayedChars += 1;
-                responseDiv.innerHTML = formatAiText(rawAiText.substring(0, displayedChars));
+                responseDiv.textContent = typewriterText(rawAiText.substring(0, displayedChars));
                 scrollToBottom();
             } else if (streamingDone) {
                 // Typewriter caught up and streaming is done — finalize
