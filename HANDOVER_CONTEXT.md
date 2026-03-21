@@ -247,11 +247,12 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
   - `GET /v1alpha/sessions/{id}/activities` — Task details
 - **Quick check:** `curl -s -H "x-goog-api-key: <KEY>" "https://jules.googleapis.com/v1alpha/sessions?pageSize=10"`
 
-### Pending Review (Stand: 21.03.2026)
-- **4 Tasks "Ready for review"** in Jules UI für `maschkeai-uc`:
-  - 3x Testing Improvement Tasks
-  - 1x Performance Optimization Task
-- ⚠️ Diese Tasks erzeugen erst PRs wenn sie in der Jules UI genehmigt werden!
+### GitHub Auto-Merge (konfiguriert 21.03.2026)
+- ✅ **Auto-Merge** aktiviert in Repo Settings → General → Pull Requests
+- ✅ **Auto-delete head branches** aktiviert (räumt Jules-Branches auf)
+- ✅ **Branch Ruleset "main"**: `Cloudflare Pages` Status Check required, Block force pushes, Restrict deletions
+- **Flow:** Jules PR → Cloudflare Build → Check grün → Auto-Merge → Branch gelöscht
+- ⚠️ Jules Tasks brauchen weiterhin manuelle Genehmigung in der Jules UI, erst dann wird der PR erstellt
 - Jules Dashboard: https://jules.google.com → Repo `MSCHKY/maschkeai-uc`
 
 ### Hinweis für B-CONTENT
