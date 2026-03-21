@@ -1,0 +1,104 @@
+# Jules Nightly Audit — GitHub Actions Workflow Template
+#
+# ANLEITUNG:
+# 1. Kopiere diese Datei nach .github/workflows/jules-nightly.yml
+# 2. Setze JULES_API_KEY als GitHub Secret (Settings > Secrets > Actions)
+# 3. Passe PERSONA_DIR an falls die Persona-Dateien anders liegen
+# 4. Optional: Passe den Cron-Schedule an
+#
+# Persona-Rotation (Mo-Fr):
+#   Mo = stahl (Testing)
+#   Di = waechter (Dependencies)
+#   Mi = glut (Performance)
+#   Do = zink (Security)
+#   Fr = schliff (UX/A11y)
+
+name: Jules Nightly Audit
+
+on:
+  schedule:
+    - cron: '0 2 * * 1-5'  # 2:00 UTC, Mo-Fr
+  workflow_dispatch:
+    inputs:
+      persona:
+        description: 'Persona (stahl|glut|zink|schliff|waechter)'
+        required: false
+        default: ''
+      custom_prompt:
+        description: 'Custom prompt (overrides persona)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  jules-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine persona
+        id: persona
+        run: |
+          if [ -n "${{ github.event.inputs.persona }}" ]; then
+            echo "name=${{ github.event.inputs.persona }}" >> "$GITHUB_OUTPUT"
+          else
+            DOW=$(date +%u)  # 1=Mon ... 5=Fri
+            case $DOW in
+              1) echo "name=stahl" >> "$GITHUB_OUTPUT" ;;
+              2) echo "name=waechter" >> "$GITHUB_OUTPUT" ;;
+              3) echo "name=glut" >> "$GITHUB_OUTPUT" ;;
+              4) echo "name=zink" >> "$GITHUB_OUTPUT" ;;
+              5) echo "name=schliff" >> "$GITHUB_OUTPUT" ;;
+              *) echo "name=waechter" >> "$GITHUB_OUTPUT" ;;
+            esac
+          fi
+
+      - name: Build prompt
+        id: prompt
+        run: |
+          if [ -n "${{ github.event.inputs.custom_prompt }}" ]; then
+            PROMPT="${{ github.event.inputs.custom_prompt }}"
+          else
+            PERSONA="${{ steps.persona.outputs.name }}"
+            CORE=""
+            LENS=""
+
+            # Versuche Persona-Dateien zu laden (aus dem Repo oder inline Fallback)
+            if [ -f "jules/core-contract.md" ]; then
+              CORE=$(cat jules/core-contract.md)
+            fi
+
+            if [ -f "jules/personas/${PERSONA}.md" ]; then
+              LENS=$(cat "jules/personas/${PERSONA}.md")
+            fi
+
+            if [ -n "$CORE" ] && [ -n "$LENS" ]; then
+              PROMPT="${CORE}
+
+          ---
+
+          ${LENS}"
+            else
+              # Fallback: Einfacher Audit-Prompt
+              PROMPT="Run a code quality audit following AGENTS.md. Focus area: ${PERSONA}. Follow the Decision Engine in AGENTS.md strictly."
+            fi
+          fi
+
+          # Prompt als Multi-Line Output speichern
+          {
+            echo "text<<PROMPT_EOF"
+            echo "$PROMPT"
+            echo "PROMPT_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run Jules
+        uses: google-labs-code/jules-action@v1
+        with:
+          model: 'gemini-2.5-pro'
+          prompt: ${{ steps.prompt.outputs.text }}
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
