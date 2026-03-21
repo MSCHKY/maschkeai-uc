@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-20T12:52 (Session 2e5b0d65)
+> Last updated: 2026-03-21T14:16 (Session 246a2260)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -25,7 +25,9 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Terminal CSS | `src/style.css` | ✅ Done (CRT scanlines, plasma gradient blobs, spotlight+vignette, floating legal panel, scroll-fade) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
 | Boot Sequence | `src/boot-sequence.ts` | ✅ Done (typewriter boot text) |
-| Commands | `src/commands.ts` | ✅ Done (box-based output, email-only contact) |
+| Commands | `src/commands.ts` | ✅ Done (box-based output, contact form trigger) |
+| Contact Form | `src/contact-form.ts` | ✅ Done (state machine: NAME→EMAIL→MESSAGE→CONFIRM) |
+| Contact API | `functions/api/contact.js` | ✅ Done (Brevo EU, honeypot, rate limiting, HTML email) |
 | Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, max_tokens=250, error rollback) |
 | Legal Content | `src/legal.ts` | ✅ Done (§5 DDG, sauber nummeriert 1-13) |
 | Mistral Proxy | `functions/api/mistral.js` | ✅ Done (server-side prompt, email-only, no model disclosure) |
@@ -122,6 +124,28 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - 📋 6 recommended (XSS fix, DOM reflow, 4 test suites), 3 skip (duplicates, micro-opt)
 - 📄 Review matrix saved → `pr_review.md` artifact
 
+## Recent Session Changes (246a2260 — 2026-03-21)
+
+### Terminal Contact Form (Brevo EU)
+- ✅ **Backend**: `functions/api/contact.js` — Cloudflare Pages Function, Brevo API (EU/Paris)
+  - Input validation, honeypot spam protection, rate limiting (3/min/IP)
+  - HTML email template (clean table layout, readable German timestamp)
+  - Reply-To set to sender's email for easy response
+- ✅ **Frontend**: `src/contact-form.ts` — State machine (IDLE→NAME→EMAIL→MESSAGE→CONFIRM)
+  - Step-by-step terminal flow, client-side validation
+  - Cancel at any step (`abbrechen`, `exit`, `quit`)
+  - Summary box with SENDEN/ABBRECHEN buttons (click or type)
+- ✅ **Integration**: `commands.ts` (`contact`/`termin` trigger form), `main.ts` (intercept + render + submit)
+- ✅ **CSS**: Contact form styles in `style.css` (summary box, action buttons, honeypot hiding)
+- ✅ **DNS**: Brevo DKIM (2x CNAME), DMARC (with Brevo reporting), SPF (`include:sendinblue.com`)
+- ✅ **Env var**: `BREVO_API_KEY` set on Cloudflare Pages
+- ✅ **Live tested**: 2x send test — emails arrive in inbox (not spam), HTML template renders correctly
+
+### Test Suite
+- ✅ **36/36 tests passing** (18 new contact form tests + 16 existing)
+- ✅ Contact form validation (name, email, message — boundaries, edge cases)
+- ✅ Contact form state machine (full flow, cancel at every step, confirm variants)
+
 ## Recent Session Changes (2e5b0d65 — 2026-03-20)
 
 ### Jules PR Integration (6 of 9)
@@ -134,11 +158,6 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - ❌ **#8, #11, #12**: Closed without merge (duplicates / irrelevant micro-opt)
 - ✅ **All 9 PRs closed** on GitHub
 
-### Test Suite
-- ✅ **Test runner**: `node --experimental-strip-types --test` (node:test, no deps)
-- ✅ **16/16 tests passing** — chat limits, network failure, commands, logo
-- ✅ **`npm test`** script added to package.json
-
 ### NEXUS Prompt Live Test
 - ✅ Persona verified: German, ~60-80 words, no headings/lists/code
 - ✅ No model disclosure (Mistral not mentioned)
@@ -147,8 +166,9 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 
 ## Open Tasks / Next Session
 
-- **P1**: **Terminal contact form** — in-terminal form → email, DSGVO-konform, "richtig" (mit Backend)
+- **P1**: Jules PRs prüfen (neue Nacht-Batch)
 - **P2**: Bold-Rendering im Typewriter fixen (Sternchen kurz sichtbar während Streaming)
+- ~~P1: Terminal contact form~~ ✅ Done (Brevo EU, live + tested)
 - ~~P1: Jules PRs integrieren~~ ✅ Done
 - ~~P1: NEXUS Prompt live testen~~ ✅ Done
 - ~~P2: Reduced-Motion~~ ✅ Done
@@ -207,11 +227,12 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `88d14bf`
-- **Session commits (2e5b0d65):** 1
+- **HEAD:** `85f813d`
+- **Session commits (246a2260):** 2
+  - `23fe6fc` feat: terminal contact form — step-by-step flow with Brevo EU backend
+  - `85f813d` polish: upgraded contact email to HTML — readable timestamp, cleaner layout, no IP
+- **Previous session (2e5b0d65):** 1 commit
   - `88d14bf` feat: integrate 6 Jules PRs — XSS sanitizer, DOM reflow, test suite
-- **Previous session (bb9141c0):** 6 commits
-  - `724f410` → `8c180a1` (see previous HANDOVER entries)
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
