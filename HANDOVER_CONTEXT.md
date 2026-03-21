@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-21T14:16 (Session 246a2260)
+> Last updated: 2026-03-21T14:30 (Session 3aa9e8b5)
 
 ## Project Status: LIVE (Under Construction)
 
@@ -162,12 +162,25 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - ✅ Persona verified: German, ~60-80 words, no headings/lists/code
 - ✅ No model disclosure (Mistral not mentioned)
 - ✅ Clickable chips (`services`, `about`, `contact`) work correctly
-- ⚠️ **Known cosmetic issue**: During typewriter rendering, `**bold**` markers briefly visible as raw asterisks (finalize() renders correctly)
+- ⚠️ ~~**Known cosmetic issue**: During typewriter rendering, `**bold**` markers briefly visible as raw asterisks (finalize() renders correctly)~~ ✅ Fixed
+
+## Recent Session Changes (3aa9e8b5 — 2026-03-21)
+
+### Jules PRs (Nacht-Batch)
+- ✅ Checked GitHub — **0 open PRs**, no new batch from Jules
+
+### Bold-Rendering Typewriter Fix
+- ✅ **Root cause**: `formatAiText()` applied to partial substring during typewriter animation — incomplete `**bold**` markers flash as raw asterisks
+- ✅ **Fix**: Added `typewriterText()` function that strips all Markdown markers (bold, italic, backtick) as plain text during animation
+- ✅ Changed `startTypewriter()` to use `textContent` + `typewriterText()` instead of `innerHTML` + `formatAiText()`
+- ✅ `finalize()` unchanged — still applies full `formatAiText()` for bold + clickable chips
+- ✅ **36/36 tests pass**, build clean
+- ✅ **Live verified**: No raw asterisks during animation, bold text and chips render correctly after finalization
 
 ## Open Tasks / Next Session
 
-- **P1**: Jules PRs prüfen (neue Nacht-Batch)
-- **P2**: Bold-Rendering im Typewriter fixen (Sternchen kurz sichtbar während Streaming)
+- ~~P1: Jules PRs prüfen (neue Nacht-Batch)~~ ✅ Checked (0 open)
+- ~~P2: Bold-Rendering im Typewriter fixen~~ ✅ Fixed
 - ~~P1: Terminal contact form~~ ✅ Done (Brevo EU, live + tested)
 - ~~P1: Jules PRs integrieren~~ ✅ Done
 - ~~P1: NEXUS Prompt live testen~~ ✅ Done
@@ -227,12 +240,12 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `85f813d`
-- **Session commits (246a2260):** 2
+- **HEAD:** `d6b6ca7`
+- **Session commits (3aa9e8b5):** 1
+  - `d6b6ca7` fix: bold rendering in typewriter — strip markers during animation, apply formatting only at finalize
+- **Previous session (246a2260):** 2 commits
   - `23fe6fc` feat: terminal contact form — step-by-step flow with Brevo EU backend
   - `85f813d` polish: upgraded contact email to HTML — readable timestamp, cleaner layout, no IP
-- **Previous session (2e5b0d65):** 1 commit
-  - `88d14bf` feat: integrate 6 Jules PRs — XSS sanitizer, DOM reflow, test suite
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
