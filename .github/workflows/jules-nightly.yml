@@ -98,7 +98,5 @@ jobs:
       - name: Run Jules
         uses: google-labs-code/jules-action@v1.0.0
         with:
-          model: 'gemini-2.5-pro'
           prompt: ${{ steps.prompt.outputs.text }}
-        env:
-          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
