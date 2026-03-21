@@ -237,6 +237,27 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 13. **Email-only CTA**: UC site uses only email (kontakt@maschke.ai), no cal.com links.
 14. **noindex**: UC site is noindex/nofollow + robots.txt Disallow. Switch to index when main site launches.
 
+## Jules AI Agent (Nacht-Batch Automation)
+
+### API Access
+- **API:** `https://jules.googleapis.com/v1alpha`
+- **Auth:** Header `x-goog-api-key: <key>` (Keys in Jules Settings → API Key)
+- **Endpoints:**
+  - `GET /v1alpha/sessions?pageSize=10` — List all tasks
+  - `GET /v1alpha/sessions/{id}/activities` — Task details
+- **Quick check:** `curl -s -H "x-goog-api-key: <KEY>" "https://jules.googleapis.com/v1alpha/sessions?pageSize=10"`
+
+### Pending Review (Stand: 21.03.2026)
+- **4 Tasks "Ready for review"** in Jules UI für `maschkeai-uc`:
+  - 3x Testing Improvement Tasks
+  - 1x Performance Optimization Task
+- ⚠️ Diese Tasks erzeugen erst PRs wenn sie in der Jules UI genehmigt werden!
+- Jules Dashboard: https://jules.google.com → Repo `MSCHKY/maschkeai-uc`
+
+### Hinweis für B-CONTENT
+- Jules hat 8 Sessions (21.03.) auf `MSCHKY/B-CONTENT` abgearbeitet → 11 offene PRs (#58–#68)
+- Review bei nächster B-CONTENT Session
+
 ## Branch Status
 
 - **Branch:** `main`
