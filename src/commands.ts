@@ -145,10 +145,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
         const chars = 'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ0123456789';
         const matrixLines: { text: string; cls: string }[] = [{ text: '', cls: '' }];
         for (let i = 0; i < 8; i++) {
-            let line = '';
-            for (let j = 0; j < 40; j++) {
-                line += chars[Math.floor(Math.random() * chars.length)];
-            }
+            const line = Array.from({ length: 40 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
             matrixLines.push({ text: line, cls: 'line-success' });
         }
         matrixLines.push({ text: '', cls: '' });

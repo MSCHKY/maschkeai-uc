@@ -1,0 +1,3 @@
+## 2026-03-20 - [Short String Concatenation vs. Array.from().join()]
+**Learning:** For short strings (~40 characters), manual string concatenation loops can be significantly faster (up to 4x) than `Array.from().join()` in the current Node.js environment. This is likely due to the overhead of object creation and function calls in the latter approach.
+**Action:** While `Array.from().join()` is more declarative and avoids intermediate string allocations, keep in mind the performance trade-offs for very short strings in hot paths. Always benchmark both approaches before deciding on an "optimization".
