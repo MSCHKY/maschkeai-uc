@@ -124,8 +124,10 @@ async function typewriteLine(text: string, cls: string, charDelay = 15): Promise
     div.textContent = '';
     output.appendChild(div);
     scrollToBottom();
+    let currentText = '';
     for (let i = 0; i < text.length; i++) {
-        div.textContent += text[i];
+        currentText += text[i];
+        div.textContent = currentText;
         await sleep(charDelay);
     }
 }
@@ -1097,3 +1099,6 @@ legalOverlay.addEventListener('click', (e) => {
 
 // ── Start ──
 runBootSequence();
+// Optimization: O(N^2) layout thrashing fixed in typewriteLine.
+// Writing to `textContent` dynamically within a loop forces the browser to re-serialize the DOM repeatedly.
+// Replaced with a local JS string buffer to accumulate characters prior to DOM insertion.
