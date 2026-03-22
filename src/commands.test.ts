@@ -31,6 +31,32 @@ test('handleCommand', async (t: any) => {
         assert.ok(statusResult !== null);
         assert.ok(statusResult.html !== undefined);
         assert.ok(statusResult.html.includes('System Status'));
+
+        const contactResult = handleCommand('contact');
+        assert.deepEqual(contactResult, { startContactForm: true });
+
+        const terminResult = handleCommand('termin');
+        assert.deepEqual(terminResult, { startContactForm: true });
+
+        const pingResult = handleCommand('ping');
+        assert.ok(pingResult !== null);
+        assert.ok(pingResult.lines !== undefined);
+        assert.ok(pingResult.lines[0].text.includes('PONG. Latenz:'));
+
+        const sudoResult = handleCommand('sudo');
+        assert.ok(sudoResult !== null);
+        assert.ok(sudoResult.lines !== undefined);
+        assert.equal(sudoResult.lines[0].text, 'Permission denied. Nice try.');
+
+        const statsResult = handleCommand('stats');
+        assert.ok(statsResult !== null);
+        assert.ok(statsResult.lines !== undefined);
+        assert.equal(statsResult.lines[1].text, 'SYSTEM STATS');
+
+        const matrixResult = handleCommand('matrix');
+        assert.ok(matrixResult !== null);
+        assert.ok(matrixResult.lines !== undefined);
+        assert.ok(matrixResult.lines.some(line => line.text.includes('Wake up, Neo…')));
     });
 
     await t.test('handles case-insensitivity and whitespace', () => {
