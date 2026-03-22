@@ -33,6 +33,43 @@ test('handleCommand', async (t: any) => {
         assert.ok(statusResult.html.includes('System Status'));
     });
 
+    await t.test('handles contact and termin forms', () => {
+        const contactResult = handleCommand('contact');
+        assert.ok(contactResult !== null);
+        assert.equal(contactResult.startContactForm, true);
+
+        const terminResult = handleCommand('termin');
+        assert.ok(terminResult !== null);
+        assert.equal(terminResult.startContactForm, true);
+    });
+
+    await t.test('handles easter egg commands', () => {
+        const pingResult = handleCommand('ping');
+        assert.ok(pingResult !== null);
+        assert.ok(pingResult.lines !== undefined);
+        assert.ok(pingResult.lines[0].text.includes('PONG'));
+
+        const sudoResult = handleCommand('sudo');
+        assert.ok(sudoResult !== null);
+        assert.ok(sudoResult.lines !== undefined);
+        assert.equal(sudoResult.lines[0].text, 'Permission denied. Nice try.');
+
+        const statsResult = handleCommand('stats');
+        assert.ok(statsResult !== null);
+        assert.ok(statsResult.lines !== undefined);
+        assert.equal(statsResult.lines[1].text, 'SYSTEM STATS');
+
+        const matrixResult = handleCommand('matrix');
+        assert.ok(matrixResult !== null);
+        assert.ok(matrixResult.lines !== undefined);
+        assert.equal(matrixResult.lines[10].text, 'Wake up, Neo…');
+
+        const secretResult = handleCommand('secret');
+        assert.ok(secretResult !== null);
+        assert.ok(secretResult.lines !== undefined);
+        assert.equal(secretResult.lines[1].text, 'Du hast das Easter Egg gefunden.');
+    });
+
     await t.test('handles case-insensitivity and whitespace', () => {
         const hilfe1 = handleCommand('hilfe');
         const hilfe2 = handleCommand(' HILFE ');
