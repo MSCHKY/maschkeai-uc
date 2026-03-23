@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-23T18:00 (Session 5c9d641)
+> Last updated: 2026-03-24T00:20 (Session 4cfdf04)
 
 ## Project Status: FEATURE-COMPLETE (Under Construction)
 
@@ -210,11 +210,38 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ### Tests
 - ✅ 42/42 Tests (2 neue: origin-Command + story-Alias)
 
+## Recent Session Changes (4cfdf04 — 2026-03-23/24)
+
+### Go-Live-Checkliste — Vollständig durchgeführt
+- ✅ **DSGVO**: Datenschutz §6 aktualisiert — Kontaktformular + Brevo (Sendinblue SAS, Paris) als Auftragsverarbeiter offengelegt
+- ✅ **Mobile Drift Fix**: `position: fixed` auf `html`, `overscroll-behavior: none`, Astronaut translateX 120px→40px reduziert
+- ✅ **Mobile Keyboard**: `visualViewport` API Handler — Terminal passt sich iOS-Tastatur an, YORI+Footer werden ausgeblendet
+- ✅ **Mobile Viewport**: `interactive-widget=resizes-visual` Meta-Tag hinzugefügt
+- ✅ **YORI Blank Frame Fix**: Timeout 1150→1100ms (match CSS exakt), Base idle `background-position: 0px 0px` als Fallback
+- ✅ **Favicon**: Brand Mark (Impossible M) aus vDNA mit Gradient (#9b97d0 → #78aaff) auf #0b0f12
+- ✅ **AI Search Vorbereitung**: `llms.txt` erstellt, `robots.txt` mit kommentierten AI-Crawler-Regeln (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, Applebot-Extended)
+- ✅ **UX**: Klick irgendwo auf Seite fokussiert Terminal-Input (document-level statt terminal-only)
+- ✅ **Tests**: 42/42 bestanden, Build clean
+
+### Go-Live-Checkliste — Ergebnisse (alle 10 Bereiche geprüft)
+- ✅ DSGVO & Rechtliches (Impressum, Datenschutz, Consent, Legal Links)
+- ✅ SEO & Meta-Tags (Title, Description, OG, noindex korrekt für UC)
+- ✅ Security (CSP, Headers, XSS, Prompt Injection, Rate Limiting)
+- ✅ Texte & Copy (Boot, Services, About, YORI, Limit-Box, System Prompt)
+- ✅ Funktionalität (Chat, Contact, Commands, Easter Eggs, Theme)
+- ✅ Mobile & Responsive (3 Breakpoints, Keyboard, Drift-Fix)
+- ✅ Accessibility (aria, reduced-motion, Kontraste WCAG AA)
+- ✅ Performance (JS 14.59kB gzip, CSS 6.83kB gzip, 0 Dependencies)
+- ✅ Tests (42/42)
+
 ## Open Tasks / Next Session
 
-- **P1: Ultimative Go-Live-Checkliste** — UC-Seite ist feature-complete. Letzte Prüfung vor dauerhaftem Live-Betrieb.
+- **P1: Cloudflare Web Analytics aktivieren** — Im Dashboard: maschkeai-uc.pages.dev → Web Analytics → Enable (kein Code nötig, DSGVO-konform)
+- **P1: Mobile testen** — iPhone 15 Pro Max: Drift-Fix + Keyboard-Handling verifizieren
+- **P1: Favicon prüfen** — Browser-Tab prüfen ob Brand Mark korrekt rendert (32x32 SVG mit komplexem Path)
 - P2: 9 offene Jules-PRs reviewen (#17–#25: Tests, Perf, TypeScript-Hygiene)
 - P3: maschke-vdna Abgleich fortsetzen (About-Text Arbeitsthese dynamisch, Services-Text Feinschliff nach User-Feedback)
+- P4: AI Search aktivieren — bei Main-Site-Launch `robots.txt` Kommentare entfernen, `noindex` → `index` in index.html
 
 ## Astronaut YORI — Positioning System
 
@@ -290,11 +317,9 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `5c9d641`
-- **Session commits (5c9d641 — 2026-03-23):** 3
-  - `0d3b3d2` polish: visual fixes, easter egg upgrades, vDNA text alignment
-  - `15905ff` fix: kontakt@maschke.ai in AI responses triggers contact form, not mailto
-  - `5c9d641` fix: YORI bubble lines — remove spatial inconsistencies
+- **HEAD:** `4cfdf04`
+- **Session commits (4cfdf04 — 2026-03-23/24):** 1
+  - `4cfdf04` fix: go-live checklist — DSGVO, mobile, YORI, favicon, AI search prep
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
