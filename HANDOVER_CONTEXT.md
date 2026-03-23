@@ -236,12 +236,17 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 
 ## Open Tasks / Next Session
 
-- **P1: Cloudflare Web Analytics aktivieren** — Im Dashboard: maschkeai-uc.pages.dev → Web Analytics → Enable (kein Code nötig, DSGVO-konform)
-- **P1: Mobile testen** — iPhone 15 Pro Max: Drift-Fix + Keyboard-Handling verifizieren
-- **P1: Favicon prüfen** — Browser-Tab prüfen ob Brand Mark korrekt rendert (32x32 SVG mit komplexem Path)
+- ~~P1: Cloudflare Web Analytics aktivieren~~ ✅ Done
+- ~~P1: Mobile testen~~ ✅ Done (Drift weg, Favicon ok)
+- **P1: Domain-Umzug auf maschke.ai** — UC-Seite von maschkeai-uc.pages.dev auf maschke.ai umziehen. Dabei:
+  - Cloudflare Pages Custom Domain konfigurieren (maschke.ai → maschkeai-uc)
+  - `noindex, nofollow` → `index, follow` in index.html
+  - `robots.txt` Disallow → Allow + AI-Crawler-Regeln aktivieren
+  - OG/Canonical URLs prüfen (zeigen bereits auf https://maschke.ai ✅)
+  - SSL/DNS prüfen
+  - Alte maschkeai-chatbot Domain-Zuordnung ggf. entfernen/umleiten
 - P2: 9 offene Jules-PRs reviewen (#17–#25: Tests, Perf, TypeScript-Hygiene)
 - P3: maschke-vdna Abgleich fortsetzen (About-Text Arbeitsthese dynamisch, Services-Text Feinschliff nach User-Feedback)
-- P4: AI Search aktivieren — bei Main-Site-Launch `robots.txt` Kommentare entfernen, `noindex` → `index` in index.html
 
 ## Astronaut YORI — Positioning System
 
