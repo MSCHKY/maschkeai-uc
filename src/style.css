@@ -129,8 +129,8 @@ body::before {
             180deg,
             transparent 0px,
             transparent 3px,
-            rgba(0, 0, 0, 0.035) 3px,
-            rgba(0, 0, 0, 0.035) 4px
+            rgba(0, 0, 0, 0.06) 3px,
+            rgba(0, 0, 0, 0.06) 4px
         ),
         /* Radial glow behind terminal — visible blue halo */
         radial-gradient(
@@ -1324,16 +1324,24 @@ body::before {
     font-weight: 400;
 }
 
+.prompt-short { display: none; }
+
+@media (max-width: 480px) {
+    .prompt-full { display: none; }
+    .prompt-short { display: inline; }
+}
+
 #terminal-input {
     flex: 0 0 auto;
     min-width: 0;
     width: 1ch;
+    /* Input text uses gradient endpoint color — not plain black/white */
     max-width: 60ch;
     background: transparent;
     border: none;
     outline: none;
     padding: 0;
-    color: var(--terminal-ink);
+    color: var(--terminal-grad-to);
     font: inherit;
     font-weight: inherit;
     caret-color: transparent;
@@ -1789,7 +1797,7 @@ body::before {
 @media (max-width: 480px) {
     :root {
         --astroX: -26px;
-        --astroY: 0px;
+        --astroY: -6px;
         --astroScale: 0.44;
         --astroBubbleX: -10px;
         --astroBubbleY: -10px;

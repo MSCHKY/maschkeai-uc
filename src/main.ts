@@ -5,7 +5,7 @@
 
 import './style.css';
 import { renderNexusLogo } from './ascii-logo';
-import { BOOT_SEQUENCE } from './boot-sequence';
+import { getBootSequence } from './boot-sequence';
 import { handleCommand, isSpecialCommand } from './commands';
 import { sendMessage, isLimitReached } from './chat';
 import {
@@ -179,9 +179,9 @@ const YORI_LINES = [
     'Die KI beißt nicht',
 
     // Brand
-    'KI trifft Kreativität',
+    'Weniger Reibung, mehr Richtung',
     'maschke.ai — bald komplett',
-    'Kreativ-Agentur mit Raketenantrieb',
+    'Systeme, die mitdenken. Bald.',
 
     // Tech-remixed German proverbs
     'Guter Code will Weile haben',
@@ -314,10 +314,12 @@ function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
     // Fall animation
     sprite.classList.add('astro-fall');
 
-    // Recovery sequence
+    // Recovery sequence — use rAF to avoid blank frame between fall→idle transition
     window.setTimeout(() => {
-        sprite.classList.remove('astro-fall');
-        isFalling = false;
+        requestAnimationFrame(() => {
+            sprite.classList.remove('astro-fall');
+            isFalling = false;
+        });
     }, 1150);
 
     // Hide warning and resume rotation
@@ -407,8 +409,9 @@ function startGlitchScanline(): void {
 
 // ── Boot sequence ──
 async function runBootSequence(): Promise<void> {
-    for (let i = 0; i < BOOT_SEQUENCE.length; i++) {
-        const line = BOOT_SEQUENCE[i];
+    const bootSequence = getBootSequence();
+    for (let i = 0; i < bootSequence.length; i++) {
+        const line = bootSequence[i];
         if (line.text === 'PROGRESS_BAR') {
             await animateProgressBar();
             continue;
@@ -812,21 +815,30 @@ async function processInput(text: string) {
             isProcessing = false;
             return;
         }
-        // Animated hack Easter Egg
+        // Animated hack Easter Egg — Hollywood style
         if (cmd === 'hack' || cmd === 'hacking') {
             addLine('', '');
-            addLine('Accessing mainframe…', 'line-system');
+            addLine('NEXUS INTRUSION FRAMEWORK v3.1.7', 'line-system');
+            addLine('───────────────────────────', 'line-dim');
             const steps = [
-                { text: 'Bypassing firewall… OK', delay: 600 },
-                { text: 'Decrypting payload… OK', delay: 1200 },
-                { text: 'Injecting exploit… FAILED', delay: 1800 },
-                { text: '', delay: 2000 },
-                { text: 'Just kidding. Das ist eine Website, kein Supercomputer.', delay: 2400 },
+                { text: '[*] Scanning target: maschke.ai (172.67.xxx.xxx)', cls: 'line-dim', delay: 400 },
+                { text: '[*] Enumerating open ports… 443/tcp HTTPS ✓', cls: 'line-dim', delay: 900 },
+                { text: '[*] Fingerprint: Cloudflare CDN / WAF detected', cls: 'line-dim', delay: 1400 },
+                { text: '[+] Bypassing WAF layer… TUNNEL ESTABLISHED', cls: 'line-success', delay: 2100 },
+                { text: '[*] Injecting payload into /api/mistral…', cls: 'line-dim', delay: 2800 },
+                { text: '[!] PROMPT INJECTION BLOCKED — Guardian active', cls: 'line-warn', delay: 3500 },
+                { text: '[*] Escalating privileges… sudo NEXUS override', cls: 'line-dim', delay: 4200 },
+                { text: '[!] AUTH FAILED: Clearance Level 7 required', cls: 'line-warn', delay: 4800 },
+                { text: '', cls: '', delay: 5200 },
+                { text: '▓▓▓ ACCESS DENIED ▓▓▓', cls: 'line-warn', delay: 5600 },
+                { text: '', cls: '', delay: 5800 },
+                { text: 'Netter Versuch. Aber diese Infrastruktur ist kein Spielplatz.', cls: 'line-dim', delay: 6200 },
+                { text: 'Wer hier reinwill, braucht Vertrauensbasis: kontakt@maschke.ai', cls: 'line-dim', delay: 6800 },
             ];
-            steps.forEach(({ text, delay }) => {
+            steps.forEach(({ text, cls, delay }) => {
                 setTimeout(() => {
-                    addLine(text, text ? 'line-system' : '');
-                    if (delay === 2400) isProcessing = false;
+                    addLine(text, cls);
+                    if (delay === 6800) isProcessing = false;
                 }, delay);
             });
             return;
@@ -893,8 +905,8 @@ async function processInput(text: string) {
         ctaBox.innerHTML = `<div class="terminal-box terminal-cta-box">
   <div class="terminal-box-title">Nexus Limit</div>
   <div class="terminal-box-body">
-    <p>5/5 Nachrichten — du hast <strong>NEXUS</strong> getestet.</p>
-    <p>Bereit für den nächsten Schritt?</p>
+    <p>5/5 Nachrichten — <strong>NEXUS</strong> hat dir einen Vorgeschmack gegeben.</p>
+    <p>Für den Rest braucht es ein echtes Gespräch.</p>
     <div class="cta-actions">
       <a href="mailto:kontakt@maschke.ai" class="terminal-cmd cta-primary">✉ Schreib uns</a>
     </div>
@@ -996,8 +1008,8 @@ async function processInput(text: string) {
                 ctaBox.innerHTML = `<div class="terminal-box terminal-cta-box">
   <div class="terminal-box-title">Nexus Limit</div>
   <div class="terminal-box-body">
-    <p>5/5 Nachrichten — du hast <strong>NEXUS</strong> getestet.</p>
-    <p>Bereit für den nächsten Schritt?</p>
+    <p>5/5 Nachrichten — <strong>NEXUS</strong> hat dir einen Vorgeschmack gegeben.</p>
+    <p>Für den Rest braucht es ein echtes Gespräch.</p>
     <div class="cta-actions">
       <a href="mailto:kontakt@maschke.ai" class="terminal-cmd cta-primary">✉ Schreib uns</a>
     </div>

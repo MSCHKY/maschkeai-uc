@@ -67,7 +67,7 @@ test('Contact Form — State Machine', async (t) => {
         const result = startContactForm();
         assert.equal(isContactFormActive(), true);
         assert.ok(result.lines !== undefined);
-        assert.ok(result.lines.some(l => l.text.includes('KONTAKTFORMULAR')));
+        assert.ok(result.lines.some(l => l.text.includes('DIREKTLEITUNG')));
     });
 
     await t.test('full flow: NAME → EMAIL → MESSAGE → CONFIRM', () => {

@@ -39,6 +39,14 @@ test('handleCommand', async (t: any) => {
         assert.deepEqual(hilfe1, hilfe2);
     });
 
+    await t.test('handles origin easter egg', () => {
+        const result = handleCommand('origin');
+        assert.ok(result !== null);
+        assert.ok(result.lines !== undefined);
+        assert.ok(result.lines.some((l: any) => l.text.includes('ORIGIN STORY')));
+        assert.ok(result.lines.some((l: any) => l.text.includes('Bend the Reality')));
+    });
+
     await t.test('handles aliases', () => {
         const hilfe = handleCommand('hilfe');
         const help = handleCommand('help');
@@ -63,6 +71,10 @@ test('handleCommand', async (t: any) => {
         const secret3 = handleCommand('easteregg');
         assert.deepEqual(secret1, secret2);
         assert.deepEqual(secret1, secret3);
+
+        const origin1 = handleCommand('origin');
+        const origin2 = handleCommand('story');
+        assert.deepEqual(origin1, origin2);
     });
 });
 

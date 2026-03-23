@@ -67,7 +67,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     }),
 
     services: () => ({
-        html: box('Leistungsfelder', `<p><strong>KI-Beratung & Strategie</strong> — von Nebel zu Richtung und Entscheidung. <strong>Workshops & Training</strong> — KI verstehen, anwenden und in echte Arbeit übersetzen. <strong>Kreative KI-Projekte</strong> — wenn Idee, Systemdenken und Maschine sauber zusammenkommen. <strong>AI-Act Compliance</strong> — EU-konforme KI ohne Papierfriedhof.</p>
+        html: box('Leistungsfelder', `<p>Du stehst im KI-Nebel und brauchst Richtung? <strong>Beratung & Strategie.</strong> Dein Team soll KI nicht fürchten, sondern nutzen? <strong>Workshops & Training.</strong> Eine Idee, die Systemdenken und Maschine zusammenbringt? <strong>Kreative KI-Projekte.</strong> EU will Compliance und du willst keinen Papierfriedhof? <strong>AI-Act Begleitung.</strong></p>
 <p class="box-label">Keine Preisliste. Schreib uns, was dich beschäftigt: <a href="mailto:kontakt@maschke.ai" class="terminal-box-link">kontakt@maschke.ai</a></p>`),
     }),
 
@@ -107,7 +107,13 @@ const COMMANDS: Record<string, () => CommandResult> = {
 
     sudo: () => ({
         lines: [
-            { text: 'Permission denied. Nice try.', cls: 'line-system' },
+            { text: '', cls: '' },
+            { text: '[sudo] password for nexus: ********', cls: 'line-system' },
+            { text: 'Verifying credentials…', cls: 'line-dim' },
+            { text: 'AUTH FAILED: Clearance Level 7 required.', cls: 'line-warn' },
+            { text: '', cls: '' },
+            { text: 'Netter Versuch. Root-Zugang gibts nur mit Kaffee und Vertrauensbasis.', cls: 'line-dim' },
+            { text: '', cls: '' },
         ],
     }),
 
@@ -131,27 +137,63 @@ const COMMANDS: Record<string, () => CommandResult> = {
     },
 
     matrix: () => {
-        const chars = 'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ0123456789';
+        const chars = 'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ日ﾘ012345789Z:."=*+-<>¦╌ ';
+        const width = 68; // match terminal max-width
         const matrixLines: { text: string; cls: string }[] = [{ text: '', cls: '' }];
-        for (let i = 0; i < 8; i++) {
+
+        // Dense rain — 16 lines with varied density
+        for (let i = 0; i < 16; i++) {
             let line = '';
-            for (let j = 0; j < 40; j++) {
-                line += chars[Math.floor(Math.random() * chars.length)];
+            for (let j = 0; j < width; j++) {
+                // Randomly thin out some columns for depth effect
+                if (Math.random() < 0.3) {
+                    line += ' ';
+                } else {
+                    line += chars[Math.floor(Math.random() * chars.length)];
+                }
             }
             matrixLines.push({ text: line, cls: 'line-success' });
         }
+
         matrixLines.push({ text: '', cls: '' });
-        matrixLines.push({ text: 'Wake up, Neo…', cls: 'line-dim' });
+        matrixLines.push({ text: '  The Matrix has you…', cls: 'line-dim' });
+        matrixLines.push({ text: '  Follow the white rabbit. 🐇', cls: 'line-dim' });
         matrixLines.push({ text: '', cls: '' });
         return { lines: matrixLines };
     },
 
+    origin: () => ({
+        lines: [
+            { text: '', cls: '' },
+            { text: 'ORIGIN STORY', cls: 'line-system' },
+            { text: '───────────────────────────', cls: 'line-dim' },
+            { text: '  15+ Jahre Kreativbranche. Agenturen, Startups, eigene Projekte.', cls: '' },
+            { text: '  Irgendwann die Erkenntnis: Die meisten Tools bremsen mehr als', cls: '' },
+            { text: '  sie helfen. Software war starr. Arbeit war es nie.', cls: '' },
+            { text: '', cls: '' },
+            { text: '  Dann kam KI — nicht als Hype, sondern als Werkzeug.', cls: '' },
+            { text: '  Nicht als Ersatz, sondern als Erweiterung.', cls: '' },
+            { text: '', cls: '' },
+            { text: '  maschke.ai entstand aus einer einfachen Idee:', cls: '' },
+            { text: '  Software darf lebendig sein. Systeme dürfen mitdenken.', cls: '' },
+            { text: '  Und Kreativität verdient bessere Werkzeuge.', cls: '' },
+            { text: '', cls: '' },
+            { text: '  Gründer:      Robert Maschke', cls: 'line-dim' },
+            { text: '  Perspektive:  neurodivers — denkt quer, macht möglich.', cls: 'line-dim' },
+            { text: '  Motto:        "Bend the Reality"', cls: 'line-dim' },
+            { text: '', cls: '' },
+        ],
+    }),
+
     secret: () => ({
         lines: [
             { text: '', cls: '' },
-            { text: 'Du hast das Easter Egg gefunden.', cls: 'line-system' },
+            { text: '▓▓▓ HIDDEN LAYER DETECTED ▓▓▓', cls: 'line-success' },
             { text: '', cls: '' },
-            { text: "Versuch auch: 'matrix' · 'ping' · 'hack' · 'stats' · 'sudo'", cls: 'line-dim' },
+            { text: 'Nicht schlecht. Du gräbst tiefer als die meisten.', cls: '' },
+            { text: 'Bei maschke.ai belohnen wir Neugier.', cls: 'line-dim' },
+            { text: '', cls: '' },
+            { text: "Mehr davon: 'matrix' · 'ping' · 'hack' · 'stats' · 'sudo' · 'origin'", cls: 'line-dim' },
             { text: '', cls: '' },
         ],
     }),
@@ -167,6 +209,7 @@ const ALIASES: Record<string, string> = {
     buchen: 'termin',
     'easter egg': 'secret',
     easteregg: 'secret',
+    story: 'origin',
 };
 
 /**
