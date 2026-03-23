@@ -167,9 +167,9 @@ const YORI_LINES = [
     'Schöne Baustelle hier',
     'Vorsicht, nasser Lack!',
     'Ich schweb hier nur rum',
-    'Gibt\'s WLAN im Orbit?',
+    'Gibt\'s hier WLAN?',
     'Ich warte hier schon seit v3…',
-    'Null Gravitation, null Stress',
+    'Null Bugs, null Stress',
     'Schweben ist mein Cardio',
 
     // Nudges (softer — curiosity over CTA)
@@ -199,7 +199,7 @@ const YORI_NUDGE_LINES = [
     'Noch da? NEXUS wartet…',
     'Tippe hilfe für Ideen',
     'Trau dich, frag was!',
-    'Langweilig hier oben…',
+    'Hier passiert gerade nix…',
 ];
 
 let bubblePool = [...YORI_LINES];
