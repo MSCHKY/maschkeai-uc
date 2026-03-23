@@ -1,8 +1,8 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-21T14:30 (Session 3aa9e8b5)
+> Last updated: 2026-03-23T18:00 (Session 5c9d641)
 
-## Project Status: LIVE (Under Construction)
+## Project Status: FEATURE-COMPLETE (Under Construction)
 
 Under-construction holding page for `maschke.ai`. Fullscreen terminal experience with scripted boot sequence, limited Mistral AI chat (5 messages/page-load), and astronaut mascot YORI.
 
@@ -24,8 +24,8 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Main Orchestrator | `src/main.ts` | ✅ Done (typewriter AI rendering, consent auto-send, CTA flow) |
 | Terminal CSS | `src/style.css` | ✅ Done (CRT scanlines, plasma gradient blobs, spotlight+vignette, floating legal panel, scroll-fade) |
 | NEXUS Logo | `src/ascii-logo.ts` | ✅ Done (2-layer + VHS glitch) |
-| Boot Sequence | `src/boot-sequence.ts` | ✅ Done (typewriter boot text) |
-| Commands | `src/commands.ts` | ✅ Done (box-based output, contact form trigger) |
+| Boot Sequence | `src/boot-sequence.ts` | ✅ Done (typewriter boot text, dynamic claim rotation) |
+| Commands | `src/commands.ts` | ✅ Done (box-based output, contact form trigger, 6 Easter Eggs) |
 | Contact Form | `src/contact-form.ts` | ✅ Done (state machine: NAME→EMAIL→MESSAGE→CONFIRM) |
 | Contact API | `functions/api/contact.js` | ✅ Done (Brevo EU, honeypot, rate limiting, HTML email) |
 | Chat Client | `src/chat.ts` | ✅ Done (SSE streaming, 5-msg limit, max_tokens=250, error rollback) |
@@ -177,16 +177,44 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - ✅ **36/36 tests pass**, build clean
 - ✅ **Live verified**: No raw asterisks during animation, bold text and chips render correctly after finalization
 
+## Recent Session Changes (5c9d641 — 2026-03-23)
+
+### Visual Fixes
+- ✅ **Light-mode scanlines**: Opacity 0.035 → 0.06 (+70% sichtbarer)
+- ✅ **Input text color**: `--terminal-ink` (black/white) → `--terminal-grad-to` (blauer Terminal-Ton)
+- ✅ **Mobile YORI position**: `--astroY: 0px` → `-6px` (6px hoch korrigiert)
+- ✅ **Mobile prompt**: `nexus@maschke.ai ~ %` → `nexus >` auf <=480px (responsive CSS)
+- ✅ **YORI blank frame**: `requestAnimationFrame` beim Entfernen der Fall-Klasse
+- ✅ **format-detection**: Meta-Tag gegen Browser-Auto-Linking von E-Mails
+
+### Easter Eggs (aufgewertet + neu)
+- ✅ **matrix**: 16 Zeilen, 68ch breit, Depth-Effekt, "The Matrix has you…"
+- ✅ **hack**: Hollywood-Style — 13 Schritte (Port-Scan, WAF-Bypass, ACCESS DENIED)
+- ✅ **sudo**: Auth-Sequence mit Clearance Level 7
+- ✅ **secret**: "HIDDEN LAYER DETECTED" + Markenvoice
+- ✅ **origin** (NEU): Origin-Story Easter Egg (vDNA-aligned) + Alias `story`
+
+### vDNA Text-Alignment
+- ✅ **Services**: Problem-orientierter Rewrite ("Du stehst im KI-Nebel…")
+- ✅ **Boot-Claim**: Dynamisch — 3 Claims rotieren pro Page Load
+- ✅ **YORI Bubbles**: 5 Zeilen ersetzt (generisch → markenspezifisch, Raumlogik korrigiert)
+- ✅ **Limit-Box**: "NEXUS hat dir einen Vorgeschmack gegeben. Für den Rest braucht es ein echtes Gespräch."
+- ✅ **OG Meta-Tags**: "Keine alten Programme mit KI-Aufkleber. Systeme, die echte Arbeit mitdenken."
+- ✅ **kontakt@maschke.ai in AI-Text**: Klick öffnet jetzt Kontaktformular statt mailto
+
+### Kontaktformular
+- ✅ Titel: "KONTAKTFORMULAR" → "DIREKTLEITUNG"
+- ✅ Schritte kürzer, direkter, on-brand
+- ✅ Abbruch-Text vereinfacht
+
+### Tests
+- ✅ 42/42 Tests (2 neue: origin-Command + story-Alias)
+
 ## Open Tasks / Next Session
 
-- ~~P1: Jules PRs prüfen (neue Nacht-Batch)~~ ✅ Checked (0 open)
-- ~~P2: Bold-Rendering im Typewriter fixen~~ ✅ Fixed
-- ~~P1: Terminal contact form~~ ✅ Done (Brevo EU, live + tested)
-- ~~P1: Jules PRs integrieren~~ ✅ Done
-- ~~P1: NEXUS Prompt live testen~~ ✅ Done
-- ~~P2: Reduced-Motion~~ ✅ Done
-- ~~P2: `line-dim` Kontrast~~ ✅ Done
-- ~~P2: CSP-Header~~ ✅ Done
+- **P1: Ultimative Go-Live-Checkliste** — UC-Seite ist feature-complete. Letzte Prüfung vor dauerhaftem Live-Betrieb.
+- P2: 9 offene Jules-PRs reviewen (#17–#25: Tests, Perf, TypeScript-Hygiene)
+- P3: maschke-vdna Abgleich fortsetzen (About-Text Arbeitsthese dynamisch, Services-Text Feinschliff nach User-Feedback)
 
 ## Astronaut YORI — Positioning System
 
@@ -197,7 +225,7 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 |------------|-----------|-----------|---------------|---------------------|
 | Desktop (>768px) | -52px | -24px | 0.61 | 1.4 |
 | Tablet (<=768px) | -21px | 4px | 0.51 | 1.65 |
-| Mobile (<=480px) | -26px | 0px | 0.44 | 1.9 |
+| Mobile (<=480px) | -26px | -6px | 0.44 | 1.9 |
 
 **Speech Bubble Counter-Scale:** Bubble inherits parent's `scale()`, so `--astroBubbleScale` counteracts shrinkage to keep text readable. `transform-origin: right center`.
 
@@ -262,12 +290,11 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `d6b6ca7`
-- **Session commits (3aa9e8b5):** 1
-  - `d6b6ca7` fix: bold rendering in typewriter — strip markers during animation, apply formatting only at finalize
-- **Previous session (246a2260):** 2 commits
-  - `23fe6fc` feat: terminal contact form — step-by-step flow with Brevo EU backend
-  - `85f813d` polish: upgraded contact email to HTML — readable timestamp, cleaner layout, no IP
+- **HEAD:** `5c9d641`
+- **Session commits (5c9d641 — 2026-03-23):** 3
+  - `0d3b3d2` polish: visual fixes, easter egg upgrades, vDNA text alignment
+  - `15905ff` fix: kontakt@maschke.ai in AI responses triggers contact form, not mailto
+  - `5c9d641` fix: YORI bubble lines — remove spatial inconsistencies
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
