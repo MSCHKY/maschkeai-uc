@@ -555,6 +555,11 @@ function formatAiText(raw: string): string {
     formatted = formatted.replace(/\*([^*]+?)\*/g, '$1');
     // `command` → clickable chip
     formatted = formatted.replace(/`([^`]+)`/g, '<span class="cmd-chip" data-cmd="$1">$1</span>');
+    // kontakt@maschke.ai → clickable chip that triggers contact form (not mailto)
+    formatted = formatted.replace(
+        /(?:<strong>)?(kontakt@maschke\.ai)(?:<\/strong>)?/g,
+        '<span class="cmd-chip" data-cmd="contact">$1</span>',
+    );
     return formatted;
 }
 
