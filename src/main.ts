@@ -314,13 +314,14 @@ function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
     // Fall animation
     sprite.classList.add('astro-fall');
 
-    // Recovery sequence — use rAF to avoid blank frame between fall→idle transition
+    // Recovery sequence — timeout matches CSS animation duration exactly (1100ms)
+    // rAF ensures class removal is frame-aligned (no blank frame between fall→idle)
     window.setTimeout(() => {
         requestAnimationFrame(() => {
             sprite.classList.remove('astro-fall');
             isFalling = false;
         });
-    }, 1150);
+    }, 1100);
 
     // Hide warning and resume rotation
     window.setTimeout(() => {
@@ -1079,9 +1080,12 @@ input.addEventListener('input', () => {
     input.size = Math.max(1, len);
 });
 
-// Click anywhere to focus input
-terminal.addEventListener('click', () => {
-    if (!isProcessing && inputLine.classList.contains('visible')) {
+// Click anywhere on page to focus input (not just inside terminal)
+document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    // Don't steal focus from interactive elements (links, buttons, legal overlay)
+    if (target.closest('a, button, #legal-overlay, #astro-debug, [data-contact-action]')) return;
+    if (!isProcessing && inputLine.classList.contains('visible') && !legalOverlay.classList.contains('active')) {
         input.focus();
     }
 });
@@ -1111,6 +1115,37 @@ document.addEventListener('keydown', (e) => {
 legalOverlay.addEventListener('click', (e) => {
     if (e.target === legalOverlay) closeLegal();
 });
+
+// ── Mobile keyboard handling (visualViewport API) ──
+// When the iOS/Android keyboard opens, the visual viewport shrinks.
+// We adjust terminal bottom offset so the input line stays visible.
+if (window.visualViewport) {
+    const onViewportResize = () => {
+        const vv = window.visualViewport!;
+        // Keyboard height ≈ difference between window height and visual viewport height
+        const kbHeight = window.innerHeight - vv.height;
+        const isKeyboardOpen = kbHeight > 100; // Threshold to distinguish from minor viewport changes
+
+        // Adjust terminal bottom to sit above the keyboard
+        terminal.style.bottom = isKeyboardOpen ? `${kbHeight + 4}px` : '';
+
+        // Hide astronaut and footer when keyboard is open (declutter mobile)
+        const astronaut = document.getElementById('astronaut-overlay');
+        const footer = document.getElementById('legal-footer');
+        if (astronaut) astronaut.style.display = isKeyboardOpen ? 'none' : '';
+        if (footer) footer.style.display = isKeyboardOpen ? 'none' : '';
+
+        // Scroll input into view
+        if (isKeyboardOpen) {
+            requestAnimationFrame(() => {
+                input.scrollIntoView({ block: 'nearest' });
+                scrollToBottom();
+            });
+        }
+    };
+
+    window.visualViewport.addEventListener('resize', onViewportResize);
+}
 
 // ── Start ──
 runBootSequence();

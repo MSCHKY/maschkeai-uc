@@ -3,3 +3,19 @@ Disallow: /
 
 # UC site — not ready for indexing
 # Switch to Allow: / when the main site launches
+
+# ── AI Crawler Rules (prepared, activate at launch) ──
+# User-agent: GPTBot
+# Allow: /
+#
+# User-agent: ClaudeBot
+# Allow: /
+#
+# User-agent: PerplexityBot
+# Allow: /
+#
+# User-agent: Google-Extended
+# Allow: /
+#
+# User-agent: Applebot-Extended
+# Allow: /
