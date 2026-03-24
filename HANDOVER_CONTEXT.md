@@ -1,12 +1,13 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-24T11:30 (Session 77752b2)
+> Last updated: 2026-03-24T18:45 (Session 77acb02)
 
 ## Project Status: FEATURE-COMPLETE (Under Construction)
 
 Under-construction holding page for `maschke.ai`. Fullscreen terminal experience with scripted boot sequence, limited Mistral AI chat (5 messages/page-load), and astronaut mascot YORI.
 
-**Live URL:** https://maschkeai-uc.pages.dev/
+**Live URL:** https://maschke.ai (Custom Domain, seit 2026-03-24)
+**Pages URL:** https://maschkeai-uc.pages.dev/ (weiterhin erreichbar)
 **GitHub:** https://github.com/MSCHKY/maschkeai-uc
 
 ## ⚠️ CRITICAL RULE: REUSE FROM MAIN PROJECT
@@ -239,7 +240,48 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - ✅ Performance (JS 14.59kB gzip, CSS 6.83kB gzip, 0 Dependencies)
 - ✅ Tests (42/42)
 
-## Recent Session Changes (77752b2 — 2026-03-24)
+## Recent Session Changes (77acb02 — 2026-03-24, Nachmittag)
+
+### Domain Go-Live
+- ✅ **maschke.ai live** — Cloudflare Pages Custom Domain (alter Canva-Tunnel gelöscht)
+- ✅ `noindex, nofollow` → `index, follow` in index.html
+- ✅ `robots.txt` Disallow → Allow (AI-Crawler noch auskommentiert — UC-Seite)
+- ✅ OG/Canonical URLs zeigen auf `https://maschke.ai` ✓
+- ✅ CSP: Cloudflare Web Analytics Beacon erlaubt (sha256-Hash + Domains)
+- ✅ **OG-Bild** neu erstellt — Terminal-Card, Brand-Mark (Impossible M), Gradient, Plasma-Blobs
+
+### Typography & Box Styling
+- ✅ `.terminal-box-title`: font-weight 700 → **600**
+- ✅ `.terminal-box-body`: Gradient **entfernt** → solide `--terminal-ink` + `font-weight: 500`
+- ✅ `.box-label`, `.terminal-box-link`: explizites `-webkit-text-fill-color` Override
+- ✅ Gradient bei fw400 auf regulären Output-Lines verifiziert: OK
+
+### YORI Sleep Animation
+- ✅ CSS: `animation: infinite` (Schlaf-Loop statt play-once + hold)
+- ✅ CSS: explizite `width/height/background-size` statt Custom Property Cascading
+- ✅ JS: Sprite-Preload beim Boot (sleep, fall, perfume — verhindert Blank-Frame)
+- ✅ `astro-sleep-hold` komplett entfernt
+
+### NEXUS System Prompt
+- ✅ **Command-Whitelist** hinzugefügt: `hilfe`, `about`, `services`, `contact`, `status`
+- ✅ "NIEMALS Commands erfinden" Guardrail
+- ✅ YORI als dekoratives Maskottchen klargestellt (kein eigenes Terminal/Befehle)
+
+### CRT Boot Overlay
+- ✅ Komplett neu: GPU-beschleunigtes `transform: scaleY()` auf `::after` Pseudo-Element
+- ✅ Alte Gradient-Keyframes entfernt (CSS kann verschiedene Gradient-Typen nicht interpolieren)
+
+### Mobile Keyboard Drift (iOS Safari)
+- ✅ Recherchiert: `scrollTo(0,0)` ist No-Op wenn `scrollY===0`, `interactive-widget=resizes-visual` wird von WebKit ignoriert
+- ✅ `scrollBy(-1/+1)` Trick erzwingt Safari-Viewport-Neuberechnung
+- ✅ `viewport-fit=cover` (Safari-supported) ersetzt `interactive-widget=resizes-visual`
+- ✅ `will-change: transform` auf `#terminal` (GPU-Layer Promotion)
+- ✅ Multi-Stage Reset (0/50/300/800ms), `focusout` Backup-Handler
+- ⚠️ **REGRESSION:** Tastatur öffnet sich nicht mehr auf Chrome Android — muss in nächster Session gefixt werden
+  - Wahrscheinliche Ursache: `input.blur()` im viewport-resize Handler oder `focusout`-Handler feuert zu aggressiv
+  - Ansatz: Keyboard-Handler auf iOS beschränken oder blur-Logik überarbeiten
+
+## Previous Session Changes (77752b2 — 2026-03-24, Vormittag)
 
 ### UX Enhancements (feat/ux-enhancements → merged to main)
 
@@ -296,20 +338,13 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 
 ## Open Tasks / Next Session
 
-- **P1: Typografie-Feinschliff** — Font-Weight 400 ist jetzt global, aber:
-  - Terminal-Box-Inhalte (LEISTUNGSFELDER etc.) brauchen eigenes Styling — aktuell erben sie den dünnen 400er-Weight, was mit dem Gradient schwer lesbar ist. Box-Title sollte 600 bleiben, Box-Body evtl. 500 oder 400 ohne Gradient.
-  - Prüfen ob Gradient-Text bei 400 auf allen Geräten gut aussieht (besonders Light-Mode)
-  - Ggf. `font-weight: 500` als Kompromiss für bestimmte Elemente
-- **P1: Mobile Drift immer noch da** — `scrollTo(0,0)` nach Keyboard-Close reicht nicht. Nächste Ansätze:
-  - `input.blur()` + verzögertes Re-Focus beim Keyboard-Close
-  - `position: fixed` + `top: 0` explizit auf Terminal beim Close forcieren
-  - Alternativ: `visualViewport.offsetTop` kompensieren
-- **P2: Domain-Umzug auf maschke.ai** — UC-Seite von maschkeai-uc.pages.dev auf maschke.ai umziehen
-  - Cloudflare Pages Custom Domain konfigurieren (maschke.ai → maschkeai-uc)
-  - `noindex, nofollow` → `index, follow` in index.html
-  - `robots.txt` Disallow → Allow + AI-Crawler-Regeln aktivieren
-  - OG/Canonical URLs prüfen (zeigen bereits auf https://maschke.ai ✅)
-  - SSL/DNS prüfen
+- **P1: REGRESSION — Chrome Android Tastatur öffnet sich nicht mehr**
+  - Seit Commit c7ee2fa (iOS drift fix) — Keyboard-Handler stört Chrome
+  - Wahrscheinliche Ursache: `input.blur()` im visualViewport resize-Handler und/oder `focusout`-Handler mit `forceViewportReset()` stören den Fokus-Flow
+  - **Ansatz:** Playwright Mobile-Emulation nutzen um zu debuggen. Den Keyboard-Handler ggf. auf iOS beschränken (User-Agent oder `navigator.standalone` Check). Oder `blur()` und `focusout`-Handler komplett entfernen und nur den `scrollBy(-1/+1)` Trick im resize-Handler behalten.
+  - **Recherche-Ergebnis (diese Session):** `scrollTo(0,0)` ist No-Op auf iOS wenn `scrollY===0`. `scrollBy(-1/+1)` erzwingt Viewport-Neuberechnung. `interactive-widget=resizes-visual` wird von WebKit ignoriert. `viewport-fit=cover` ist die Safari-Alternative. iOS braucht bis zu 1s zum Settlen. Quellen: Apple Dev Forums thread/800125, Claus Wahlers iOS viewport gist.
+- **P1: iOS Safari Drift** — `scrollBy`-Trick implementiert aber noch nicht auf echtem iPhone verifiziert (Chrome-Regression hat Test blockiert)
+- P2: `www.maschke.ai` als Custom Domain in Cloudflare Pages hinzufügen (fehlt noch)
 - P3: Neue YORI-Sprites erstellen (Wave, Scared, Celebrate) — Robert erstellt die Pixel-Art
 - P3: maschke-vdna Abgleich fortsetzen (About-Text, Services-Text Feinschliff)
 
@@ -331,7 +366,7 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - **Fall:** Click Yori -> 1100ms fall animation + red warning bubble + woosh/thud sounds
 - **Perfume:** Random trigger (28s interval, 2% chance), 1300ms, 9 frames (blocked during sleep)
 - **Talk:** AI streaming trigger, 1200ms fast cycle -> "talking" effect. Guards prevent concurrent animations.
-- **Sleep:** 60s inactivity → 2000ms sleep animation (9 frames, 185×266px) → holds frame 9 + "zZz..." pulsating bubble. Wakes on user input.
+- **Sleep:** 60s inactivity → infinite loop sleep animation (9 frames, 2000ms/cycle) + "zZz..." pulsating bubble. Wakes on user input.
 - **Command Reactions:** hack/sudo → shake + warning bubble; matrix → fade 0.3; secret → glow pulse
 - **Hover Glow:** Blue drop-shadow on hover, 300ms transition
 - **Debug Panel:** `?debug=1` shows live sliders
@@ -344,9 +379,10 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 3. Antwortlaenge: 40-60 words standard, 80 max (hard-enforced via max_tokens=250)
 4. Kern-Wissen: Teaser-level services as Fliesstext, **NIEMALS Preise**
 5. **Gespraechsfuehrung**: Subtle, email max every 3rd response, NO termin/cal.com pushing
-6. YORI: Max 1x per conversation, never quote directly
-7. UC-Bewusstsein, Guardrails (prompt injection, no code gen, context lock, role integrity)
-8. **Model name NOT disclosed** — security decision
+6. **Verfügbare Terminal-Befehle** — explizite Whitelist: `hilfe`, `about`, `services`, `contact`, `status`. "NIEMALS Commands erfinden" Guardrail.
+7. YORI: Dekoratives Maskottchen, KEIN eigenes Terminal/Befehle. Max 1x pro Gespräch.
+8. UC-Bewusstsein, Guardrails (prompt injection, no code gen, context lock, role integrity)
+9. **Model name NOT disclosed** — security decision
 
 ## Invariants
 
@@ -363,7 +399,7 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 11. **EU-OS-Plattform**: Link ENTFERNT — Plattform eingestellt seit 20.07.2025. Nicht wieder hinzufügen!
 12. **No model disclosure**: Never reveal Mistral Medium 3 in UI, status bar, or system prompt hints.
 13. **Email-only CTA**: UC site uses only email (kontakt@maschke.ai), no cal.com links.
-14. **noindex**: UC site is noindex/nofollow + robots.txt Disallow. Switch to index when main site launches.
+14. **Indexing**: Site ist jetzt `index, follow` + robots.txt Allow (seit Go-Live auf maschke.ai). AI-Crawler noch auskommentiert.
 
 ## Jules AI Agent (Nacht-Batch Automation)
 
@@ -390,16 +426,17 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `77752b2`
-- **Session commits (77752b2 — 2026-03-24):** 8
-  - `a529ac6` feat: UX enhancements — sound engine, CRT boot, cursor glow, screen effects, YORI upgrade
-  - `7dc2fd3` Merge feat/ux-enhancements
-  - `3057f16` fix: UX polish — CRT longer, remove buzz, text toggles, matrix fade, YORI fix
-  - `fa7bc61` fix: matrix timing, backspace sound, YORI bubble pacing
-  - `45c6e3b` fix: AudioContext resume on first user gesture
-  - `de2e0b2` fix: cmd-chip text invisible on mobile (gradient text inheritance)
-  - `9955f0c` fix: font readability, mobile sizing, keyboard drift
-  - `77752b2` fix: remove font-weight 600 from output lines, improve drift reset
+- **HEAD:** `77acb02`
+- **Session commits (77acb02 — 2026-03-24, Nachmittag):** 9
+  - `d052537` fix: box typography readability + mobile keyboard drift
+  - `ac1210e` fix: YORI sleep animation + NEXUS command hallucination
+  - `d4d0713` fix: loop YORI sleep animation instead of play-once + hold
+  - `f14db27` feat: go live — enable indexing for maschke.ai domain
+  - `b37bf77` fix: CRT boot overlay — GPU-accelerated scaleY
+  - `4c04b05` fix: CSP allow Cloudflare Web Analytics beacon
+  - `63e4032` fix: iOS keyboard drift + new OG image from vDNA
+  - `c7ee2fa` fix: iOS Safari keyboard drift — evidence-based approach ⚠️ (Chrome-Regression)
+  - `77acb02` fix: replace translate3d with will-change on terminal
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
