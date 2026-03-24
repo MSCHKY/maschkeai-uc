@@ -299,7 +299,7 @@ function hideBubble(bubble: HTMLElement) {
 
 function startBubbleRotation(bubble: HTMLElement) {
     const SHOW_MS = 10_000;
-    const HIDE_MS = 15_000;
+    const HIDE_MS = 25_000;
 
     function showNext() {
         showBubble(bubble, pickNextLine());
@@ -409,11 +409,11 @@ function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
         });
     }, 1100);
 
-    // Hide warning and resume rotation
+    // Hide warning and resume rotation (long pause after warning)
     window.setTimeout(() => {
         hideBubble(bubble);
-        window.setTimeout(() => startBubbleRotation(bubble), 2000);
-    }, 2300);
+        window.setTimeout(() => startBubbleRotation(bubble), 15_000);
+    }, 3000);
 }
 
 // ── YORI command reactions ──
@@ -996,7 +996,7 @@ async function processInput(text: string) {
         else if (cmd === 'secret' || cmd === 'easteregg' || cmd === 'easter egg') sound.play('discoveryChime');
         else if (cmd === 'matrix') {
             sound.play('matrixRain');
-            setTimeout(() => sound.stopLoop('matrixRain'), 4000);
+            setTimeout(() => sound.stopLoop('matrixRain'), 3200); // sync with 16 lines × 200ms
         } else sound.play('cmdAccept');
 
         // YORI reactions to easter egg commands
@@ -1038,10 +1038,11 @@ async function processInput(text: string) {
                 });
             });
         } else if (result.lines) {
-            // Legacy line-by-line output (Easter eggs, simple responses)
+            // Line-by-line output — slower for matrix (cascading rain effect)
+            const lineDelay = cmd === 'matrix' ? 200 : 30;
             for (const line of result.lines) {
                 addLine(line.text, line.cls);
-                await sleep(30);
+                await sleep(lineDelay);
             }
         }
 
@@ -1191,7 +1192,7 @@ input.addEventListener('keydown', (e) => {
         sound.play('keyReturn');
         e.preventDefault();
         processInput(input.value);
-    } else if (e.key.length === 1) {
+    } else if (e.key.length === 1 || e.key === 'Backspace') {
         sound.play('keyClick');
     }
 
