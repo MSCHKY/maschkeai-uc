@@ -1287,78 +1287,62 @@ legalOverlay.addEventListener('click', (e) => {
 // ── Mobile keyboard handling (visualViewport API) ──
 // When the iOS/Android keyboard opens, the visual viewport shrinks.
 // We adjust terminal bottom offset so the input line stays visible.
+let isKeyboardOpen = false;
+
 if (window.visualViewport) {
-    let wasKeyboardOpen = false;
-    let driftResetTimer: ReturnType<typeof setTimeout> | null = null;
-
-    const resetDrift = () => {
-        // Aggressively reset all scroll positions
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-        terminal.style.transform = '';
-
-        // Compensate visualViewport offset if it persists after keyboard close
-        const vv = window.visualViewport;
-        if (vv && vv.offsetTop > 0) {
-            window.scrollTo(0, 0);
-        }
-    };
-
     const onViewportResize = () => {
         const vv = window.visualViewport!;
-        // Keyboard height ≈ difference between window height and visual viewport height
         const kbHeight = window.innerHeight - vv.height;
-        const isKeyboardOpen = kbHeight > 100; // Threshold to distinguish from minor viewport changes
+        const kbOpen = kbHeight > 100;
 
-        // Adjust terminal bottom to sit above the keyboard
-        terminal.style.bottom = isKeyboardOpen ? `${kbHeight + 4}px` : '';
+        terminal.style.bottom = kbOpen ? `${kbHeight + 4}px` : '';
 
-        // Hide astronaut and footer when keyboard is open (declutter mobile)
         const astronaut = document.getElementById('astronaut-overlay');
         const footer = document.getElementById('legal-footer');
-        if (astronaut) astronaut.style.display = isKeyboardOpen ? 'none' : '';
-        if (footer) footer.style.display = isKeyboardOpen ? 'none' : '';
+        if (astronaut) astronaut.style.display = kbOpen ? 'none' : '';
+        if (footer) footer.style.display = kbOpen ? 'none' : '';
 
-        if (isKeyboardOpen) {
-            wasKeyboardOpen = true;
-            // Clear any pending drift reset from rapid open/close
-            if (driftResetTimer) { clearTimeout(driftResetTimer); driftResetTimer = null; }
-            // Scroll input into view
+        if (kbOpen) {
+            isKeyboardOpen = true;
             requestAnimationFrame(() => {
                 input.scrollIntoView({ block: 'nearest' });
                 scrollToBottom();
             });
-        } else if (wasKeyboardOpen) {
-            wasKeyboardOpen = false;
-            // Keyboard closed — blur input to ensure keyboard fully dismisses
+        } else if (isKeyboardOpen) {
+            isKeyboardOpen = false;
+            // Keyboard closed — multi-stage aggressive reset
             input.blur();
-
-            // Multi-stage reset: iOS keyboard close animation takes ~300ms
-            // Stage 1: Immediate reset
-            resetDrift();
-
-            // Stage 2: After keyboard animation completes
-            if (driftResetTimer) clearTimeout(driftResetTimer);
-            driftResetTimer = setTimeout(() => {
-                resetDrift();
-                scrollToBottom();
-                driftResetTimer = null;
-            }, 350);
+            for (const delay of [0, 50, 150, 300, 500]) {
+                setTimeout(() => {
+                    window.scrollTo(0, 0);
+                    document.documentElement.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+                    terminal.style.transform = '';
+                    if (delay === 300) scrollToBottom();
+                }, delay);
+            }
         }
     };
-
     window.visualViewport.addEventListener('resize', onViewportResize);
-
-    // Also listen for scroll events on visualViewport to catch offset drift
-    window.visualViewport.addEventListener('scroll', () => {
-        const vv = window.visualViewport!;
-        if (vv.offsetTop > 0 && !wasKeyboardOpen) {
-            // Page drifted — snap back
-            window.scrollTo(0, 0);
-        }
-    });
 }
+
+// Nuclear drift prevention: any time the page scrolls, snap back to 0.
+// The page is position:fixed fullscreen — it should NEVER scroll.
+window.addEventListener('scroll', () => {
+    if (!isKeyboardOpen && (window.scrollX !== 0 || window.scrollY !== 0)) {
+        window.scrollTo(0, 0);
+    }
+}, { passive: true });
+
+// Backup: reset on input blur (keyboard dismiss via "Done" button or tap outside)
+input.addEventListener('focusout', () => {
+    setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+    }, 100);
+});
 
 // ── Start ──
 (async () => {
