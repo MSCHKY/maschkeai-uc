@@ -296,26 +296,50 @@ body::before {
     z-index: 9000;
     background: #000;
     pointer-events: none;
-    animation: crt-boot 1200ms ease-out forwards;
+    animation: crt-boot 2800ms ease-out forwards;
 }
 
 @keyframes crt-boot {
-    0%, 16% {
+    /* Phase 1: Black screen — suspense (0-840ms) */
+    0%, 28% {
         background: #000;
-    }
-    17% {
-        background: linear-gradient(180deg, #000 48%, rgba(255, 255, 255, 0.95) 49%, rgba(255, 255, 255, 0.95) 51%, #000 52%);
-    }
-    42% {
-        background: linear-gradient(180deg, #000 48%, rgba(255, 255, 255, 0.95) 49%, rgba(255, 255, 255, 0.95) 51%, #000 52%);
-    }
-    75% {
-        background: rgba(255, 255, 255, 0.9);
-    }
-    80% {
-        background: rgba(255, 255, 255, 0.7);
         opacity: 1;
     }
+    /* Phase 2: Thin white horizontal stripe appears */
+    30% {
+        background: linear-gradient(180deg,
+            #000 46%, rgba(200, 220, 255, 0.6) 48%,
+            rgba(255, 255, 255, 0.95) 49.5%, rgba(255, 255, 255, 0.95) 50.5%,
+            rgba(200, 220, 255, 0.6) 52%, #000 54%);
+        opacity: 1;
+    }
+    /* Phase 3: Stripe holds and intensifies */
+    48% {
+        background: linear-gradient(180deg,
+            #000 42%, rgba(200, 220, 255, 0.4) 45%,
+            #fff 49%, #fff 51%,
+            rgba(200, 220, 255, 0.4) 55%, #000 58%);
+        opacity: 1;
+    }
+    /* Phase 4: Stripe expands vertically */
+    55% {
+        background: linear-gradient(180deg, #000 30%, rgba(255, 255, 255, 0.9) 45%, rgba(255, 255, 255, 0.95) 55%, #000 70%);
+        opacity: 1;
+    }
+    65% {
+        background: linear-gradient(180deg, #000 10%, rgba(255, 255, 255, 0.9) 30%, rgba(255, 255, 255, 0.95) 70%, #000 90%);
+        opacity: 1;
+    }
+    /* Phase 5: Full white flash */
+    72% {
+        background: rgba(255, 255, 255, 0.95);
+        opacity: 1;
+    }
+    80% {
+        background: rgba(255, 255, 255, 0.6);
+        opacity: 0.8;
+    }
+    /* Phase 6: Fade to transparent */
     100% {
         background: rgba(255, 255, 255, 0);
         opacity: 0;
@@ -1658,22 +1682,9 @@ body::before {
     opacity: 0.4;
 }
 
-#theme-toggle {
-    background: none;
-    border: none;
-    color: var(--terminal-sub);
-    font-family: inherit;
-    font-size: inherit;
-    cursor: pointer;
-    padding: 0 0.25rem;
-    transition: color 0.2s ease;
-}
-
-#theme-toggle:hover {
-    color: var(--terminal-accent);
-}
-
-/* Sound toggle — matches theme toggle styling */
+/* Status bar & footer toggle buttons */
+#theme-toggle,
+#theme-status-toggle,
 #sound-toggle,
 #sound-toggle-mobile {
     background: none;
@@ -1682,10 +1693,14 @@ body::before {
     font-family: inherit;
     font-size: inherit;
     cursor: pointer;
-    padding: 0 0.25rem;
+    padding: 0 0.15rem;
     transition: color 0.2s ease, opacity 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
+#theme-toggle:hover,
+#theme-status-toggle:hover,
 #sound-toggle:hover,
 #sound-toggle-mobile:hover {
     color: var(--terminal-accent);
@@ -1696,12 +1711,14 @@ body::before {
     opacity: 0.4;
 }
 
-#sound-toggle-mobile {
+#sound-toggle-mobile,
+#theme-toggle {
     display: none;
 }
 
 @media (max-width: 480px) {
-    #sound-toggle-mobile {
+    #sound-toggle-mobile,
+    #theme-toggle {
         display: inline-block;
     }
 }

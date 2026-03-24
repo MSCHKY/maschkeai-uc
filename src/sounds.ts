@@ -19,6 +19,7 @@ class SoundEngine {
     private _muted: boolean;
     private matrixInterval: number | null = null;
     private matrixSource: AudioBufferSourceNode | null = null;
+    private matrixGain: GainNode | null = null;
 
     constructor() {
         const stored = localStorage.getItem(STORAGE_KEY);
@@ -68,9 +69,15 @@ class SoundEngine {
                 clearInterval(this.matrixInterval);
                 this.matrixInterval = null;
             }
-            if (this.matrixSource) {
-                this.matrixSource.stop();
+            if (this.matrixSource && this.matrixGain && this.ctx) {
+                // Fade out over 800ms instead of abrupt stop
+                const now = this.ctx.currentTime;
+                this.matrixGain.gain.setValueAtTime(this.matrixGain.gain.value, now);
+                this.matrixGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                const src = this.matrixSource;
+                setTimeout(() => { try { src.stop(); } catch { /* already stopped */ } }, 850);
                 this.matrixSource = null;
+                this.matrixGain = null;
             }
         }
     }
@@ -193,6 +200,7 @@ class SoundEngine {
         src.connect(filter).connect(g).connect(ctx.destination);
         src.start();
         this.matrixSource = src;
+        this.matrixGain = g;
 
         // Random ping tones
         this.matrixInterval = window.setInterval(() => {

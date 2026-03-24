@@ -40,6 +40,7 @@ const legalContent = document.getElementById('legal-overlay-content')!;
 const legalClose = document.getElementById('legal-overlay-close')!;
 const soundToggle = document.getElementById('sound-toggle');
 const soundToggleMobile = document.getElementById('sound-toggle-mobile');
+const themeStatusToggle = document.getElementById('theme-status-toggle');
 
 let isProcessing = false;
 let commandHistory: string[] = [];
@@ -81,7 +82,9 @@ function applyTheme(theme: 'light' | 'dark' | 'auto') {
     const resolved = theme === 'auto' ? getSystemTheme() : theme;
     document.documentElement.setAttribute('data-theme', resolved);
     localStorage.setItem(THEME_KEY, theme);
-    themeToggle.textContent = resolved === 'dark' ? '☀' : '◐';
+    const label = resolved === 'dark' ? 'LIGHT' : 'DARK';
+    themeToggle.textContent = label;
+    if (themeStatusToggle) themeStatusToggle.textContent = label;
 }
 
 function toggleTheme() {
@@ -248,7 +251,7 @@ const PERFUME_CHANCE = 0.02;      // 2% chance per check
 let perfumeTimeoutId: number | null = null;
 
 function triggerPerfume(sprite: HTMLElement) {
-    if (isPerfuming || isFalling || isTalking) return;
+    if (isPerfuming || isFalling || isTalking || isSleeping) return;
 
     if (perfumeTimeoutId != null) {
         window.clearTimeout(perfumeTimeoutId);
@@ -373,6 +376,14 @@ function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
     if (isFalling) return;
     isFalling = true;
     sound.play('woosh');
+
+    // Clear sleep state if sleeping (prevents CSS class collision)
+    if (isSleeping) {
+        isSleeping = false;
+        sprite.classList.remove('astro-sleep', 'astro-sleep-hold');
+        bubble.classList.remove('sleep-bubble');
+        if (sleepTimer) { window.clearTimeout(sleepTimer); sleepTimer = null; }
+    }
 
     // Clear any pending bubble timers
     if (bubbleTimers.show) window.clearTimeout(bubbleTimers.show);
@@ -1231,14 +1242,15 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Theme toggle button
+// Theme toggle buttons (footer + status bar)
 themeToggle.addEventListener('click', toggleTheme);
+themeStatusToggle?.addEventListener('click', toggleTheme);
 
 // Sound toggle buttons
 function updateSoundButtons(muted: boolean) {
-    const icon = muted ? '🔇' : '🔊';
+    const label = muted ? 'SOUND OFF' : 'SOUND ON';
     [soundToggle, soundToggleMobile].forEach(btn => {
-        if (btn) { btn.textContent = icon; btn.className = muted ? 'muted' : ''; }
+        if (btn) { btn.textContent = label; btn.className = muted ? 'muted' : ''; }
     });
 }
 updateSoundButtons(sound.muted);
@@ -1306,7 +1318,6 @@ if (window.visualViewport) {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (overlay && !prefersReducedMotion) {
-        sound.play('powerOn');
         await new Promise<void>(resolve => {
             overlay.addEventListener('animationend', () => {
                 overlay.remove();
