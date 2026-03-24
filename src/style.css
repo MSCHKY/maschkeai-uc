@@ -532,10 +532,7 @@ body::before {
     }
 
     #terminal {
-        top: 8px;
-        left: 10px;
-        right: 10px;
-        bottom: 38px;
+        margin: 8px 10px 10px;
         padding: 12px;
         border-radius: 6px;
     }
@@ -1764,8 +1761,34 @@ body::before {
    Responsive
    ============================================================ */
 @media (max-width: 768px) {
+    /* ── Mobile Flexbox Layout ──
+       Browser handles keyboard natively. No JS workaround needed.
+       Desktop (>768px) stays position:fixed. */
+    html {
+        position: static;
+        overflow: auto;
+        overscroll-behavior: none;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+    }
+
     #terminal {
+        position: static;
+        flex: 1;
+        min-height: 0;
+        margin: 24px 24px 16px;
         padding: 16px;
+    }
+
+    #legal-footer {
+        position: static;
+        flex-shrink: 0;
     }
 
     .terminal-nexus-stack {
