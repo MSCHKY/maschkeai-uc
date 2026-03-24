@@ -1285,9 +1285,21 @@ legalOverlay.addEventListener('click', (e) => {
 });
 
 // ── Mobile keyboard handling (visualViewport API) ──
-// When the iOS/Android keyboard opens, the visual viewport shrinks.
-// We adjust terminal bottom offset so the input line stays visible.
+// iOS Safari maintains separate layout/visual viewports. When keyboard closes,
+// the layout viewport can stay offset (visualViewport.offsetTop > 0).
+// window.scrollTo(0,0) is a no-op when scrollY is already 0 — the scrollBy(-1/+1)
+// trick forces Safari to recalculate its internal viewport geometry.
 let isKeyboardOpen = false;
+
+// Force Safari to recalculate viewport position
+const forceViewportReset = () => {
+    window.scrollBy(0, -1);
+    window.scrollBy(0, 1);
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+};
 
 if (window.visualViewport) {
     const onViewportResize = () => {
@@ -1310,38 +1322,33 @@ if (window.visualViewport) {
             });
         } else if (isKeyboardOpen) {
             isKeyboardOpen = false;
-            // Keyboard closed — multi-stage aggressive reset
             input.blur();
-            for (const delay of [0, 50, 150, 300, 500]) {
-                setTimeout(() => {
-                    window.scrollTo(0, 0);
-                    document.documentElement.scrollTop = 0;
-                    document.body.scrollTop = 0;
-                    if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
-                    terminal.style.transform = '';
-                    if (delay === 300) scrollToBottom();
-                }, delay);
-            }
+            // Multi-stage reset — iOS can take up to 1s to settle viewport
+            forceViewportReset();
+            setTimeout(forceViewportReset, 50);
+            setTimeout(() => { forceViewportReset(); scrollToBottom(); }, 300);
+            setTimeout(forceViewportReset, 800);
         }
     };
     window.visualViewport.addEventListener('resize', onViewportResize);
 }
 
-// Nuclear drift prevention: any time the page scrolls, snap back to 0.
-// The page is position:fixed fullscreen — it should NEVER scroll.
+// Snap back if page ever scrolls when keyboard is closed
 window.addEventListener('scroll', () => {
     if (!isKeyboardOpen && (window.scrollX !== 0 || window.scrollY !== 0)) {
         window.scrollTo(0, 0);
     }
 }, { passive: true });
 
-// Backup: reset on input blur (keyboard dismiss via "Done" button or tap outside)
+// Backup: reset on focusout (Done button, tap outside)
 input.addEventListener('focusout', () => {
+    setTimeout(forceViewportReset, 100);
+    // iOS 18+ can take a full second to settle
     setTimeout(() => {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-    }, 100);
+        if (window.visualViewport && window.visualViewport.offsetTop > 0) {
+            forceViewportReset();
+        }
+    }, 1000);
 });
 
 // ── Start ──
