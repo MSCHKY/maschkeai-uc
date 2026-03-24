@@ -47,6 +47,9 @@
     <div class="plasma-blob plasma-blob-3"></div>
   </div>
 
+  <!-- CRT power-on effect — removed after animation -->
+  <div id="crt-boot-overlay" aria-hidden="true"></div>
+
   <div id="terminal">
     <div id="terminal-output"></div>
     <div id="terminal-separator"></div>
@@ -59,7 +62,7 @@
     <div id="terminal-status-bar">
       <span class="status-left">nexus://uplink (secure)</span>
       <span class="status-center">maschke.ai</span>
-      <span class="status-right">NEXUS OS · UC</span>
+      <span class="status-right"><button id="sound-toggle" title="Sound an/aus" aria-label="Sound an/aus">🔊</button> NEXUS OS · UC</span>
     </div>
   </div>
 
@@ -79,6 +82,8 @@
     <a href="#" id="link-datenschutz">Datenschutz</a>
     <span class="separator">|</span>
     <button id="theme-toggle" title="Theme wechseln">◐</button>
+    <span class="separator">|</span>
+    <button id="sound-toggle-mobile" title="Sound an/aus" aria-label="Sound an/aus">🔊</button>
   </footer>
 
   <!-- Legal overlay (floating panel) -->
