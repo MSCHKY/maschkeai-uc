@@ -1467,6 +1467,10 @@ body::before {
     color: var(--terminal-grad-to);
     font: inherit;
     font-weight: inherit;
+    /* iOS auto-zooms inputs with font-size < 16px — causes viewport drift on keyboard open/close.
+       16px prevents the zoom. The input is visually hidden (transparent bg, hidden caret),
+       so the size difference vs terminal text is invisible to users. */
+    font-size: 16px;
     caret-color: transparent;
     /* hide native thin caret */
 }
