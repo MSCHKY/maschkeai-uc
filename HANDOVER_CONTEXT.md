@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-24T00:20 (Session 4cfdf04)
+> Last updated: 2026-03-24T11:30 (Session 77752b2)
 
 ## Project Status: FEATURE-COMPLETE (Under Construction)
 
@@ -35,6 +35,11 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 | Astronaut Animations | `src/main.ts` + `src/style.css` | ✅ Done (idle, fall, perfume, talk) |
 | Background Particles | `index.html` + `src/style.css` | ✅ Done (12 particles dark-only, CRT scanlines light-only) |
 | Plasma Gradient | `index.html` + `src/style.css` | ✅ Done (3 animated blobs behind terminal, GPU-only) |
+| Sound Engine | `src/sounds.ts` | ✅ Done (Web Audio API, 17 synth sounds, default ON, toggle in status bar) |
+| CRT Boot Overlay | `index.html` + `src/style.css` | ✅ Done (2.8s power-on animation, 6 phases) |
+| Cursor Glow | `src/main.ts` + `src/style.css` | ✅ Done (mouse spotlight via #terminal::after, desktop only) |
+| CRT Screen Effects | `src/main.ts` + `src/style.css` | ✅ Done (random flicker, theme-switch static, legal-warp) |
+| YORI Sleep | `public/gfx/yori_anim/` + CSS | ✅ Done (sleep sprite, zZz bubble, 60s inactivity trigger) |
 | Security Headers | `public/_headers` | ✅ Done (CSP, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy) |
 
 ## Recent Session Changes (b5160214 — 2026-03-19)
@@ -234,19 +239,79 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - ✅ Performance (JS 14.59kB gzip, CSS 6.83kB gzip, 0 Dependencies)
 - ✅ Tests (42/42)
 
+## Recent Session Changes (77752b2 — 2026-03-24)
+
+### UX Enhancements (feat/ux-enhancements → merged to main)
+
+**Sound Engine (`src/sounds.ts` — NEU)**
+- ✅ Web Audio API Synthesizer — 17 prozedurale Sounds, 0 KB Assets
+- ✅ Typing-Clicks (keyClick, keyReturn, Backspace), Typewriter-Bleeps, Command-Feedback
+- ✅ Easter-Egg-Sounds: `matrix` (Rain+Pings, 800ms Fade-out), `hack` (Bleep-Sequenz+Buzzer), `sudo` (Access-Denied), `secret` (Discovery-Chime)
+- ✅ YORI-Sounds: Woosh (Fall-Start), Landing-Thud, Wake-Blip
+- ✅ Default: AN, Toggle in Status-Bar (SOUND ON/OFF) + Footer (Mobile)
+- ✅ AudioContext: Lazy init + resume on first user gesture (Browser Autoplay Policy Fix)
+- ⚠️ Boot-Sounds nicht hörbar (feuern vor User-Interaction → unvermeidbar)
+
+**CRT Boot Overlay**
+- ✅ 2800ms Power-On-Animation: 6 Phasen (Schwarz-Suspense → Streifen → Expansion → Flash → Fade)
+- ✅ `prefers-reduced-motion`: Overlay übersprungen
+- ✅ ~~powerOn Sound~~ entfernt (Sawtooth 80Hz war störend)
+
+**Cursor Glow / Mouse Spotlight**
+- ✅ `#terminal::after` mit radial-gradient, folgt Maus via CSS Custom Properties
+- ✅ Opacity 0.05 light / 0.04 dark, nur Desktop (`@media (hover: hover)`)
+- ✅ rAF-throttled mousemove, -999px auf mouseleave
+
+**CRT Screen Effects**
+- ✅ Random Flicker: alle 30-60s, 150ms opacity-jitter
+- ✅ Theme-Switch Static: 200ms Noise-Flash + staticBurst Sound
+- ✅ Legal Overlay Warp: Terminal `scale(0.98) + blur(1px)` während Overlay offen
+
+**YORI Upgrade**
+- ✅ Sleep-Animation: 60s Inaktivität → 2000ms Sleep-Sprite (9 Frames, 185×266px → ~92×133px gerendert) → Sleep-Hold auf Frame 9
+- ✅ "zZz..." Bubble mit `sleep-pulse` Animation (2s, opacity 0.6↔1, Y-Float)
+- ✅ Wake-Up bei User-Input + wakeBlip Sound
+- ✅ Hover-Glow: `drop-shadow(0 0 8px rgba(120,170,255,0.4))` + 300ms Transition
+- ✅ Command-Reaktionen: `hack`/`sudo` → Shake + rote Warning-Bubble, `matrix` → Fade 0.3, `secret` → Glow-Pulse
+- ✅ Klick-Sounds: Woosh + Landing-Thud
+- ✅ Sleep-State wird bei Klick/Fall sauber aufgeräumt (CSS-Klassen-Kollision gefixt)
+- ✅ Perfume gegen Sleep gesperrt
+- ✅ Bubble-Frequenz reduziert: 25s Hide (war 15s), 15s Pause nach Fall-Warnung (war 2s)
+
+**Status-Bar Redesign**
+- ✅ Text-Toggles: `SOUND ON`/`SOUND OFF` + `LIGHT`/`DARK` (statt Emoji-Icons)
+- ✅ Theme-Toggle aus Footer in Status-Bar verschoben (Footer behält Mobile-Fallback)
+
+**Typography & Mobile**
+- ✅ Font-weight: 400 global (war 600), AI-Antworten explizit 400
+- ✅ Mobile (≤480px): font-size 12px (war 14px), padding 12px
+- ✅ Keyboard-Close: 100ms delayed scrollTo(0,0) Reset
+- ✅ **cmd-chip Fix**: `-webkit-text-fill-color` explizit gesetzt (E-Mail war auf Mobile unsichtbar wegen gradient-text Vererbung)
+
+**Nicht umgesetzt (geparkt für Future)**
+- YORI Wave-Sprite (Begrüßung)
+- YORI Scared-Sprite (hack/sudo Reaktion)
+- YORI Celebrate-Sprite (Kontaktformular Erfolg)
+- CSS-Platzhalter sind vorbereitet (kommentiert)
+
 ## Open Tasks / Next Session
 
-- ~~P1: Cloudflare Web Analytics aktivieren~~ ✅ Done
-- ~~P1: Mobile testen~~ ✅ Done (Drift weg, Favicon ok)
-- **P1: Domain-Umzug auf maschke.ai** — UC-Seite von maschkeai-uc.pages.dev auf maschke.ai umziehen. Dabei:
+- **P1: Typografie-Feinschliff** — Font-Weight 400 ist jetzt global, aber:
+  - Terminal-Box-Inhalte (LEISTUNGSFELDER etc.) brauchen eigenes Styling — aktuell erben sie den dünnen 400er-Weight, was mit dem Gradient schwer lesbar ist. Box-Title sollte 600 bleiben, Box-Body evtl. 500 oder 400 ohne Gradient.
+  - Prüfen ob Gradient-Text bei 400 auf allen Geräten gut aussieht (besonders Light-Mode)
+  - Ggf. `font-weight: 500` als Kompromiss für bestimmte Elemente
+- **P1: Mobile Drift immer noch da** — `scrollTo(0,0)` nach Keyboard-Close reicht nicht. Nächste Ansätze:
+  - `input.blur()` + verzögertes Re-Focus beim Keyboard-Close
+  - `position: fixed` + `top: 0` explizit auf Terminal beim Close forcieren
+  - Alternativ: `visualViewport.offsetTop` kompensieren
+- **P2: Domain-Umzug auf maschke.ai** — UC-Seite von maschkeai-uc.pages.dev auf maschke.ai umziehen
   - Cloudflare Pages Custom Domain konfigurieren (maschke.ai → maschkeai-uc)
   - `noindex, nofollow` → `index, follow` in index.html
   - `robots.txt` Disallow → Allow + AI-Crawler-Regeln aktivieren
   - OG/Canonical URLs prüfen (zeigen bereits auf https://maschke.ai ✅)
   - SSL/DNS prüfen
-  - Alte maschkeai-chatbot Domain-Zuordnung ggf. entfernen/umleiten
-- P2: 9 offene Jules-PRs reviewen (#17–#25: Tests, Perf, TypeScript-Hygiene)
-- P3: maschke-vdna Abgleich fortsetzen (About-Text Arbeitsthese dynamisch, Services-Text Feinschliff nach User-Feedback)
+- P3: Neue YORI-Sprites erstellen (Wave, Scared, Celebrate) — Robert erstellt die Pixel-Art
+- P3: maschke-vdna Abgleich fortsetzen (About-Text, Services-Text Feinschliff)
 
 ## Astronaut YORI — Positioning System
 
@@ -263,9 +328,12 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 
 **Animations:**
 - **Idle:** 8s cycle, 3x3 sprite sheet (9 frames)
-- **Fall:** Click Yori -> 1100ms fall animation + red warning bubble
-- **Perfume:** Random trigger (28s interval, 2% chance), 1300ms, 9 frames
+- **Fall:** Click Yori -> 1100ms fall animation + red warning bubble + woosh/thud sounds
+- **Perfume:** Random trigger (28s interval, 2% chance), 1300ms, 9 frames (blocked during sleep)
 - **Talk:** AI streaming trigger, 1200ms fast cycle -> "talking" effect. Guards prevent concurrent animations.
+- **Sleep:** 60s inactivity → 2000ms sleep animation (9 frames, 185×266px) → holds frame 9 + "zZz..." pulsating bubble. Wakes on user input.
+- **Command Reactions:** hack/sudo → shake + warning bubble; matrix → fade 0.3; secret → glow pulse
+- **Hover Glow:** Blue drop-shadow on hover, 300ms transition
 - **Debug Panel:** `?debug=1` shows live sliders
 
 ## NEXUS System Prompt
@@ -322,9 +390,16 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `4cfdf04`
-- **Session commits (4cfdf04 — 2026-03-23/24):** 1
-  - `4cfdf04` fix: go-live checklist — DSGVO, mobile, YORI, favicon, AI search prep
+- **HEAD:** `77752b2`
+- **Session commits (77752b2 — 2026-03-24):** 8
+  - `a529ac6` feat: UX enhancements — sound engine, CRT boot, cursor glow, screen effects, YORI upgrade
+  - `7dc2fd3` Merge feat/ux-enhancements
+  - `3057f16` fix: UX polish — CRT longer, remove buzz, text toggles, matrix fade, YORI fix
+  - `fa7bc61` fix: matrix timing, backspace sound, YORI bubble pacing
+  - `45c6e3b` fix: AudioContext resume on first user gesture
+  - `de2e0b2` fix: cmd-chip text invisible on mobile (gradient text inheritance)
+  - `9955f0c` fix: font readability, mobile sizing, keyboard drift
+  - `77752b2` fix: remove font-weight 600 from output lines, improve drift reset
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
