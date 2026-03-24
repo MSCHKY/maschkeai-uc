@@ -24,6 +24,18 @@ class SoundEngine {
     constructor() {
         const stored = localStorage.getItem(STORAGE_KEY);
         this._muted = stored === 'off';
+
+        // Resume AudioContext on first user gesture (browser autoplay policy)
+        const initOnGesture = () => {
+            const ctx = this.ensureCtx();
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+            document.removeEventListener('pointerdown', initOnGesture);
+            document.removeEventListener('keydown', initOnGesture);
+        };
+        document.addEventListener('pointerdown', initOnGesture);
+        document.addEventListener('keydown', initOnGesture);
     }
 
     get muted(): boolean {
@@ -40,8 +52,17 @@ class SoundEngine {
     play(id: SoundId): void {
         if (this._muted) return;
         const ctx = this.ensureCtx();
-        if (ctx.state === 'suspended') ctx.resume();
+        if (ctx.state === 'suspended') {
+            // Context not yet ready — resume and retry after it's running
+            ctx.resume().then(() => {
+                this.dispatch(ctx, id);
+            });
+            return;
+        }
+        this.dispatch(ctx, id);
+    }
 
+    private dispatch(ctx: AudioContext, id: SoundId): void {
         switch (id) {
             case 'keyClick': this.tone(ctx, 'square', 800, 0.002, 0.03); break;
             case 'keyReturn': this.tone(ctx, 'square', 400, 0.004, 0.05); break;
