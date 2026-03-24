@@ -320,27 +320,8 @@ function triggerSleep(sprite: HTMLElement, bubble: HTMLElement) {
     if (bubbleTimers.show) window.clearTimeout(bubbleTimers.show);
     if (bubbleTimers.hide) window.clearTimeout(bubbleTimers.hide);
 
-    const transitionToHold = () => {
-        sprite.classList.remove('astro-sleep');
-        sprite.classList.add('astro-sleep-hold');
-    };
-
+    // Sleep animation loops infinitely until wakeUp() removes the class
     sprite.classList.add('astro-sleep');
-
-    // Listen for animationend — check animationName to avoid catching wrong animation
-    const onEnd = (e: AnimationEvent) => {
-        if (e.animationName !== 'astro-sleep') return;
-        clearTimeout(fallback);
-        sprite.removeEventListener('animationend', onEnd as EventListener);
-        transitionToHold();
-    };
-    sprite.addEventListener('animationend', onEnd as EventListener);
-
-    // Fallback: if animationend never fires (browser quirk), force transition after 2100ms
-    const fallback = setTimeout(() => {
-        sprite.removeEventListener('animationend', onEnd as EventListener);
-        transitionToHold();
-    }, 2100);
 
     showBubble(bubble, 'zZz...');
     bubble.classList.add('sleep-bubble');
@@ -350,7 +331,7 @@ function wakeUp(sprite: HTMLElement, bubble: HTMLElement) {
     if (!isSleeping) return;
     isSleeping = false;
 
-    sprite.classList.remove('astro-sleep', 'astro-sleep-hold');
+    sprite.classList.remove('astro-sleep');
     bubble.classList.remove('sleep-bubble');
     hideBubble(bubble);
     sound.play('wakeBlip');
@@ -396,7 +377,7 @@ function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
     // Clear sleep state if sleeping (prevents CSS class collision)
     if (isSleeping) {
         isSleeping = false;
-        sprite.classList.remove('astro-sleep', 'astro-sleep-hold');
+        sprite.classList.remove('astro-sleep');
         bubble.classList.remove('sleep-bubble');
         if (sleepTimer) { window.clearTimeout(sleepTimer); sleepTimer = null; }
     }

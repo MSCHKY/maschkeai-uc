@@ -2290,22 +2290,13 @@ body::before {
 }
 
 /* --- Sleep sprite (9 frames, 185x266 per frame → rendered ~92x133) --- */
-/* Explicit width/height/background-size — don't rely on custom property cascading */
+/* Loops continuously until wakeUp() removes the class */
 #astronaut-sprite.astro-sleep {
     width: 92px;
     height: 133px;
     background-image: url('/gfx/yori_anim/sprite_sleep-256px-9.webp');
     background-size: 276px 399px;
-    animation: astro-sleep 2000ms steps(1, end) 1 both;
-}
-
-#astronaut-sprite.astro-sleep-hold {
-    width: 92px;
-    height: 133px;
-    background-image: url('/gfx/yori_anim/sprite_sleep-256px-9.webp');
-    background-size: 276px 399px;
-    background-position: -184px -266px;
-    animation: none;
+    animation: astro-sleep 2000ms steps(1, end) infinite;
 }
 
 @keyframes astro-sleep {
