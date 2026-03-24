@@ -1057,6 +1057,10 @@ body::before {
 /* Clickable command chips inside AI responses */
 .cmd-chip {
     color: var(--terminal-accent);
+    -webkit-text-fill-color: var(--terminal-accent);
+    background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
     cursor: pointer;
     text-decoration: underline;
     text-decoration-color: var(--terminal-link-decoration);
