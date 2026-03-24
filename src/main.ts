@@ -1285,17 +1285,17 @@ legalOverlay.addEventListener('click', (e) => {
 });
 
 // ── Mobile keyboard handling (visualViewport API) ──
-// iOS Safari has a viewport drift bug: when the keyboard closes, the layout
-// viewport can stay offset (visualViewport.offsetTop > 0). The scrollBy(-1/+1)
-// trick forces Safari to recalculate. Chrome Android does NOT have this bug —
-// running these hacks on Chrome actively prevents the keyboard from opening.
+// When the mobile keyboard closes, the viewport can stay offset (drift).
+// The scrollBy(-1/+1) trick forces the browser to recalculate viewport geometry.
+// This affects both iOS Safari AND Chrome Android.
+// However, input.blur() on keyboard close breaks Chrome Android — it prevents
+// the keyboard from re-opening. So blur + focusout handler are iOS-only.
 let isKeyboardOpen = false;
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-// Force Safari to recalculate viewport position (iOS only)
+// Force browser to recalculate viewport position after keyboard close
 const forceViewportReset = () => {
-    if (!isIOS) return;
     window.scrollBy(0, -1);
     window.scrollBy(0, 1);
     window.scrollTo(0, 0);
@@ -1325,16 +1325,12 @@ if (window.visualViewport) {
             });
         } else if (isKeyboardOpen) {
             isKeyboardOpen = false;
-            // iOS needs blur + viewport reset; Chrome keeps focus naturally
-            if (isIOS) {
-                input.blur();
-                forceViewportReset();
-                setTimeout(forceViewportReset, 50);
-                setTimeout(() => { forceViewportReset(); scrollToBottom(); }, 300);
-                setTimeout(forceViewportReset, 800);
-            } else {
-                scrollToBottom();
-            }
+            // blur() only on iOS — on Chrome it kills keyboard re-opening
+            if (isIOS) input.blur();
+            forceViewportReset();
+            setTimeout(forceViewportReset, 50);
+            setTimeout(() => { forceViewportReset(); scrollToBottom(); }, 300);
+            setTimeout(forceViewportReset, 800);
         }
     };
     window.visualViewport.addEventListener('resize', onViewportResize);
@@ -1348,6 +1344,7 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 // Backup: reset on focusout (Done button, tap outside) — iOS only
+// On Chrome Android this handler interferes with keyboard re-opening
 if (isIOS) {
     input.addEventListener('focusout', () => {
         setTimeout(forceViewportReset, 100);
