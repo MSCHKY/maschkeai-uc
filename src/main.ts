@@ -1284,76 +1284,99 @@ legalOverlay.addEventListener('click', (e) => {
     if (e.target === legalOverlay) closeLegal();
 });
 
-// ── Mobile keyboard handling (visualViewport API) ──
-// When the mobile keyboard closes, the viewport can stay offset (drift).
-// The scrollBy(-1/+1) trick forces the browser to recalculate viewport geometry.
-// This affects both iOS Safari AND Chrome Android.
-// However, input.blur() on keyboard close breaks Chrome Android — it prevents
-// the keyboard from re-opening. So blur + focusout handler are iOS-only.
-let isKeyboardOpen = false;
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-// Force browser to recalculate viewport position after keyboard close
-const forceViewportReset = () => {
-    window.scrollBy(0, -1);
-    window.scrollBy(0, 1);
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-    if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
-};
-
-if (window.visualViewport) {
-    const onViewportResize = () => {
-        const vv = window.visualViewport!;
-        const kbHeight = window.innerHeight - vv.height;
-        const kbOpen = kbHeight > 100;
-
-        terminal.style.bottom = kbOpen ? `${kbHeight + 4}px` : '';
-
-        const astronaut = document.getElementById('astronaut-overlay');
+// ── Mobile keyboard handling ──
+// Strategy: focus/blur as PRIMARY detection (works on every browser),
+// visualViewport.resize as ENHANCEMENT for precise height (where supported).
+// No per-device UA sniffing. No scroll hacks. No guesswork.
+//
+// Why focus/blur? iOS Safari doesn't reliably resize the visual viewport
+// when the keyboard opens, so visualViewport.resize alone misses it.
+// focus/blur is universal — if the input got focus on a touch device,
+// the keyboard WILL appear.
+{
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isMobile) {
+        let kbOpen = false;
+        let blurTimer: ReturnType<typeof setTimeout> | null = null;
+        const baseHeight = window.visualViewport?.height ?? window.innerHeight;
         const footer = document.getElementById('legal-footer');
-        if (astronaut) astronaut.style.display = kbOpen ? 'none' : '';
-        if (footer) footer.style.display = kbOpen ? 'none' : '';
+        const astronaut = document.getElementById('astronaut-overlay');
 
-        if (kbOpen) {
-            isKeyboardOpen = true;
-            requestAnimationFrame(() => {
-                input.scrollIntoView({ block: 'nearest' });
-                scrollToBottom();
-            });
-        } else if (isKeyboardOpen) {
-            isKeyboardOpen = false;
-            // blur() only on iOS — on Chrome it kills keyboard re-opening
-            if (isIOS) input.blur();
-            forceViewportReset();
-            setTimeout(forceViewportReset, 50);
-            setTimeout(() => { forceViewportReset(); scrollToBottom(); }, 300);
-            setTimeout(forceViewportReset, 800);
-        }
-    };
-    window.visualViewport.addEventListener('resize', onViewportResize);
-}
+        const applyKeyboard = (open: boolean) => {
+            if (open === kbOpen) return;
+            kbOpen = open;
 
-// Snap back if page ever scrolls when keyboard is closed
-window.addEventListener('scroll', () => {
-    if (!isKeyboardOpen && (window.scrollX !== 0 || window.scrollY !== 0)) {
-        window.scrollTo(0, 0);
-    }
-}, { passive: true });
+            if (open) {
+                // Try precise measurement via visualViewport
+                const vv = window.visualViewport;
+                const visible = vv ? vv.height : window.innerHeight;
+                const kbHeight = baseHeight - visible;
 
-// Backup: reset on focusout (Done button, tap outside) — iOS only
-// On Chrome Android this handler interferes with keyboard re-opening
-if (isIOS) {
-    input.addEventListener('focusout', () => {
-        setTimeout(forceViewportReset, 100);
-        setTimeout(() => {
-            if (window.visualViewport && window.visualViewport.offsetTop > 0) {
-                forceViewportReset();
+                // If viewport shrank enough, use actual measurement.
+                // Otherwise fall back to 45% of screen (typical mobile keyboard).
+                terminal.style.bottom = kbHeight > 80
+                    ? `${kbHeight + 4}px`
+                    : `${Math.round(baseHeight * 0.45)}px`;
+
+                if (astronaut) astronaut.style.display = 'none';
+                if (footer) footer.style.display = 'none';
+                requestAnimationFrame(() => scrollToBottom());
+            } else {
+                terminal.style.bottom = '';
+                if (astronaut) astronaut.style.display = '';
+                if (footer) footer.style.display = '';
             }
-        }, 1000);
-    });
+        };
+
+        // ── Primary: focus / blur ──
+        input.addEventListener('focus', () => {
+            // Cancel pending close — prevents flicker from click-to-focus handler
+            if (blurTimer) { clearTimeout(blurTimer); blurTimer = null; }
+            // Delay lets keyboard animation start so visualViewport can measure
+            setTimeout(() => applyKeyboard(true), 150);
+            // Re-measure once keyboard is fully open for precise fit
+            setTimeout(() => {
+                if (!kbOpen) return;
+                const vv = window.visualViewport;
+                if (!vv) return;
+                const kbHeight = baseHeight - vv.height;
+                if (kbHeight > 80) {
+                    terminal.style.bottom = `${kbHeight + 4}px`;
+                    scrollToBottom();
+                }
+            }, 500);
+        });
+
+        input.addEventListener('blur', () => {
+            // Debounce: if focus returns quickly (click-to-focus), cancel close
+            blurTimer = setTimeout(() => {
+                applyKeyboard(false);
+                blurTimer = null;
+            }, 200);
+        });
+
+        // ── Enhancement: precise resizing via visualViewport (Chrome, some Safari) ──
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', () => {
+                const vv = window.visualViewport!;
+                const kbHeight = baseHeight - vv.height;
+                if (kbHeight > 80 && kbOpen) {
+                    // Keyboard still open — refine height
+                    terminal.style.bottom = `${kbHeight + 4}px`;
+                } else if (kbHeight < 50 && kbOpen) {
+                    // Viewport expanded — keyboard closed
+                    applyKeyboard(false);
+                }
+            });
+        }
+
+        // ── Safety net: reset scroll if page ever drifts ──
+        window.addEventListener('scroll', () => {
+            if (!kbOpen && (window.scrollX !== 0 || window.scrollY !== 0)) {
+                window.scrollTo(0, 0);
+            }
+        }, { passive: true });
+    }
 }
 
 // ── Start ──
