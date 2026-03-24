@@ -7,8 +7,13 @@ import { handleCommand, isSpecialCommand } from './commands.ts';
 test('handleCommand', async (t: any) => {
     await t.test('returns null for unknown commands', () => {
         assert.equal(handleCommand('unknown'), null);
+        assert.equal(handleCommand('invalid'), null);
+    });
+
+    await t.test('handles empty and whitespace inputs', () => {
         assert.equal(handleCommand(''), null);
         assert.equal(handleCommand('   '), null);
+        assert.equal(handleCommand('\t\n'), null);
     });
 
     await t.test('handles valid commands', () => {
@@ -151,6 +156,11 @@ test('isSpecialCommand', async (t: any) => {
         assert.equal(isSpecialCommand('clea'), false);
         assert.equal(isSpecialCommand('impress'), false);
         assert.equal(isSpecialCommand('unknown'), false);
+    });
+
+    await t.test('handles empty and whitespace inputs', () => {
         assert.equal(isSpecialCommand(''), false);
+        assert.equal(isSpecialCommand('   '), false);
+        assert.equal(isSpecialCommand('\t\n'), false);
     });
 });
