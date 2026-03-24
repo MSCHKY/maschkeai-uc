@@ -320,11 +320,27 @@ function triggerSleep(sprite: HTMLElement, bubble: HTMLElement) {
     if (bubbleTimers.show) window.clearTimeout(bubbleTimers.show);
     if (bubbleTimers.hide) window.clearTimeout(bubbleTimers.hide);
 
-    sprite.classList.add('astro-sleep');
-    sprite.addEventListener('animationend', () => {
+    const transitionToHold = () => {
         sprite.classList.remove('astro-sleep');
         sprite.classList.add('astro-sleep-hold');
-    }, { once: true });
+    };
+
+    sprite.classList.add('astro-sleep');
+
+    // Listen for animationend — check animationName to avoid catching wrong animation
+    const onEnd = (e: AnimationEvent) => {
+        if (e.animationName !== 'astro-sleep') return;
+        clearTimeout(fallback);
+        sprite.removeEventListener('animationend', onEnd as EventListener);
+        transitionToHold();
+    };
+    sprite.addEventListener('animationend', onEnd as EventListener);
+
+    // Fallback: if animationend never fires (browser quirk), force transition after 2100ms
+    const fallback = setTimeout(() => {
+        sprite.removeEventListener('animationend', onEnd as EventListener);
+        transitionToHold();
+    }, 2100);
 
     showBubble(bubble, 'zZz...');
     bubble.classList.add('sleep-bubble');
@@ -562,6 +578,11 @@ async function runBootSequence(): Promise<void> {
     // Show input
     inputLine.classList.add('visible');
     input.focus();
+
+    // Preload secondary sprite sheets (sleep, fall, perfume) to avoid blank frames
+    for (const src of ['/gfx/yori_anim/sprite_sleep-256px-9.webp', '/gfx/yori_anim/sprite_fall-256px-9.webp', '/gfx/yori_anim/sprite_perfume-256px-9.webp']) {
+        const img = new Image(); img.src = src;
+    }
 
     // Reveal astronaut after a short delay + start speech bubbles
     const astronaut = document.getElementById('astronaut-overlay');
