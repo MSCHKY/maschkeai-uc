@@ -1356,16 +1356,16 @@ legalOverlay.addEventListener('click', (e) => {
         });
 
         // ── Enhancement: precise resizing via visualViewport (Chrome, some Safari) ──
+        // ONLY refines height — never closes keyboard state.
+        // blur is the sole signal for keyboard close. visualViewport can fluctuate
+        // during content rendering (reflows, address bar) which would falsely close.
         if (window.visualViewport) {
             window.visualViewport.addEventListener('resize', () => {
+                if (!kbOpen) return;
                 const vv = window.visualViewport!;
                 const kbHeight = baseHeight - vv.height;
-                if (kbHeight > 80 && kbOpen) {
-                    // Keyboard still open — refine height
+                if (kbHeight > 80) {
                     terminal.style.bottom = `${kbHeight + 4}px`;
-                } else if (kbHeight < 50 && kbOpen) {
-                    // Viewport expanded — keyboard closed
-                    applyKeyboard(false);
                 }
             });
         }
