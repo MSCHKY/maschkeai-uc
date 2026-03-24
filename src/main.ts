@@ -8,6 +8,7 @@ import { renderNexusLogo } from './ascii-logo';
 import { getBootSequence } from './boot-sequence';
 import { handleCommand, isSpecialCommand } from './commands';
 import { sendMessage, isLimitReached } from './chat';
+import { sound } from './sounds';
 import {
     isContactFormActive,
     startContactForm,
@@ -37,10 +38,32 @@ const legalOverlay = document.getElementById('legal-overlay')!;
 const legalTitle = document.getElementById('legal-overlay-title')!;
 const legalContent = document.getElementById('legal-overlay-content')!;
 const legalClose = document.getElementById('legal-overlay-close')!;
+const soundToggle = document.getElementById('sound-toggle');
+const soundToggleMobile = document.getElementById('sound-toggle-mobile');
 
 let isProcessing = false;
 let commandHistory: string[] = [];
 let historyIndex = -1;
+
+// ── Cursor Glow (desktop only) ──
+if (window.matchMedia('(hover: hover)').matches
+    && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let rafPending = false;
+    terminal.addEventListener('mousemove', (e) => {
+        if (rafPending) return;
+        rafPending = true;
+        requestAnimationFrame(() => {
+            const rect = terminal.getBoundingClientRect();
+            terminal.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+            terminal.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+            rafPending = false;
+        });
+    });
+    terminal.addEventListener('mouseleave', () => {
+        terminal.style.setProperty('--mouse-x', '-999px');
+        terminal.style.setProperty('--mouse-y', '-999px');
+    });
+}
 
 
 // ── DSGVO Consent (pattern from main project: useTerminalControllerV2.ts) ──
@@ -63,6 +86,11 @@ function applyTheme(theme: 'light' | 'dark' | 'auto') {
 
 function toggleTheme() {
     const current = document.documentElement.getAttribute('data-theme');
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.body.classList.add('static-burst');
+        sound.play('staticBurst');
+        setTimeout(() => document.body.classList.remove('static-burst'), 250);
+    }
     applyTheme(current === 'dark' ? 'light' : 'dark');
 }
 
@@ -126,6 +154,7 @@ async function typewriteLine(text: string, cls: string, charDelay = 15): Promise
     scrollToBottom();
     for (let i = 0; i < text.length; i++) {
         div.textContent += text[i];
+        if (i % 5 === 0) sound.play('typeBleep');
         await sleep(charDelay);
     }
 }
@@ -143,6 +172,7 @@ async function animateProgressBar(): Promise<void> {
         const empty = '░'.repeat(total - i);
         const pct = Math.round((i / total) * 100);
         div.textContent = `[${filled}${empty}] ${pct}%`;
+        if (i % 3 === 0) sound.play('progressTick');
         scrollToBottom();
         await sleep(30 + Math.random() * 40);
     }
@@ -207,7 +237,9 @@ let bubbleTimers: { show?: number; hide?: number } = {};
 let isFalling = false;
 let isPerfuming = false;
 let isTalking = false;
+let isSleeping = false;
 let inactivityTimer: number | null = null;
+let sleepTimer: number | null = null;
 let inactivityNudgeShown = false;
 
 // ── Perfume animation (ported from main project's useAstronaut.ts) ──
@@ -277,15 +309,50 @@ function startBubbleRotation(bubble: HTMLElement) {
     showNext();
 }
 
-// ── Inactivity nudge: YORI prods user after 30s idle ──
+// ── Sleep animation ──
+function triggerSleep(sprite: HTMLElement, bubble: HTMLElement) {
+    if (isSleeping || isFalling || isPerfuming || isTalking) return;
+    isSleeping = true;
+
+    if (bubbleTimers.show) window.clearTimeout(bubbleTimers.show);
+    if (bubbleTimers.hide) window.clearTimeout(bubbleTimers.hide);
+
+    sprite.classList.add('astro-sleep');
+    sprite.addEventListener('animationend', () => {
+        sprite.classList.remove('astro-sleep');
+        sprite.classList.add('astro-sleep-hold');
+    }, { once: true });
+
+    showBubble(bubble, 'zZz...');
+    bubble.classList.add('sleep-bubble');
+}
+
+function wakeUp(sprite: HTMLElement, bubble: HTMLElement) {
+    if (!isSleeping) return;
+    isSleeping = false;
+
+    sprite.classList.remove('astro-sleep', 'astro-sleep-hold');
+    bubble.classList.remove('sleep-bubble');
+    hideBubble(bubble);
+    sound.play('wakeBlip');
+
+    bubbleTimers.show = window.setTimeout(() => startBubbleRotation(bubble), 3000);
+}
+
+// ── Inactivity nudge: YORI prods user after 30s idle, sleeps after 60s ──
 function resetInactivityTimer(bubble: HTMLElement) {
     if (inactivityTimer) window.clearTimeout(inactivityTimer);
+    if (sleepTimer) window.clearTimeout(sleepTimer);
     inactivityNudgeShown = false;
+
+    // Wake up if sleeping
+    const sprite = document.getElementById('astronaut-sprite');
+    if (sprite && isSleeping) wakeUp(sprite, bubble);
+
     inactivityTimer = window.setTimeout(() => {
         if (inactivityNudgeShown) return;
         inactivityNudgeShown = true;
         const nudge = YORI_NUDGE_LINES[Math.floor(Math.random() * YORI_NUDGE_LINES.length)];
-        // Interrupt current bubble rotation briefly
         if (bubbleTimers.show) window.clearTimeout(bubbleTimers.show);
         if (bubbleTimers.hide) window.clearTimeout(bubbleTimers.hide);
         showBubble(bubble, nudge);
@@ -294,11 +361,18 @@ function resetInactivityTimer(bubble: HTMLElement) {
             bubbleTimers.show = window.setTimeout(() => startBubbleRotation(bubble), 8_000);
         }, 6_000);
     }, 30_000);
+
+    // Sleep after 60s total inactivity
+    sleepTimer = window.setTimeout(() => {
+        const spriteEl = document.getElementById('astronaut-sprite');
+        if (spriteEl) triggerSleep(spriteEl, bubble);
+    }, 60_000);
 }
 
 function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
     if (isFalling) return;
     isFalling = true;
+    sound.play('woosh');
 
     // Clear any pending bubble timers
     if (bubbleTimers.show) window.clearTimeout(bubbleTimers.show);
@@ -317,6 +391,7 @@ function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
     // Recovery sequence — timeout matches CSS animation duration exactly (1100ms)
     // rAF ensures class removal is frame-aligned (no blank frame between fall→idle)
     window.setTimeout(() => {
+        sound.play('landingThud');
         requestAnimationFrame(() => {
             sprite.classList.remove('astro-fall');
             isFalling = false;
@@ -328,6 +403,36 @@ function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
         hideBubble(bubble);
         window.setTimeout(() => startBubbleRotation(bubble), 2000);
     }, 2300);
+}
+
+// ── YORI command reactions ──
+function triggerYoriReaction(cmd: string) {
+    const overlay = document.getElementById('astronaut-overlay');
+    const bubble = document.getElementById('astronaut-bubble');
+    if (!overlay || !bubble) return;
+
+    if (cmd === 'hack' || cmd === 'hacking' || cmd === 'sudo') {
+        overlay.classList.add('astro-shake');
+        showBubble(bubble, '!!! WARNUNG !!!', true);
+        setTimeout(() => {
+            overlay.classList.remove('astro-shake');
+            hideBubble(bubble);
+        }, 2000);
+    } else if (cmd === 'matrix') {
+        overlay.classList.add('astro-matrix');
+        showBubble(bubble, 'Was passiert hier?!');
+        setTimeout(() => {
+            overlay.classList.remove('astro-matrix');
+            hideBubble(bubble);
+        }, 5000);
+    } else if (cmd === 'secret' || cmd === 'easteregg' || cmd === 'easter egg') {
+        overlay.classList.add('astro-glow-pulse');
+        showBubble(bubble, 'Psst... du hast mich gefunden!');
+        setTimeout(() => {
+            overlay.classList.remove('astro-glow-pulse');
+            hideBubble(bubble);
+        }, 3000);
+    }
 }
 
 // ── Astronaut Debug Panel (enabled via ?debug=1) ──
@@ -421,6 +526,7 @@ async function runBootSequence(): Promise<void> {
         if (line.text === 'ASCII_LOGO') {
             const logoEl = renderNexusLogo();
             output.appendChild(logoEl);
+            sound.play('glitchNoise');
             scrollToBottom();
             await sleep(line.delay || 100);
             continue;
@@ -433,6 +539,7 @@ async function runBootSequence(): Promise<void> {
         // Typewriter effect for BOOT: lines (lines 2-4 in sequence)
         if (line.text.startsWith('BOOT:')) {
             await typewriteLine(line.text, line.cls);
+            sound.play('bootBlip');
         } else {
             addLine(line.text, line.cls);
         }
@@ -471,6 +578,21 @@ async function runBootSequence(): Promise<void> {
 
     // Periodic glitch scanline — random interference line (like reference terminal site)
     startGlitchScanline();
+
+    // Random CRT flicker — every 30-60s
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const scheduleFlicker = () => {
+            const delay = 30_000 + Math.random() * 30_000;
+            setTimeout(() => {
+                terminal.classList.add('crt-flicker');
+                terminal.addEventListener('animationend', () => {
+                    terminal.classList.remove('crt-flicker');
+                }, { once: true });
+                scheduleFlicker();
+            }, delay);
+        };
+        scheduleFlicker();
+    }
 }
 
 // ── Echo user input ──
@@ -594,10 +716,12 @@ function showLegal(type: 'impressum' | 'datenschutz') {
     legalTitle.textContent = type === 'impressum' ? '§ Impressum' : '§ Datenschutzerklärung';
     legalContent.innerHTML = type === 'impressum' ? IMPRESSUM_CONTENT : DATENSCHUTZ_CONTENT;
     legalOverlay.classList.add('active');
+    document.body.classList.add('legal-open');
 }
 
 function closeLegal() {
     legalOverlay.classList.remove('active');
+    document.body.classList.remove('legal-open');
     input.focus();
 }
 
@@ -823,6 +947,8 @@ async function processInput(text: string) {
         }
         // Animated hack Easter Egg — Hollywood style
         if (cmd === 'hack' || cmd === 'hacking') {
+            sound.play('hackSequence');
+            triggerYoriReaction(cmd);
             addLine('', '');
             addLine('NEXUS INTRUSION FRAMEWORK v3.1.7', 'line-system');
             addLine('───────────────────────────', 'line-dim');
@@ -854,6 +980,16 @@ async function processInput(text: string) {
     // Local commands
     const result = handleCommand(trimmed);
     if (result) {
+        // Sound feedback for recognized commands
+        if (cmd === 'sudo') sound.play('accessDenied');
+        else if (cmd === 'secret' || cmd === 'easteregg' || cmd === 'easter egg') sound.play('discoveryChime');
+        else if (cmd === 'matrix') {
+            sound.play('matrixRain');
+            setTimeout(() => sound.stopLoop('matrixRain'), 4000);
+        } else sound.play('cmdAccept');
+
+        // YORI reactions to easter egg commands
+        triggerYoriReaction(cmd);
 
         // Contact form trigger
         if (result.startContactForm) {
@@ -965,6 +1101,7 @@ async function processInput(text: string) {
         typewriterTimer = window.setInterval(() => {
             if (displayedChars < rawAiText.length) {
                 displayedChars += 1;
+                if (displayedChars % 5 === 0) sound.play('typeBleep');
                 responseDiv.textContent = typewriterText(rawAiText.substring(0, displayedChars));
                 scrollToBottom();
             } else if (streamingDone) {
@@ -1025,6 +1162,7 @@ async function processInput(text: string) {
                 output.appendChild(ctaBox);
                 scrollToBottom();
             } else {
+                sound.play('cmdError');
                 responseDiv.textContent = `[FEHLER] ${error}`;
                 responseDiv.className = 'line line-accent';
             }
@@ -1039,8 +1177,11 @@ async function processInput(text: string) {
 // Input submit
 input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
+        sound.play('keyReturn');
         e.preventDefault();
         processInput(input.value);
+    } else if (e.key.length === 1) {
+        sound.play('keyClick');
     }
 
     // Command history navigation
@@ -1092,6 +1233,18 @@ document.addEventListener('click', (e) => {
 
 // Theme toggle button
 themeToggle.addEventListener('click', toggleTheme);
+
+// Sound toggle buttons
+function updateSoundButtons(muted: boolean) {
+    const icon = muted ? '🔇' : '🔊';
+    [soundToggle, soundToggleMobile].forEach(btn => {
+        if (btn) { btn.textContent = icon; btn.className = muted ? 'muted' : ''; }
+    });
+}
+updateSoundButtons(sound.muted);
+[soundToggle, soundToggleMobile].forEach(btn => {
+    btn?.addEventListener('click', () => updateSoundButtons(sound.toggle()));
+});
 
 // Legal footer links → overlay
 linkImpressum.addEventListener('click', (e) => {
@@ -1148,4 +1301,21 @@ if (window.visualViewport) {
 }
 
 // ── Start ──
-runBootSequence();
+(async () => {
+    const overlay = document.getElementById('crt-boot-overlay');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (overlay && !prefersReducedMotion) {
+        sound.play('powerOn');
+        await new Promise<void>(resolve => {
+            overlay.addEventListener('animationend', () => {
+                overlay.remove();
+                resolve();
+            }, { once: true });
+        });
+    } else if (overlay) {
+        overlay.remove();
+    }
+
+    await runBootSequence();
+})();

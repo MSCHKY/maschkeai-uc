@@ -288,6 +288,48 @@ body::before {
 }
 
 /* ============================================================
+   CRT Boot Overlay — TV power-on effect
+   ============================================================ */
+#crt-boot-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background: #000;
+    pointer-events: none;
+    animation: crt-boot 1200ms ease-out forwards;
+}
+
+@keyframes crt-boot {
+    0%, 16% {
+        background: #000;
+    }
+    17% {
+        background: linear-gradient(180deg, #000 48%, rgba(255, 255, 255, 0.95) 49%, rgba(255, 255, 255, 0.95) 51%, #000 52%);
+    }
+    42% {
+        background: linear-gradient(180deg, #000 48%, rgba(255, 255, 255, 0.95) 49%, rgba(255, 255, 255, 0.95) 51%, #000 52%);
+    }
+    75% {
+        background: rgba(255, 255, 255, 0.9);
+    }
+    80% {
+        background: rgba(255, 255, 255, 0.7);
+        opacity: 1;
+    }
+    100% {
+        background: rgba(255, 255, 255, 0);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #crt-boot-overlay {
+        animation: none !important;
+        display: none !important;
+    }
+}
+
+/* ============================================================
    Terminal Container
    ============================================================ */
 #terminal {
@@ -305,6 +347,48 @@ body::before {
     box-shadow:
         0 2px 16px rgba(0, 0, 0, 0.08),
         0 0 0 1px rgba(0, 0, 0, 0.04);
+    z-index: 1;
+}
+
+/* Mouse spotlight — subtle radial glow following cursor */
+#terminal::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    background: radial-gradient(
+        350px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+        var(--terminal-grad-to) 0%,
+        transparent 100%
+    );
+}
+
+@media (hover: hover) {
+    #terminal::after {
+        opacity: 0.05;
+    }
+
+    [data-theme="dark"] #terminal::after {
+        opacity: 0.04;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #terminal::after {
+        display: none !important;
+    }
+}
+
+/* Ensure terminal children are above the spotlight pseudo-element */
+#terminal-output,
+#terminal-input-line,
+#terminal-separator,
+#terminal-separator-bottom,
+#terminal-status-bar {
+    position: relative;
     z-index: 1;
 }
 
@@ -1421,6 +1505,59 @@ body::before {
     }
 }
 
+/* CRT Flicker — subtle random opacity jitter */
+.crt-flicker {
+    animation: crt-flicker-anim 150ms ease-in-out;
+}
+
+@keyframes crt-flicker-anim {
+    0% { opacity: 1; }
+    25% { opacity: 0.85; }
+    50% { opacity: 0.92; }
+    75% { opacity: 0.88; }
+    100% { opacity: 1; }
+}
+
+/* Theme-switch static noise — via #terminal::before */
+#terminal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+    background:
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.08) 0px, transparent 1px, transparent 2px),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0px, transparent 2px, transparent 4px);
+    mix-blend-mode: overlay;
+}
+
+.static-burst #terminal::before {
+    animation: static-noise 200ms linear forwards;
+}
+
+@keyframes static-noise {
+    0% { opacity: 0; }
+    10% { opacity: 0.8; }
+    30% { opacity: 0.5; background-position: 0 10px; }
+    50% { opacity: 0.9; background-position: 5px 0; }
+    70% { opacity: 0.4; background-position: 0 5px; }
+    100% { opacity: 0; }
+}
+
+/* Legal overlay warp — terminal shrinks when legal panel opens */
+.legal-open #terminal {
+    transform: scale(0.98);
+    filter: blur(1px);
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .crt-flicker { animation: none !important; }
+    .static-burst #terminal::before { animation: none !important; opacity: 0 !important; }
+}
+
 /* ============================================================
    Status Bar — Gemini CLI-inspired info bar below input
    ============================================================ */
@@ -1534,6 +1671,39 @@ body::before {
 
 #theme-toggle:hover {
     color: var(--terminal-accent);
+}
+
+/* Sound toggle — matches theme toggle styling */
+#sound-toggle,
+#sound-toggle-mobile {
+    background: none;
+    border: none;
+    color: var(--terminal-sub);
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    padding: 0 0.25rem;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+#sound-toggle:hover,
+#sound-toggle-mobile:hover {
+    color: var(--terminal-accent);
+}
+
+#sound-toggle.muted,
+#sound-toggle-mobile.muted {
+    opacity: 0.4;
+}
+
+#sound-toggle-mobile {
+    display: none;
+}
+
+@media (max-width: 480px) {
+    #sound-toggle-mobile {
+        display: inline-block;
+    }
 }
 
 /* ============================================================
@@ -1876,6 +2046,25 @@ body::before {
         brightness(1.1) drop-shadow(-2.8px 2.8px 0 rgba(0, 0, 0, 0.55));
 }
 
+/* Hover glow — signals clickability */
+#astronaut-sprite {
+    transition: filter 0.3s ease;
+}
+
+#astronaut-sprite:hover {
+    filter:
+        brightness(var(--astroBright, 1))
+        drop-shadow(-2.8px 2.8px 0 rgba(0, 0, 0, 0.4))
+        drop-shadow(0 0 8px rgba(120, 170, 255, 0.4));
+}
+
+[data-theme="dark"] #astronaut-sprite:hover {
+    filter:
+        brightness(1.1)
+        drop-shadow(-2.8px 2.8px 0 rgba(0, 0, 0, 0.55))
+        drop-shadow(0 0 10px rgba(120, 170, 255, 0.5));
+}
+
 /* --- Fall sprite (1:1 from main project) --- */
 #astronaut-sprite.astro-fall {
     --astro-frame-w: 114px;
@@ -2068,6 +2257,97 @@ body::before {
         background-position: calc(-2 * var(--astro-frame-w)) calc(-2 * var(--astro-frame-h));
     }
 }
+
+/* --- Sleep sprite (9 frames, 185x266 per frame → rendered ~92x133) --- */
+#astronaut-sprite.astro-sleep {
+    --astro-frame-w: 92px;
+    --astro-frame-h: 133px;
+    --astro-sheet-w: 276px;
+    --astro-sheet-h: 399px;
+    background-image: url('/gfx/yori_anim/sprite_sleep-256px-9.webp');
+    animation: astro-sleep 2000ms steps(1, end) 1 both;
+}
+
+#astronaut-sprite.astro-sleep-hold {
+    --astro-frame-w: 92px;
+    --astro-frame-h: 133px;
+    --astro-sheet-w: 276px;
+    --astro-sheet-h: 399px;
+    background-image: url('/gfx/yori_anim/sprite_sleep-256px-9.webp');
+    background-position: -184px -266px;
+    animation: none;
+}
+
+@keyframes astro-sleep {
+    0% { background-position: 0px 0px; }
+    11.11% { background-position: -92px 0px; }
+    22.22% { background-position: -184px 0px; }
+    33.33% { background-position: 0px -133px; }
+    44.44% { background-position: -92px -133px; }
+    55.55% { background-position: -184px -133px; }
+    66.66% { background-position: 0px -266px; }
+    77.77% { background-position: -92px -266px; }
+    88.88%, 100% { background-position: -184px -266px; }
+}
+
+/* YORI command reactions — shake (hack/sudo) */
+.astro-shake #astronaut-sprite {
+    animation: astro-shake 500ms ease-in-out !important;
+}
+
+@keyframes astro-shake {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-4px); }
+    20% { transform: translateX(4px); }
+    30% { transform: translateX(-3px); }
+    40% { transform: translateX(3px); }
+    50% { transform: translateX(-2px); }
+    60% { transform: translateX(2px); }
+    70% { transform: translateX(-1px); }
+    80% { transform: translateX(1px); }
+}
+
+/* YORI command reactions — matrix (faded out) */
+.astro-matrix #astronaut-sprite {
+    opacity: 0.3;
+    transition: opacity 0.5s ease;
+}
+
+/* YORI command reactions — glow pulse (secret) */
+.astro-glow-pulse #astronaut-sprite {
+    animation: astro-glow-pulse 1s ease-in-out 2 !important;
+}
+
+@keyframes astro-glow-pulse {
+    0%, 100% {
+        filter: brightness(var(--astroBright, 1)) drop-shadow(-2.8px 2.8px 0 rgba(0, 0, 0, 0.4));
+    }
+    50% {
+        filter: brightness(1.3) drop-shadow(0 0 12px rgba(120, 170, 255, 0.6)) drop-shadow(-2.8px 2.8px 0 rgba(0, 0, 0, 0.4));
+    }
+}
+
+/* Sleep bubble — pulsating zZz... */
+#astronaut-bubble.sleep-bubble {
+    animation: sleep-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sleep-pulse {
+    0%, 100% {
+        opacity: 0.6;
+        transform: translate(var(--astroBubbleX), var(--astroBubbleY)) scale(var(--astroBubbleScale, 1));
+    }
+    50% {
+        opacity: 1;
+        transform: translate(var(--astroBubbleX), calc(var(--astroBubbleY) - 3px)) scale(var(--astroBubbleScale, 1));
+    }
+}
+
+/* --- Future sprites (prepared, not yet active) ---
+#astronaut-sprite.astro-wave { }
+#astronaut-sprite.astro-scared { }
+#astronaut-sprite.astro-celebrate { }
+*/
 
 /* ============================================================
    Speech Bubble — 1:1 from main project's astro-bubble
