@@ -1,10 +1,10 @@
 User-agent: *
-Disallow: /
+Allow: /
 
-# UC site — not ready for indexing
-# Switch to Allow: / when the main site launches
+# Sitemap (none yet — UC site is a single page)
 
-# ── AI Crawler Rules (prepared, activate at launch) ──
+# ── AI Crawler Rules (not yet active — UC site) ──
+# Uncomment when full site launches:
 # User-agent: GPTBot
 # Allow: /
 #
