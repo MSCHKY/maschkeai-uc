@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-24T19:00 (Session 57e30d4)
+> Last updated: 2026-03-24T21:30 (Session 942c9ed)
 
 ## Project Status: FEATURE-COMPLETE (Under Construction)
 
@@ -240,41 +240,58 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - ✅ Performance (JS 14.59kB gzip, CSS 6.83kB gzip, 0 Dependencies)
 - ✅ Tests (42/42)
 
-## Recent Session Changes (57e30d4 — 2026-03-24, Abend)
+## Recent Session Changes (942c9ed — 2026-03-24, Abend/Nacht)
 
-### Mobile Keyboard Drift — NICHT GELÖST ⚠️⚠️⚠️
+### Mobile Keyboard — Root Cause gefunden, Architektur-Entscheid getroffen
 
-**Status: 2 Fix-Versuche gescheitert. Problem besteht weiterhin.**
+**Root Cause des Drift-Bugs:** iOS Auto-Zoom. `#terminal-input` hatte `font: inherit` → erbte 12px auf Mobile. iOS Safari (und Chrome iOS = WebKit) zoomen automatisch bei Input-Focus wenn `font-size < 16px`. Dieser Zoom verändert die Visual Viewport Zoom-Stufe — das ist kein Scroll. Darum konnte `forceViewportReset()` (scrollBy/scrollTo) es nie fixen.
 
-**Hintergrund:** Commit `c7ee2fa` (vorige Session) führte iOS-Safari-Drift-Fix ein (`scrollBy(-1/+1)` Trick, `input.blur()`, `focusout`-Handler). Das fixte iOS-Drift, brach aber Chrome Android Keyboard.
+**Fix `f40843c`:** `font-size: 16px` auf `#terminal-input` → ✅ Drift auf beiden Browsern gefixt.
 
-**Versuch 1 (`7d77712`):** Alle iOS-Hacks komplett hinter `isIOS` UA-Check gegated.
-- ❌ **Ergebnis:** Chrome Keyboard funktioniert wieder, aber Drift ist zurück — auch auf Chrome Android. Annahme "Chrome hat kein Drift" war falsch.
+**Safari Keyboard-Sichtbarkeit:** Input wird hinter Tastatur versteckt. Ursache: Safari feuert `visualViewport.resize` nicht zuverlässig → JS-Handler erkennt Keyboard nicht → Terminal wird nicht verkleinert.
 
-**Versuch 2 (`57e30d4`):** Nur `input.blur()` + `focusout`-Handler auf iOS beschränkt, `forceViewportReset()` (scrollBy-Trick) für alle Plattformen aktiv gelassen.
-- ❌ **Ergebnis laut Robert:** Drift immer noch da. Nicht verifiziert ob Keyboard funktioniert.
+**Fix-Versuche (4 Stück in dieser Session):**
+1. `f40843c` font-size: 16px → ✅ Drift gefixt, ❌ Safari Input unsichtbar
+2. `a9ad915` interactive-widget=resizes-visual → ❌ Safari ignoriert es
+3. `850d324` Keyboard-Handler komplett neu: focus/blur primary → ✅ Initial OK, ❌ bricht nach ein paar Nachrichten
+4. `942c9ed` visualViewport darf nicht mehr keyboard-close triggern → ❌ Problem bleibt
+
+**Gesamt-Bilanz: 8 Fix-Versuche über 3 Sessions → Architektur-Problem erkannt.**
+
+### ⚠️ ARCHITEKTUR-ENTSCHEID: Mobile Layout Refactor (Option A) ⚠️
+
+**Problem:** `position: fixed` + `overflow: hidden` auf html/terminal/footer verhindert, dass der Browser sein natives Keyboard-Handling nutzen kann. Jeder JS-Workaround scheitert an Browser-Unterschieden.
+
+**Entscheid (mit Robert abgestimmt):** Mobile-Layout von `position: fixed` auf **Flexbox** umstellen.
+
+**Was sich ändern muss (nur Mobile ≤768px):**
+
+1. **html**: `position: fixed` → `position: static` (nur Mobile)
+2. **body**: `display: flex; flex-direction: column; height: 100dvh` (Fallback: 100vh)
+3. **#terminal**: `position: fixed` → `flex: 1; min-height: 0; position: static`
+4. **#legal-footer**: `position: fixed` → `flex-shrink: 0; position: static`
+5. **Dekorative Elemente** (particles, plasma, astronaut): bleiben `position: fixed` (rein visuell)
+6. **JS Keyboard-Handler**: Kann stark vereinfacht oder komplett entfernt werden — Browser handled Keyboard nativ
+7. **Landscape**: Muss mitgetestet werden — aktuell katastrophal
+
+**Was NICHT geändert wird:**
+- Desktop-Layout (>768px) bleibt `position: fixed` — funktioniert einwandfrei
+- Alle Features (Chat, Commands, Contact, Easter Eggs, Sound, YORI)
+- Visuelles Design (Terminal-Card, Gradient, Scanlines, etc.)
 
 **Aktueller Code-Stand (`src/main.ts` ~Zeile 1287):**
-- `isIOS` Detection via UA-String (funktioniert korrekt)
-- `forceViewportReset()` läuft auf allen Plattformen (kein Guard)
-- `input.blur()` nur auf iOS
-- `focusout`-Handler nur auf iOS
-- Multi-stage Reset (0/50/300/800ms) auf allen Plattformen
+- Focus/blur als primäre Keyboard-Detection
+- visualViewport.resize nur für Höhenverfeinerung (kein close)
+- Debounced blur (200ms) verhindert Flicker bei click-to-focus
+- Kein UA-Sniffing, kein scrollBy, keine Platform-Weichen
+- `forceViewportReset()` komplett entfernt
+- `isIOS` komplett entfernt
 
-**Was NICHT funktioniert hat (nicht wiederholen!):**
-1. Alles hinter `isIOS` gaten → Drift auf Chrome
-2. Nur `blur`/`focusout` gaten, scrollBy für alle → Drift bleibt
-
-**Was die nächste Session tun MUSS:**
-1. **Robert fragen:** Exakt beschreiben lassen WAS driftet (Richtung, wann, wie weit, welches Element)
-2. **Echtes Gerät zuerst** — Playwright-Emulation kann Mobile-Keyboard nicht simulieren
-3. **Nicht raten** — die letzten 2 Versuche waren Hypothesen ohne echte Device-Evidenz
-4. **Mögliche alternative Ansätze:**
-   - `position: fixed` auf html entfernen und stattdessen `overflow: hidden` auf body nutzen
-   - `visualViewport.offsetTop` als Trigger statt `innerHeight - vv.height`
-   - Keyboard-Detection via `focus`/`blur` Events statt viewport-resize
-   - CSS `env(keyboard-inset-height)` prüfen (neuere Browser)
-   - Komplett anderen Ansatz: `resize`-Handler entfernen, nur CSS `dvh` Units nutzen
+**Was in der nächsten Session NICHT mehr versucht werden darf:**
+- Weitere JS-Workarounds für Keyboard auf `position: fixed` Layout
+- `scrollBy`/`scrollTo` Tricks
+- `interactive-widget` als alleinige Lösung (Safari unterstützt es nicht zuverlässig)
+- Per-Device UA-Sniffing
 
 ## Previous Session Changes (77acb02 — 2026-03-24, Nachmittag)
 
@@ -368,12 +385,12 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 
 ## Open Tasks / Next Session
 
-- **P1: Mobile Keyboard Drift — UNGELÖST (beide Plattformen)**
-  - Drift nach Keyboard-Close auf iOS Safari UND Chrome Android
-  - Chrome Keyboard funktioniert wieder (blur nur iOS), aber Drift nicht gefixt
-  - **WICHTIG:** Nicht weiter raten! Erst mit Robert klären was genau driftet, dann mit echtem Gerät debuggen
-  - Gescheiterte Ansätze dokumentiert oben unter "Recent Session Changes (57e30d4)"
-  - Alternative Ansätze: `dvh` CSS Units, `env(keyboard-inset-height)`, position:fixed entfernen, focus/blur statt resize
+- **P1: Mobile Layout Refactor — `position: fixed` → Flexbox (ARCHITEKTUR-ENTSCHEID)**
+  - Betrifft NUR Mobile (≤768px), Desktop bleibt unverändert
+  - Ziel: Browser handled Keyboard nativ, kein JS-Workaround nötig
+  - Detailplan oben unter "ARCHITEKTUR-ENTSCHEID"
+  - **Umsetzung mit parallelen Agenten** (CSS, JS, Testing)
+  - Landscape muss mitgetestet werden
 - P2: `www.maschke.ai` als Custom Domain in Cloudflare Pages hinzufügen (fehlt noch)
 - P3: Neue YORI-Sprites erstellen (Wave, Scared, Celebrate) — Robert erstellt die Pixel-Art
 - P3: maschke-vdna Abgleich fortsetzen (About-Text, Services-Text Feinschliff)
@@ -456,10 +473,12 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `57e30d4`
-- **Session commits (57e30d4 — 2026-03-24, Abend):** 2
-  - `7d77712` fix: gate iOS Safari keyboard hacks behind UA check — restore Chrome Android ❌ (Drift zurück)
-  - `57e30d4` fix: restore viewport drift fix on Chrome — only blur() is iOS-gated ❌ (Drift bleibt)
+- **HEAD:** `942c9ed`
+- **Session commits (942c9ed — 2026-03-24, Abend/Nacht):** 4
+  - `f40843c` fix: set input font-size to 16px — prevent iOS auto-zoom viewport drift ✅ (Drift gefixt)
+  - `a9ad915` fix: add interactive-widget=resizes-visual — Safari keyboard detection ❌ (Safari ignoriert)
+  - `850d324` fix: rewrite keyboard handler — focus/blur primary, no per-device hacks ⚠️ (initial OK, bricht nach Chat)
+  - `942c9ed` fix: prevent visualViewport from falsely closing keyboard state ❌ (Problem bleibt)
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
