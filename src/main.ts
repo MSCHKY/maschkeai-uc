@@ -1285,14 +1285,17 @@ legalOverlay.addEventListener('click', (e) => {
 });
 
 // ── Mobile keyboard handling (visualViewport API) ──
-// iOS Safari maintains separate layout/visual viewports. When keyboard closes,
-// the layout viewport can stay offset (visualViewport.offsetTop > 0).
-// window.scrollTo(0,0) is a no-op when scrollY is already 0 — the scrollBy(-1/+1)
-// trick forces Safari to recalculate its internal viewport geometry.
+// iOS Safari has a viewport drift bug: when the keyboard closes, the layout
+// viewport can stay offset (visualViewport.offsetTop > 0). The scrollBy(-1/+1)
+// trick forces Safari to recalculate. Chrome Android does NOT have this bug —
+// running these hacks on Chrome actively prevents the keyboard from opening.
 let isKeyboardOpen = false;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-// Force Safari to recalculate viewport position
+// Force Safari to recalculate viewport position (iOS only)
 const forceViewportReset = () => {
+    if (!isIOS) return;
     window.scrollBy(0, -1);
     window.scrollBy(0, 1);
     window.scrollTo(0, 0);
@@ -1322,12 +1325,16 @@ if (window.visualViewport) {
             });
         } else if (isKeyboardOpen) {
             isKeyboardOpen = false;
-            input.blur();
-            // Multi-stage reset — iOS can take up to 1s to settle viewport
-            forceViewportReset();
-            setTimeout(forceViewportReset, 50);
-            setTimeout(() => { forceViewportReset(); scrollToBottom(); }, 300);
-            setTimeout(forceViewportReset, 800);
+            // iOS needs blur + viewport reset; Chrome keeps focus naturally
+            if (isIOS) {
+                input.blur();
+                forceViewportReset();
+                setTimeout(forceViewportReset, 50);
+                setTimeout(() => { forceViewportReset(); scrollToBottom(); }, 300);
+                setTimeout(forceViewportReset, 800);
+            } else {
+                scrollToBottom();
+            }
         }
     };
     window.visualViewport.addEventListener('resize', onViewportResize);
@@ -1340,16 +1347,17 @@ window.addEventListener('scroll', () => {
     }
 }, { passive: true });
 
-// Backup: reset on focusout (Done button, tap outside)
-input.addEventListener('focusout', () => {
-    setTimeout(forceViewportReset, 100);
-    // iOS 18+ can take a full second to settle
-    setTimeout(() => {
-        if (window.visualViewport && window.visualViewport.offsetTop > 0) {
-            forceViewportReset();
-        }
-    }, 1000);
-});
+// Backup: reset on focusout (Done button, tap outside) — iOS only
+if (isIOS) {
+    input.addEventListener('focusout', () => {
+        setTimeout(forceViewportReset, 100);
+        setTimeout(() => {
+            if (window.visualViewport && window.visualViewport.offsetTop > 0) {
+                forceViewportReset();
+            }
+        }, 1000);
+    });
+}
 
 // ── Start ──
 (async () => {
