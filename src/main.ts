@@ -1309,12 +1309,15 @@ if (window.visualViewport) {
             });
         } else {
             // Keyboard closed — force reset scroll position to prevent drift
-            requestAnimationFrame(() => {
-                window.scrollTo(0, 0);
+            // Delayed: iOS needs time to finish keyboard close animation
+            setTimeout(() => {
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
                 document.documentElement.scrollTop = 0;
                 document.body.scrollTop = 0;
+                // Also reset any inline offsets on terminal from viewport changes
+                terminal.style.transform = '';
                 scrollToBottom();
-            });
+            }, 100);
         }
     };
 

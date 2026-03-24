@@ -516,7 +516,6 @@ body::before {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-weight: 600; /* Gradient text needs weight to stay legible */
 }
 
 #terminal-output::-webkit-scrollbar {
