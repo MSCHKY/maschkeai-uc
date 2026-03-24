@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { handleCommand, isSpecialCommand } from './commands.ts';
 
-test('handleCommand', async (t) => {
+test('handleCommand', async (t: any) => {
     await t.test('returns null for unknown commands', () => {
         assert.equal(handleCommand('unknown'), null);
         assert.equal(handleCommand(''), null);
@@ -66,7 +66,7 @@ test('handleCommand', async (t) => {
     });
 });
 
-test('isSpecialCommand', async (t) => {
+test('isSpecialCommand', async (t: any) => {
     await t.test('identifies special commands', () => {
         assert.equal(isSpecialCommand('clear'), true);
         assert.equal(isSpecialCommand('impressum'), true);
