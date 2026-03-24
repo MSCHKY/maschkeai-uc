@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-24T18:45 (Session 77acb02)
+> Last updated: 2026-03-24T19:00 (Session 57e30d4)
 
 ## Project Status: FEATURE-COMPLETE (Under Construction)
 
@@ -240,7 +240,43 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - ✅ Performance (JS 14.59kB gzip, CSS 6.83kB gzip, 0 Dependencies)
 - ✅ Tests (42/42)
 
-## Recent Session Changes (77acb02 — 2026-03-24, Nachmittag)
+## Recent Session Changes (57e30d4 — 2026-03-24, Abend)
+
+### Mobile Keyboard Drift — NICHT GELÖST ⚠️⚠️⚠️
+
+**Status: 2 Fix-Versuche gescheitert. Problem besteht weiterhin.**
+
+**Hintergrund:** Commit `c7ee2fa` (vorige Session) führte iOS-Safari-Drift-Fix ein (`scrollBy(-1/+1)` Trick, `input.blur()`, `focusout`-Handler). Das fixte iOS-Drift, brach aber Chrome Android Keyboard.
+
+**Versuch 1 (`7d77712`):** Alle iOS-Hacks komplett hinter `isIOS` UA-Check gegated.
+- ❌ **Ergebnis:** Chrome Keyboard funktioniert wieder, aber Drift ist zurück — auch auf Chrome Android. Annahme "Chrome hat kein Drift" war falsch.
+
+**Versuch 2 (`57e30d4`):** Nur `input.blur()` + `focusout`-Handler auf iOS beschränkt, `forceViewportReset()` (scrollBy-Trick) für alle Plattformen aktiv gelassen.
+- ❌ **Ergebnis laut Robert:** Drift immer noch da. Nicht verifiziert ob Keyboard funktioniert.
+
+**Aktueller Code-Stand (`src/main.ts` ~Zeile 1287):**
+- `isIOS` Detection via UA-String (funktioniert korrekt)
+- `forceViewportReset()` läuft auf allen Plattformen (kein Guard)
+- `input.blur()` nur auf iOS
+- `focusout`-Handler nur auf iOS
+- Multi-stage Reset (0/50/300/800ms) auf allen Plattformen
+
+**Was NICHT funktioniert hat (nicht wiederholen!):**
+1. Alles hinter `isIOS` gaten → Drift auf Chrome
+2. Nur `blur`/`focusout` gaten, scrollBy für alle → Drift bleibt
+
+**Was die nächste Session tun MUSS:**
+1. **Robert fragen:** Exakt beschreiben lassen WAS driftet (Richtung, wann, wie weit, welches Element)
+2. **Echtes Gerät zuerst** — Playwright-Emulation kann Mobile-Keyboard nicht simulieren
+3. **Nicht raten** — die letzten 2 Versuche waren Hypothesen ohne echte Device-Evidenz
+4. **Mögliche alternative Ansätze:**
+   - `position: fixed` auf html entfernen und stattdessen `overflow: hidden` auf body nutzen
+   - `visualViewport.offsetTop` als Trigger statt `innerHeight - vv.height`
+   - Keyboard-Detection via `focus`/`blur` Events statt viewport-resize
+   - CSS `env(keyboard-inset-height)` prüfen (neuere Browser)
+   - Komplett anderen Ansatz: `resize`-Handler entfernen, nur CSS `dvh` Units nutzen
+
+## Previous Session Changes (77acb02 — 2026-03-24, Nachmittag)
 
 ### Domain Go-Live
 - ✅ **maschke.ai live** — Cloudflare Pages Custom Domain (alter Canva-Tunnel gelöscht)
@@ -271,15 +307,9 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - ✅ Komplett neu: GPU-beschleunigtes `transform: scaleY()` auf `::after` Pseudo-Element
 - ✅ Alte Gradient-Keyframes entfernt (CSS kann verschiedene Gradient-Typen nicht interpolieren)
 
-### Mobile Keyboard Drift (iOS Safari)
-- ✅ Recherchiert: `scrollTo(0,0)` ist No-Op wenn `scrollY===0`, `interactive-widget=resizes-visual` wird von WebKit ignoriert
-- ✅ `scrollBy(-1/+1)` Trick erzwingt Safari-Viewport-Neuberechnung
-- ✅ `viewport-fit=cover` (Safari-supported) ersetzt `interactive-widget=resizes-visual`
-- ✅ `will-change: transform` auf `#terminal` (GPU-Layer Promotion)
-- ✅ Multi-Stage Reset (0/50/300/800ms), `focusout` Backup-Handler
-- ⚠️ **REGRESSION:** Tastatur öffnet sich nicht mehr auf Chrome Android — muss in nächster Session gefixt werden
-  - Wahrscheinliche Ursache: `input.blur()` im viewport-resize Handler oder `focusout`-Handler feuert zu aggressiv
-  - Ansatz: Keyboard-Handler auf iOS beschränken oder blur-Logik überarbeiten
+### Mobile Keyboard Drift (iOS Safari) — Eingeführt, verursachte Chrome-Regression
+- ✅ `scrollBy(-1/+1)` Trick, `viewport-fit=cover`, `will-change: transform`
+- ⚠️ Verursachte Chrome-Regression (siehe oben)
 
 ## Previous Session Changes (77752b2 — 2026-03-24, Vormittag)
 
@@ -338,12 +368,12 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 
 ## Open Tasks / Next Session
 
-- **P1: REGRESSION — Chrome Android Tastatur öffnet sich nicht mehr**
-  - Seit Commit c7ee2fa (iOS drift fix) — Keyboard-Handler stört Chrome
-  - Wahrscheinliche Ursache: `input.blur()` im visualViewport resize-Handler und/oder `focusout`-Handler mit `forceViewportReset()` stören den Fokus-Flow
-  - **Ansatz:** Playwright Mobile-Emulation nutzen um zu debuggen. Den Keyboard-Handler ggf. auf iOS beschränken (User-Agent oder `navigator.standalone` Check). Oder `blur()` und `focusout`-Handler komplett entfernen und nur den `scrollBy(-1/+1)` Trick im resize-Handler behalten.
-  - **Recherche-Ergebnis (diese Session):** `scrollTo(0,0)` ist No-Op auf iOS wenn `scrollY===0`. `scrollBy(-1/+1)` erzwingt Viewport-Neuberechnung. `interactive-widget=resizes-visual` wird von WebKit ignoriert. `viewport-fit=cover` ist die Safari-Alternative. iOS braucht bis zu 1s zum Settlen. Quellen: Apple Dev Forums thread/800125, Claus Wahlers iOS viewport gist.
-- **P1: iOS Safari Drift** — `scrollBy`-Trick implementiert aber noch nicht auf echtem iPhone verifiziert (Chrome-Regression hat Test blockiert)
+- **P1: Mobile Keyboard Drift — UNGELÖST (beide Plattformen)**
+  - Drift nach Keyboard-Close auf iOS Safari UND Chrome Android
+  - Chrome Keyboard funktioniert wieder (blur nur iOS), aber Drift nicht gefixt
+  - **WICHTIG:** Nicht weiter raten! Erst mit Robert klären was genau driftet, dann mit echtem Gerät debuggen
+  - Gescheiterte Ansätze dokumentiert oben unter "Recent Session Changes (57e30d4)"
+  - Alternative Ansätze: `dvh` CSS Units, `env(keyboard-inset-height)`, position:fixed entfernen, focus/blur statt resize
 - P2: `www.maschke.ai` als Custom Domain in Cloudflare Pages hinzufügen (fehlt noch)
 - P3: Neue YORI-Sprites erstellen (Wave, Scared, Celebrate) — Robert erstellt die Pixel-Art
 - P3: maschke-vdna Abgleich fortsetzen (About-Text, Services-Text Feinschliff)
@@ -426,17 +456,10 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `77acb02`
-- **Session commits (77acb02 — 2026-03-24, Nachmittag):** 9
-  - `d052537` fix: box typography readability + mobile keyboard drift
-  - `ac1210e` fix: YORI sleep animation + NEXUS command hallucination
-  - `d4d0713` fix: loop YORI sleep animation instead of play-once + hold
-  - `f14db27` feat: go live — enable indexing for maschke.ai domain
-  - `b37bf77` fix: CRT boot overlay — GPU-accelerated scaleY
-  - `4c04b05` fix: CSP allow Cloudflare Web Analytics beacon
-  - `63e4032` fix: iOS keyboard drift + new OG image from vDNA
-  - `c7ee2fa` fix: iOS Safari keyboard drift — evidence-based approach ⚠️ (Chrome-Regression)
-  - `77acb02` fix: replace translate3d with will-change on terminal
+- **HEAD:** `57e30d4`
+- **Session commits (57e30d4 — 2026-03-24, Abend):** 2
+  - `7d77712` fix: gate iOS Safari keyboard hacks behind UA check — restore Chrome Android ❌ (Drift zurück)
+  - `57e30d4` fix: restore viewport drift fix on Chrome — only blur() is iOS-gated ❌ (Drift bleibt)
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
