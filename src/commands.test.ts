@@ -134,6 +134,22 @@ test('isSpecialCommand', async (t: any) => {
 
     await t.test('returns false for non-special commands', () => {
         assert.equal(isSpecialCommand('hilfe'), false);
+        assert.equal(isSpecialCommand('about'), false);
+        assert.equal(isSpecialCommand('services'), false);
+        assert.equal(isSpecialCommand('contact'), false);
+        assert.equal(isSpecialCommand('status'), false);
+        assert.equal(isSpecialCommand('ping'), false);
+        assert.equal(isSpecialCommand('sudo'), false);
+        assert.equal(isSpecialCommand('stats'), false);
+        assert.equal(isSpecialCommand('matrix'), false);
+        assert.equal(isSpecialCommand('secret'), false);
+        assert.equal(isSpecialCommand('help'), false);
+        assert.equal(isSpecialCommand('kontakt'), false);
+        assert.equal(isSpecialCommand('clear screen'), false);
+        assert.equal(isSpecialCommand('dark mode'), false);
+        assert.equal(isSpecialCommand('impressum und datenschutz'), false);
+        assert.equal(isSpecialCommand('clea'), false);
+        assert.equal(isSpecialCommand('impress'), false);
         assert.equal(isSpecialCommand('unknown'), false);
         assert.equal(isSpecialCommand(''), false);
     });
