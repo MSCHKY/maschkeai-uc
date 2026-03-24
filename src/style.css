@@ -360,9 +360,9 @@ body::before {
         0 2px 16px rgba(0, 0, 0, 0.08),
         0 0 0 1px rgba(0, 0, 0, 0.04);
     z-index: 1;
-    /* GPU layer promotion — prevents Safari from losing element position during viewport transitions */
-    transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
+    /* GPU layer promotion — prevents Safari from losing element position during viewport transitions.
+       will-change instead of translate3d to avoid breaking input focus on Chrome Android. */
+    will-change: transform;
 }
 
 /* Mouse spotlight — subtle radial glow following cursor */
