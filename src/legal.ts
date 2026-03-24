@@ -90,13 +90,8 @@ Wir verarbeiten Ihre Daten ausschließlich im Rahmen der Datenschutz-Grundverord
 <p>Weitere Informationen: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Datenschutzerklärung von Cloudflare</a></p>
 
 <h2>6. Kontaktaufnahme</h2>
-<p>Sie können uns über folgende Wege kontaktieren:</p>
-<ul>
-<li><strong>E-Mail:</strong> <a href="mailto:kontakt@maschke.ai">kontakt@maschke.ai</a></li>
-<li><strong>Kontaktformular:</strong> Über das integrierte Terminal-Kontaktformular auf dieser Website</li>
-</ul>
-<p>Wenn Sie das Kontaktformular nutzen, werden Ihre Angaben (Name, E-Mail-Adresse, Inhalt der Nachricht) über den E-Mail-Dienst <strong>Brevo</strong> (Sendinblue SAS, 54 Rue du Château d'Eau, 75010 Paris, Frankreich) als Auftragsverarbeiter an uns weitergeleitet. Brevo verarbeitet die Daten ausschließlich innerhalb der EU (Rechenzentrum Paris). Ein Vertrag zur Auftragsverarbeitung gemäß Art. 28 DSGVO besteht. Es erfolgt keine dauerhafte Speicherung Ihrer Daten durch Brevo — die Verarbeitung dient ausschließlich der Zustellung der Nachricht.</p>
-<p>Bei direkter E-Mail-Kontaktaufnahme werden Ihre Angaben zur Bearbeitung der Anfrage gespeichert. Eine Weitergabe an Dritte findet nicht statt. Die Daten werden gelöscht, sobald sie für die Erreichung des Zweckes ihrer Erhebung nicht mehr erforderlich sind — in der Regel nach Abschluss der Korrespondenz, spätestens nach 6 Monaten.</p>
+<p>Kontakt ist ausschließlich per E-Mail an <a href="mailto:kontakt@maschke.ai">kontakt@maschke.ai</a> möglich. Auf dieser Website werden keine externen Terminbuchungs-Tools eingesetzt.</p>
+<p>Wenn Sie uns per E-Mail kontaktieren, werden Ihre Angaben (Name, E-Mail-Adresse, Inhalt der Anfrage) zur Bearbeitung der Anfrage gespeichert. Eine Weitergabe an Dritte findet nicht statt. Die Daten werden gelöscht, sobald sie für die Erreichung des Zweckes ihrer Erhebung nicht mehr erforderlich sind — in der Regel nach Abschluss der Korrespondenz, spätestens nach 6 Monaten.</p>
 <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) bzw. Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Beantwortung von Anfragen)</p>
 
 <h2>7. KI-Chatbot (Mistral AI)</h2>

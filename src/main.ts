@@ -5,7 +5,7 @@
 
 import './style.css';
 import { renderNexusLogo } from './ascii-logo';
-import { getBootSequence } from './boot-sequence';
+import { BOOT_SEQUENCE } from './boot-sequence';
 import { handleCommand, isSpecialCommand } from './commands';
 import { sendMessage, isLimitReached } from './chat';
 import {
@@ -167,9 +167,9 @@ const YORI_LINES = [
     'Schöne Baustelle hier',
     'Vorsicht, nasser Lack!',
     'Ich schweb hier nur rum',
-    'Gibt\'s hier WLAN?',
+    'Gibt\'s WLAN im Orbit?',
     'Ich warte hier schon seit v3…',
-    'Null Bugs, null Stress',
+    'Null Gravitation, null Stress',
     'Schweben ist mein Cardio',
 
     // Nudges (softer — curiosity over CTA)
@@ -179,9 +179,9 @@ const YORI_LINES = [
     'Die KI beißt nicht',
 
     // Brand
-    'Weniger Reibung, mehr Richtung',
+    'KI trifft Kreativität',
     'maschke.ai — bald komplett',
-    'Systeme, die mitdenken. Bald.',
+    'Kreativ-Agentur mit Raketenantrieb',
 
     // Tech-remixed German proverbs
     'Guter Code will Weile haben',
@@ -199,7 +199,7 @@ const YORI_NUDGE_LINES = [
     'Noch da? NEXUS wartet…',
     'Tippe hilfe für Ideen',
     'Trau dich, frag was!',
-    'Hier passiert gerade nix…',
+    'Langweilig hier oben…',
 ];
 
 let bubblePool = [...YORI_LINES];
@@ -314,14 +314,11 @@ function triggerFall(sprite: HTMLElement, bubble: HTMLElement) {
     // Fall animation
     sprite.classList.add('astro-fall');
 
-    // Recovery sequence — timeout matches CSS animation duration exactly (1100ms)
-    // rAF ensures class removal is frame-aligned (no blank frame between fall→idle)
+    // Recovery sequence
     window.setTimeout(() => {
-        requestAnimationFrame(() => {
-            sprite.classList.remove('astro-fall');
-            isFalling = false;
-        });
-    }, 1100);
+        sprite.classList.remove('astro-fall');
+        isFalling = false;
+    }, 1150);
 
     // Hide warning and resume rotation
     window.setTimeout(() => {
@@ -410,9 +407,8 @@ function startGlitchScanline(): void {
 
 // ── Boot sequence ──
 async function runBootSequence(): Promise<void> {
-    const bootSequence = getBootSequence();
-    for (let i = 0; i < bootSequence.length; i++) {
-        const line = bootSequence[i];
+    for (let i = 0; i < BOOT_SEQUENCE.length; i++) {
+        const line = BOOT_SEQUENCE[i];
         if (line.text === 'PROGRESS_BAR') {
             await animateProgressBar();
             continue;
@@ -556,11 +552,6 @@ function formatAiText(raw: string): string {
     formatted = formatted.replace(/\*([^*]+?)\*/g, '$1');
     // `command` → clickable chip
     formatted = formatted.replace(/`([^`]+)`/g, '<span class="cmd-chip" data-cmd="$1">$1</span>');
-    // kontakt@maschke.ai → clickable chip that triggers contact form (not mailto)
-    formatted = formatted.replace(
-        /(?:<strong>)?(kontakt@maschke\.ai)(?:<\/strong>)?/g,
-        '<span class="cmd-chip" data-cmd="contact">$1</span>',
-    );
     return formatted;
 }
 
@@ -821,30 +812,21 @@ async function processInput(text: string) {
             isProcessing = false;
             return;
         }
-        // Animated hack Easter Egg — Hollywood style
+        // Animated hack Easter Egg
         if (cmd === 'hack' || cmd === 'hacking') {
             addLine('', '');
-            addLine('NEXUS INTRUSION FRAMEWORK v3.1.7', 'line-system');
-            addLine('───────────────────────────', 'line-dim');
+            addLine('Accessing mainframe…', 'line-system');
             const steps = [
-                { text: '[*] Scanning target: maschke.ai (172.67.xxx.xxx)', cls: 'line-dim', delay: 400 },
-                { text: '[*] Enumerating open ports… 443/tcp HTTPS ✓', cls: 'line-dim', delay: 900 },
-                { text: '[*] Fingerprint: Cloudflare CDN / WAF detected', cls: 'line-dim', delay: 1400 },
-                { text: '[+] Bypassing WAF layer… TUNNEL ESTABLISHED', cls: 'line-success', delay: 2100 },
-                { text: '[*] Injecting payload into /api/mistral…', cls: 'line-dim', delay: 2800 },
-                { text: '[!] PROMPT INJECTION BLOCKED — Guardian active', cls: 'line-warn', delay: 3500 },
-                { text: '[*] Escalating privileges… sudo NEXUS override', cls: 'line-dim', delay: 4200 },
-                { text: '[!] AUTH FAILED: Clearance Level 7 required', cls: 'line-warn', delay: 4800 },
-                { text: '', cls: '', delay: 5200 },
-                { text: '▓▓▓ ACCESS DENIED ▓▓▓', cls: 'line-warn', delay: 5600 },
-                { text: '', cls: '', delay: 5800 },
-                { text: 'Netter Versuch. Aber diese Infrastruktur ist kein Spielplatz.', cls: 'line-dim', delay: 6200 },
-                { text: 'Wer hier reinwill, braucht Vertrauensbasis: kontakt@maschke.ai', cls: 'line-dim', delay: 6800 },
+                { text: 'Bypassing firewall… OK', delay: 600 },
+                { text: 'Decrypting payload… OK', delay: 1200 },
+                { text: 'Injecting exploit… FAILED', delay: 1800 },
+                { text: '', delay: 2000 },
+                { text: 'Just kidding. Das ist eine Website, kein Supercomputer.', delay: 2400 },
             ];
-            steps.forEach(({ text, cls, delay }) => {
+            steps.forEach(({ text, delay }) => {
                 setTimeout(() => {
-                    addLine(text, cls);
-                    if (delay === 6800) isProcessing = false;
+                    addLine(text, text ? 'line-system' : '');
+                    if (delay === 2400) isProcessing = false;
                 }, delay);
             });
             return;
@@ -911,8 +893,8 @@ async function processInput(text: string) {
         ctaBox.innerHTML = `<div class="terminal-box terminal-cta-box">
   <div class="terminal-box-title">Nexus Limit</div>
   <div class="terminal-box-body">
-    <p>5/5 Nachrichten — <strong>NEXUS</strong> hat dir einen Vorgeschmack gegeben.</p>
-    <p>Für den Rest braucht es ein echtes Gespräch.</p>
+    <p>5/5 Nachrichten — du hast <strong>NEXUS</strong> getestet.</p>
+    <p>Bereit für den nächsten Schritt?</p>
     <div class="cta-actions">
       <a href="mailto:kontakt@maschke.ai" class="terminal-cmd cta-primary">✉ Schreib uns</a>
     </div>
@@ -1014,8 +996,8 @@ async function processInput(text: string) {
                 ctaBox.innerHTML = `<div class="terminal-box terminal-cta-box">
   <div class="terminal-box-title">Nexus Limit</div>
   <div class="terminal-box-body">
-    <p>5/5 Nachrichten — <strong>NEXUS</strong> hat dir einen Vorgeschmack gegeben.</p>
-    <p>Für den Rest braucht es ein echtes Gespräch.</p>
+    <p>5/5 Nachrichten — du hast <strong>NEXUS</strong> getestet.</p>
+    <p>Bereit für den nächsten Schritt?</p>
     <div class="cta-actions">
       <a href="mailto:kontakt@maschke.ai" class="terminal-cmd cta-primary">✉ Schreib uns</a>
     </div>
@@ -1080,12 +1062,9 @@ input.addEventListener('input', () => {
     input.size = Math.max(1, len);
 });
 
-// Click anywhere on page to focus input (not just inside terminal)
-document.addEventListener('click', (e) => {
-    const target = e.target as HTMLElement;
-    // Don't steal focus from interactive elements (links, buttons, legal overlay)
-    if (target.closest('a, button, #legal-overlay, #astro-debug, [data-contact-action]')) return;
-    if (!isProcessing && inputLine.classList.contains('visible') && !legalOverlay.classList.contains('active')) {
+// Click anywhere to focus input
+terminal.addEventListener('click', () => {
+    if (!isProcessing && inputLine.classList.contains('visible')) {
         input.focus();
     }
 });
@@ -1115,37 +1094,6 @@ document.addEventListener('keydown', (e) => {
 legalOverlay.addEventListener('click', (e) => {
     if (e.target === legalOverlay) closeLegal();
 });
-
-// ── Mobile keyboard handling (visualViewport API) ──
-// When the iOS/Android keyboard opens, the visual viewport shrinks.
-// We adjust terminal bottom offset so the input line stays visible.
-if (window.visualViewport) {
-    const onViewportResize = () => {
-        const vv = window.visualViewport!;
-        // Keyboard height ≈ difference between window height and visual viewport height
-        const kbHeight = window.innerHeight - vv.height;
-        const isKeyboardOpen = kbHeight > 100; // Threshold to distinguish from minor viewport changes
-
-        // Adjust terminal bottom to sit above the keyboard
-        terminal.style.bottom = isKeyboardOpen ? `${kbHeight + 4}px` : '';
-
-        // Hide astronaut and footer when keyboard is open (declutter mobile)
-        const astronaut = document.getElementById('astronaut-overlay');
-        const footer = document.getElementById('legal-footer');
-        if (astronaut) astronaut.style.display = isKeyboardOpen ? 'none' : '';
-        if (footer) footer.style.display = isKeyboardOpen ? 'none' : '';
-
-        // Scroll input into view
-        if (isKeyboardOpen) {
-            requestAnimationFrame(() => {
-                input.scrollIntoView({ block: 'nearest' });
-                scrollToBottom();
-            });
-        }
-    };
-
-    window.visualViewport.addEventListener('resize', onViewportResize);
-}
 
 // ── Start ──
 runBootSequence();

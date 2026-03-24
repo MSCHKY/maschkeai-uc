@@ -83,21 +83,11 @@
     box-sizing: border-box;
 }
 
-html {
-    /* iOS Safari: position: fixed on html prevents elastic rubber-band scrolling
-       that causes horizontal drift with fixed-position elements */
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-    touch-action: manipulation; /* Prevent double-tap zoom drift */
-}
-
 html,
 body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    overscroll-behavior: none; /* Prevent pull-to-refresh and elastic overscroll on mobile */
     background: var(--bg-page);
     color: var(--terminal-ink);
     font-family: var(--terminal-font-family);
@@ -139,8 +129,8 @@ body::before {
             180deg,
             transparent 0px,
             transparent 3px,
-            rgba(0, 0, 0, 0.06) 3px,
-            rgba(0, 0, 0, 0.06) 4px
+            rgba(0, 0, 0, 0.035) 3px,
+            rgba(0, 0, 0, 0.035) 4px
         ),
         /* Radial glow behind terminal — visible blue halo */
         radial-gradient(
@@ -1334,24 +1324,16 @@ body::before {
     font-weight: 400;
 }
 
-.prompt-short { display: none; }
-
-@media (max-width: 480px) {
-    .prompt-full { display: none; }
-    .prompt-short { display: inline; }
-}
-
 #terminal-input {
     flex: 0 0 auto;
     min-width: 0;
     width: 1ch;
-    /* Input text uses gradient endpoint color — not plain black/white */
     max-width: 60ch;
     background: transparent;
     border: none;
     outline: none;
     padding: 0;
-    color: var(--terminal-grad-to);
+    color: var(--terminal-ink);
     font: inherit;
     font-weight: inherit;
     caret-color: transparent;
@@ -1807,7 +1789,7 @@ body::before {
 @media (max-width: 480px) {
     :root {
         --astroX: -26px;
-        --astroY: -6px;
+        --astroY: 0px;
         --astroScale: 0.44;
         --astroBubbleX: -10px;
         --astroBubbleY: -10px;
@@ -1823,9 +1805,7 @@ body::before {
     z-index: 5;
     pointer-events: auto;
     opacity: 0;
-    /* No translateX offset — was 120px but caused horizontal drift on iOS Safari.
-       opacity: 0 handles the hidden state; slide-in comes from transform diff alone. */
-    transform: translate3d(calc(var(--astroX) + 40px), var(--astroY), 0) scale(var(--astroScale));
+    transform: translate3d(var(--astroX), var(--astroY), 0) scale(var(--astroScale)) translateX(120px);
     transform-origin: right bottom;
     transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -1866,8 +1846,6 @@ body::before {
     filter:
         brightness(var(--astroBright, 1)) drop-shadow(-2.8px 2.8px 0 rgba(0, 0, 0, 0.4));
 
-    /* Base idle frame (frame 0) as fallback — prevents blank frame during animation transitions */
-    background-position: 0px 0px;
     animation: astro-idle 8s steps(1, end) infinite;
 }
 

@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { handleCommand, isSpecialCommand } from './commands.ts';
 
-test('handleCommand', async (t: import('node:test').TestContext) => {
+test('handleCommand', async (t: any) => {
     await t.test('returns null for unknown commands', () => {
         assert.equal(handleCommand('unknown'), null);
         assert.equal(handleCommand(''), null);
@@ -39,14 +39,6 @@ test('handleCommand', async (t: import('node:test').TestContext) => {
         assert.deepEqual(hilfe1, hilfe2);
     });
 
-    await t.test('handles origin easter egg', () => {
-        const result = handleCommand('origin');
-        assert.ok(result !== null);
-        assert.ok(result.lines !== undefined);
-        assert.ok(result.lines.some((l: { text: string }) => l.text.includes('ORIGIN STORY')));
-        assert.ok(result.lines.some((l: { text: string }) => l.text.includes('Bend the Reality')));
-    });
-
     await t.test('handles aliases', () => {
         const hilfe = handleCommand('hilfe');
         const help = handleCommand('help');
@@ -71,14 +63,10 @@ test('handleCommand', async (t: import('node:test').TestContext) => {
         const secret3 = handleCommand('easteregg');
         assert.deepEqual(secret1, secret2);
         assert.deepEqual(secret1, secret3);
-
-        const origin1 = handleCommand('origin');
-        const origin2 = handleCommand('story');
-        assert.deepEqual(origin1, origin2);
     });
 });
 
-test('isSpecialCommand', async (t: import('node:test').TestContext) => {
+test('isSpecialCommand', async (t: any) => {
     await t.test('identifies special commands', () => {
         assert.equal(isSpecialCommand('clear'), true);
         assert.equal(isSpecialCommand('impressum'), true);

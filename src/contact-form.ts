@@ -49,8 +49,8 @@ export function validateEmail(email: string): string | null {
 
 export function validateMessage(message: string): string | null {
     const trimmed = message.trim();
-    if (trimmed.length < 10) return 'Ein bisschen mehr darf es sein — mindestens 10 Zeichen.';
-    if (trimmed.length > 2000) return 'Maximal 2000 Zeichen — für den Roman schreib direkt an kontakt@maschke.ai.';
+    if (trimmed.length < 10) return 'Ein bisschen mehr darfs schon sein — mindestens 10 Zeichen.';
+    if (trimmed.length > 2000) return 'Maximal 2000 Zeichen, bitte. Für den Roman schreib uns direkt.';
     return null;
 }
 
@@ -66,12 +66,12 @@ export function startContactForm(): ContactFormResult {
     return {
         lines: [
             { text: '', cls: '' },
-            { text: 'DIREKTLEITUNG', cls: 'line-system' },
+            { text: 'KONTAKTFORMULAR', cls: 'line-system' },
             { text: '───────────────────────────', cls: 'line-dim' },
-            { text: 'Drei Fragen, dann landet deine Nachricht bei uns.', cls: 'line-dim' },
-            { text: 'Jederzeit raus mit: abbrechen', cls: 'line-dim' },
+            { text: 'Drei kurze Fragen, dann geht deine Nachricht raus.', cls: 'line-dim' },
+            { text: 'Jederzeit abbrechen mit: abbrechen', cls: 'line-dim' },
             { text: '', cls: '' },
-            { text: '① Wie heißt du?', cls: '' },
+            { text: '① Wie darf ich dich vorstellen?', cls: '' },
             { text: '', cls: '' },
         ],
     };
@@ -87,7 +87,7 @@ export function handleContactInput(input: string): ContactFormResult {
         return {
             lines: [
                 { text: '', cls: '' },
-                { text: '[ABGEBROCHEN] Alles klar — nichts gesendet.', cls: 'line-dim' },
+                { text: '[ABGEBROCHEN] Kein Problem — die Nachricht wurde nicht gesendet.', cls: 'line-dim' },
                 { text: '', cls: '' },
             ],
             done: true,
@@ -110,9 +110,9 @@ export function handleContactInput(input: string): ContactFormResult {
             return {
                 lines: [
                     { text: '', cls: '' },
-                    { text: `Hey ${formData.name}.`, cls: '' },
+                    { text: `Hallo ${formData.name}.`, cls: '' },
                     { text: '', cls: '' },
-                    { text: '② Deine E-Mail?', cls: '' },
+                    { text: '② Unter welcher E-Mail können wir dich erreichen?', cls: '' },
                     { text: '', cls: '' },
                 ],
             };
@@ -133,7 +133,7 @@ export function handleContactInput(input: string): ContactFormResult {
             return {
                 lines: [
                     { text: '', cls: '' },
-                    { text: '③ Was beschäftigt dich? (Stichworte reichen, Roman geht auch)', cls: '' },
+                    { text: '③ Was beschäftigt dich? (Kurz oder ausführlich — beides okay)', cls: '' },
                     { text: '', cls: '' },
                 ],
             };
@@ -159,7 +159,7 @@ export function handleContactInput(input: string): ContactFormResult {
 
             return {
                 html: `<div class="terminal-box contact-summary">
-<div class="terminal-box-title">Direktleitung</div>
+<div class="terminal-box-title">Nachricht an maschke.ai</div>
 <div class="terminal-box-body">
 <p><span class="box-label">Name:</span> ${escapedName}</p>
 <p><span class="box-label">E-Mail:</span> ${escapedEmail}</p>
@@ -185,7 +185,7 @@ export function handleContactInput(input: string): ContactFormResult {
                 return {
                     lines: [
                         { text: '', cls: '' },
-                        { text: '[ABGEBROCHEN] Alles klar — nichts gesendet.', cls: 'line-dim' },
+                        { text: '[ABGEBROCHEN] Kein Problem — die Nachricht wurde nicht gesendet.', cls: 'line-dim' },
                         { text: '', cls: '' },
                     ],
                     done: true,
