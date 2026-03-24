@@ -44,7 +44,7 @@ const SUSPICIOUS_PATTERNS = [
     /schreib\w*\s+(mir\s+)?(ein|einen|eine)\s+(shell|bash|python|script|skript)(?!.*maschke)/i,
 ];
 
-function detectPromptInjection(messages) {
+export function detectPromptInjection(messages) {
     for (const msg of messages) {
         if (msg.role === 'user') {
             for (const pattern of SUSPICIOUS_PATTERNS) {
