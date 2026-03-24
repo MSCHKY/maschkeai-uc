@@ -1286,6 +1286,23 @@ legalOverlay.addEventListener('click', (e) => {
 // When the iOS/Android keyboard opens, the visual viewport shrinks.
 // We adjust terminal bottom offset so the input line stays visible.
 if (window.visualViewport) {
+    let wasKeyboardOpen = false;
+    let driftResetTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const resetDrift = () => {
+        // Aggressively reset all scroll positions
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        terminal.style.transform = '';
+
+        // Compensate visualViewport offset if it persists after keyboard close
+        const vv = window.visualViewport;
+        if (vv && vv.offsetTop > 0) {
+            window.scrollTo(0, 0);
+        }
+    };
+
     const onViewportResize = () => {
         const vv = window.visualViewport!;
         // Keyboard height ≈ difference between window height and visual viewport height
@@ -1302,26 +1319,43 @@ if (window.visualViewport) {
         if (footer) footer.style.display = isKeyboardOpen ? 'none' : '';
 
         if (isKeyboardOpen) {
+            wasKeyboardOpen = true;
+            // Clear any pending drift reset from rapid open/close
+            if (driftResetTimer) { clearTimeout(driftResetTimer); driftResetTimer = null; }
             // Scroll input into view
             requestAnimationFrame(() => {
                 input.scrollIntoView({ block: 'nearest' });
                 scrollToBottom();
             });
-        } else {
-            // Keyboard closed — force reset scroll position to prevent drift
-            // Delayed: iOS needs time to finish keyboard close animation
-            setTimeout(() => {
-                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-                document.documentElement.scrollTop = 0;
-                document.body.scrollTop = 0;
-                // Also reset any inline offsets on terminal from viewport changes
-                terminal.style.transform = '';
+        } else if (wasKeyboardOpen) {
+            wasKeyboardOpen = false;
+            // Keyboard closed — blur input to ensure keyboard fully dismisses
+            input.blur();
+
+            // Multi-stage reset: iOS keyboard close animation takes ~300ms
+            // Stage 1: Immediate reset
+            resetDrift();
+
+            // Stage 2: After keyboard animation completes
+            if (driftResetTimer) clearTimeout(driftResetTimer);
+            driftResetTimer = setTimeout(() => {
+                resetDrift();
                 scrollToBottom();
-            }, 100);
+                driftResetTimer = null;
+            }, 350);
         }
     };
 
     window.visualViewport.addEventListener('resize', onViewportResize);
+
+    // Also listen for scroll events on visualViewport to catch offset drift
+    window.visualViewport.addEventListener('scroll', () => {
+        const vv = window.visualViewport!;
+        if (vv.offsetTop > 0 && !wasKeyboardOpen) {
+            // Page drifted — snap back
+            window.scrollTo(0, 0);
+        }
+    });
 }
 
 // ── Start ──

@@ -1136,7 +1136,7 @@ body::before {
 }
 
 .terminal-box-title {
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     font-size: 12px;
@@ -1151,10 +1151,13 @@ body::before {
 }
 
 .terminal-box-body {
-    background-image: var(--terminal-grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    /* Solid color for readability — gradient was too thin at fw400 in dense box text */
+    color: var(--terminal-ink);
+    -webkit-text-fill-color: var(--terminal-ink);
+    background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    font-weight: 500;
     line-height: 1.35;
     font-size: inherit;
 }
@@ -1165,6 +1168,7 @@ body::before {
 
 .terminal-box-body .box-label {
     color: var(--terminal-sub);
+    -webkit-text-fill-color: var(--terminal-sub);
     font-size: 0.92em;
 }
 
@@ -1218,6 +1222,7 @@ body::before {
 /* Links inside boxes */
 .terminal-box-link {
     color: var(--terminal-accent);
+    -webkit-text-fill-color: var(--terminal-accent);
     text-decoration: none;
     border-bottom: 1px solid var(--terminal-link-decoration);
     transition: border-color 140ms ease;
