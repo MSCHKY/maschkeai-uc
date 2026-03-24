@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { handleCommand, isSpecialCommand } from './commands.ts';
 
-test('handleCommand', async (t: any) => {
+test('handleCommand', async (t: import('node:test').TestContext) => {
     await t.test('returns null for unknown commands', () => {
         assert.equal(handleCommand('unknown'), null);
         assert.equal(handleCommand(''), null);
@@ -43,8 +43,8 @@ test('handleCommand', async (t: any) => {
         const result = handleCommand('origin');
         assert.ok(result !== null);
         assert.ok(result.lines !== undefined);
-        assert.ok(result.lines.some((l: any) => l.text.includes('ORIGIN STORY')));
-        assert.ok(result.lines.some((l: any) => l.text.includes('Bend the Reality')));
+        assert.ok(result.lines.some((l: { text: string }) => l.text.includes('ORIGIN STORY')));
+        assert.ok(result.lines.some((l: { text: string }) => l.text.includes('Bend the Reality')));
     });
 
     await t.test('handles aliases', () => {
@@ -78,7 +78,7 @@ test('handleCommand', async (t: any) => {
     });
 });
 
-test('isSpecialCommand', async (t: any) => {
+test('isSpecialCommand', async (t: import('node:test').TestContext) => {
     await t.test('identifies special commands', () => {
         assert.equal(isSpecialCommand('clear'), true);
         assert.equal(isSpecialCommand('impressum'), true);
