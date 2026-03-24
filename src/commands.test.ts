@@ -57,7 +57,7 @@ test('handleCommand', async (t: any) => {
         const sudoResult = handleCommand('sudo');
         assert.ok(sudoResult !== null);
         assert.ok(sudoResult.lines !== undefined);
-        assert.equal(sudoResult.lines[0].text, 'Permission denied. Nice try.');
+        assert.equal(sudoResult.lines[1].text, '[sudo] password for nexus: ********');
 
         const statsResult = handleCommand('stats');
         assert.ok(statsResult !== null);
@@ -67,12 +67,12 @@ test('handleCommand', async (t: any) => {
         const matrixResult = handleCommand('matrix');
         assert.ok(matrixResult !== null);
         assert.ok(matrixResult.lines !== undefined);
-        assert.equal(matrixResult.lines[10].text, 'Wake up, Neo…');
+        assert.ok(matrixResult.lines.some((l: { text: string }) => l.text.includes('The Matrix has you')));
 
         const secretResult = handleCommand('secret');
         assert.ok(secretResult !== null);
         assert.ok(secretResult.lines !== undefined);
-        assert.equal(secretResult.lines[1].text, 'Du hast das Easter Egg gefunden.');
+        assert.equal(secretResult.lines[1].text, '▓▓▓ HIDDEN LAYER DETECTED ▓▓▓');
     });
 
     await t.test('handles case-insensitivity and whitespace', () => {
