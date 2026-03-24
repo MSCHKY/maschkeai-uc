@@ -136,7 +136,6 @@ async function animateProgressBar(): Promise<void> {
     const div = document.createElement('div');
     div.className = 'line progress-bar';
     output.appendChild(div);
-    scrollToBottom();
 
     const maxFill = total - 1; // Stop at 95% — it's under construction after all
     for (let i = 0; i <= maxFill; i++) {
@@ -144,6 +143,7 @@ async function animateProgressBar(): Promise<void> {
         const empty = '░'.repeat(total - i);
         const pct = Math.round((i / total) * 100);
         div.textContent = `[${filled}${empty}] ${pct}%`;
+        scrollToBottom();
         await sleep(30 + Math.random() * 40);
     }
 
