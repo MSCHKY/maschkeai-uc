@@ -1301,10 +1301,18 @@ if (window.visualViewport) {
         if (astronaut) astronaut.style.display = isKeyboardOpen ? 'none' : '';
         if (footer) footer.style.display = isKeyboardOpen ? 'none' : '';
 
-        // Scroll input into view
         if (isKeyboardOpen) {
+            // Scroll input into view
             requestAnimationFrame(() => {
                 input.scrollIntoView({ block: 'nearest' });
+                scrollToBottom();
+            });
+        } else {
+            // Keyboard closed — force reset scroll position to prevent drift
+            requestAnimationFrame(() => {
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
                 scrollToBottom();
             });
         }

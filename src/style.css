@@ -25,7 +25,7 @@
     --terminal-font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --terminal-font-size: 14px;
     --terminal-line-height: 1.35;
-    --terminal-font-weight: 600;
+    --terminal-font-weight: 400;
     --terminal-letter-spacing: 0.006em;
     --terminal-word-spacing: 0.018em;
 
@@ -516,6 +516,7 @@ body::before {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    font-weight: 600; /* Gradient text needs weight to stay legible */
 }
 
 #terminal-output::-webkit-scrollbar {
@@ -536,12 +537,16 @@ body::before {
 }
 
 @media (max-width: 480px) {
+    html, body {
+        font-size: 12px;
+    }
+
     #terminal {
         top: 8px;
         left: 10px;
         right: 10px;
         bottom: 38px;
-        padding: 16px;
+        padding: 12px;
         border-radius: 6px;
     }
 }
@@ -1044,6 +1049,7 @@ body::before {
 /* AI response text */
 .line-ai {
     color: var(--terminal-ink);
+    font-weight: 400;
     max-width: 68ch;
     line-height: 1.5;
     word-spacing: 0.02em;
