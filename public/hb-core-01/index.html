@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Christine Thürmer – Artist Intelligence Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --card-hover: #222632;
+    --border: #2a2e3a;
+    --accent: #4f8cff;
+    --accent2: #7c5cfc;
+    --accent3: #22c997;
+    --accent4: #ff6b6b;
+    --accent5: #ffa94d;
+    --text: #e4e6eb;
+    --text-dim: #8b8fa3;
+    --text-bright: #ffffff;
+  }
+
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: linear-gradient(135deg, #161922 0%, #1e2235 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-left { display: flex; align-items: center; gap: 20px; }
+  .avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700; color: #fff;
+  }
+  .header-info h1 { font-size: 22px; font-weight: 700; color: var(--text-bright); }
+  .header-info p { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+  .header-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(79, 140, 255, 0.12); border: 1px solid rgba(79, 140, 255, 0.25);
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; color: var(--accent); font-weight: 500;
+  }
+  .header-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent3); }
+  .header-right { display: flex; gap: 12px; align-items: center; }
+  .tag {
+    padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 500;
+    background: rgba(124, 92, 252, 0.12); border: 1px solid rgba(124, 92, 252, 0.2); color: var(--accent2);
+  }
+
+  /* ─── TABS ─── */
+  .tabs {
+    display: flex; gap: 0; background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+  }
+  .tab {
+    padding: 14px 24px; font-size: 13px; font-weight: 500; color: var(--text-dim);
+    cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ─── LAYOUT ─── */
+  .dashboard { padding: 28px 40px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; transition: all 0.2s;
+  }
+  .card:hover { border-color: rgba(79, 140, 255, 0.3); }
+  .card-title {
+    font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 12px;
+  }
+
+  /* ─── KPI CARDS ─── */
+  .kpi { text-align: center; }
+  .kpi-value { font-size: 32px; font-weight: 800; color: var(--text-bright); line-height: 1.1; }
+  .kpi-label { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+  .kpi-trend { font-size: 12px; margin-top: 8px; font-weight: 600; }
+  .kpi-trend.up { color: var(--accent3); }
+  .kpi-trend.down { color: var(--accent4); }
+  .kpi-trend.neutral { color: var(--accent5); }
+
+  /* ─── SECTION HEADERS ─── */
+  .section-title {
+    font-size: 16px; font-weight: 700; color: var(--text-bright);
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-title .icon { font-size: 18px; }
+
+  /* ─── BARS ─── */
+  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 12px; }
+  .bar-label { width: 120px; font-size: 12px; color: var(--text-dim); text-align: right; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 24px; background: rgba(255,255,255,0.04); border-radius: 6px; overflow: hidden; position: relative; }
+  .bar-fill {
+    height: 100%; border-radius: 6px; display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 8px; font-size: 11px; font-weight: 600; color: #fff; min-width: 30px;
+    transition: width 1s ease;
+  }
+  .bar-value { font-size: 12px; color: var(--text-dim); width: 50px; text-align: right; flex-shrink: 0; }
+
+  /* ─── TIMELINE ─── */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 7px; top: 4px; bottom: 4px;
+    width: 2px; background: var(--border);
+  }
+  .tl-item { position: relative; padding-bottom: 18px; }
+  .tl-item::before {
+    content: ''; position: absolute; left: -20px; top: 5px;
+    width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent);
+    background: var(--bg);
+  }
+  .tl-item.active::before { background: var(--accent); box-shadow: 0 0 8px rgba(79,140,255,0.5); }
+  .tl-item.future::before { border-color: var(--text-dim); }
+  .tl-date { font-size: 11px; color: var(--text-dim); font-weight: 500; }
+  .tl-text { font-size: 13px; color: var(--text); margin-top: 2px; }
+  .tl-tag {
+    display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 4px;
+    margin-top: 4px; font-weight: 500;
+  }
+  .tl-tag.show { background: rgba(79,140,255,0.15); color: var(--accent); }
+  .tl-tag.media { background: rgba(124,92,252,0.15); color: var(--accent2); }
+  .tl-tag.book { background: rgba(34,201,151,0.15); color: var(--accent3); }
+  .tl-tag.brand { background: rgba(255,169,77,0.15); color: var(--accent5); }
+
+  /* ─── MAP ─── */
+  .map-container { position: relative; width: 100%; height: 380px; overflow: hidden; }
+  .map-svg { width: 100%; height: 100%; }
+  .city-dot {
+    cursor: pointer; transition: all 0.2s;
+  }
+  .city-dot:hover circle { r: 8; }
+  .city-label { font-size: 10px; fill: var(--text-dim); font-family: 'Inter', sans-serif; }
+  .tooltip {
+    position: absolute; background: #2a2e3a; border: 1px solid var(--accent);
+    border-radius: 8px; padding: 10px 14px; font-size: 12px; pointer-events: none;
+    opacity: 0; transition: opacity 0.15s; z-index: 10; min-width: 160px;
+  }
+  .tooltip.show { opacity: 1; }
+  .tooltip-city { font-weight: 700; color: var(--text-bright); margin-bottom: 4px; }
+  .tooltip-stat { color: var(--text-dim); }
+  .tooltip-stat span { color: var(--accent3); font-weight: 600; }
+
+  /* ─── HEATMAP ─── */
+  .heatmap { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
+  .hm-cell {
+    aspect-ratio: 1.6; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.7); position: relative; cursor: default;
+  }
+  .hm-label { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 2px; }
+
+  /* ─── VERANSTALTER TABLE ─── */
+  .vtable { width: 100%; border-collapse: collapse; }
+  .vtable th {
+    text-align: left; font-size: 11px; font-weight: 600; color: var(--text-dim);
+    padding: 8px 10px; border-bottom: 1px solid var(--border); text-transform: uppercase;
+  }
+  .vtable td {
+    padding: 10px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .vtable tr:hover td { background: rgba(79,140,255,0.04); }
+  .stars { color: var(--accent5); letter-spacing: 1px; }
+  .status-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px;
+  }
+  .status-dot.green { background: var(--accent3); }
+  .status-dot.yellow { background: var(--accent5); }
+  .status-dot.red { background: var(--accent4); }
+
+  /* ─── CONTENT ECOSYSTEM ─── */
+  .eco-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .eco-card {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px; text-align: center; transition: all 0.3s;
+  }
+  .eco-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .eco-icon { font-size: 24px; margin-bottom: 8px; }
+  .eco-name { font-size: 12px; font-weight: 600; color: var(--text-bright); }
+  .eco-stat { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .eco-revenue { font-size: 14px; font-weight: 700; color: var(--accent3); margin-top: 6px; }
+
+  /* ─── AI INSIGHTS ─── */
+  .ai-card {
+    background: linear-gradient(135deg, rgba(79,140,255,0.08), rgba(124,92,252,0.08));
+    border: 1px solid rgba(79,140,255,0.2); border-radius: 12px; padding: 20px;
+  }
+  .ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .ai-badge {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-size: 14px; font-weight: 700;
+  }
+  .ai-insight { margin-bottom: 14px; }
+  .ai-insight-title { font-size: 13px; font-weight: 600; color: var(--text-bright); margin-bottom: 4px; }
+  .ai-insight-text { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+  .ai-metric {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(34,201,151,0.1); border-radius: 4px; padding: 2px 8px;
+    font-size: 11px; font-weight: 600; color: var(--accent3);
+  }
+
+  /* ─── REVENUE CHART ─── */
+  .rev-chart { display: flex; align-items: flex-end; gap: 6px; height: 160px; padding-top: 20px; }
+  .rev-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .rev-bar {
+    width: 100%; border-radius: 4px 4px 0 0; transition: height 1s ease;
+    position: relative; min-height: 2px;
+  }
+  .rev-bar:hover { opacity: 0.85; }
+  .rev-label { font-size: 10px; color: var(--text-dim); }
+  .rev-amount { font-size: 9px; color: var(--text-dim); text-align: center; }
+
+  /* ─── RISK RADAR ─── */
+  .risk-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .risk-level {
+    width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .risk-level.high { background: rgba(255,107,107,0.15); color: var(--accent4); }
+  .risk-level.mid { background: rgba(255,169,77,0.15); color: var(--accent5); }
+  .risk-level.low { background: rgba(34,201,151,0.15); color: var(--accent3); }
+  .risk-text { font-size: 12px; color: var(--text); }
+  .risk-detail { font-size: 11px; color: var(--text-dim); }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center; padding: 24px; font-size: 11px; color: var(--text-dim);
+    border-top: 1px solid var(--border); margin-top: 20px;
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  /* ─── PAGE SECTIONS ─── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .card { animation: fadeUp 0.4s ease forwards; }
+  .grid-4 .card:nth-child(2) { animation-delay: 0.05s; }
+  .grid-4 .card:nth-child(3) { animation-delay: 0.1s; }
+  .grid-4 .card:nth-child(4) { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="header">
+  <div class="header-left">
+    <div class="avatar">CT</div>
+    <div class="header-info">
+      <h1>Christine Thürmer</h1>
+      <p>Wander Woman · German Tourist · 65.000+ km auf 5 Kontinenten</p>
+    </div>
+    <div class="header-badge">Aktive Künstlerin</div>
+  </div>
+  <div class="header-right">
+    <div class="tag">4 Bücher</div>
+    <div class="tag">3 Shows aktiv</div>
+    <div class="tag">Podcast 2025</div>
+  </div>
+</div>
+
+<!-- ═══════════ TABS ═══════════ -->
+<div class="tabs">
+  <div class="tab active" onclick="showPage('overview')">Übersicht</div>
+  <div class="tab" onclick="showPage('touring')">Touring & Venues</div>
+  <div class="tab" onclick="showPage('finance')">Finanzen</div>
+  <div class="tab" onclick="showPage('strategy')">KI-Strategie</div>
+</div>
+
+<!-- ═══════════ OVERVIEW ═══════════ -->
+<div class="dashboard">
+<div class="page active" id="page-overview">
+
+  <!-- KPIs -->
+  <div class="grid-4">
+    <div class="card kpi">
+      <div class="kpi-value">65.000+</div>
+      <div class="kpi-label">Kilometer gewandert</div>
+      <div class="kpi-trend neutral">40+ Länder · 5 Kontinente</div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-value">40+</div>
+      <div class="kpi-label">Shows pro Saison</div>
+      <div class="kpi-trend up">↑ 3 aktive Formate + 1 neue Show</div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-value">600K+</div>
+      <div class="kpi-label">Social Media Reichweite</div>
+      <div class="kpi-trend up">↑ Podcast-Launch mit Podimo</div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-value">4 + 1</div>
+      <div class="kpi-label">Bücher (VÖ #5: März 2026)</div>
+      <div class="kpi-trend up">↑ Bestseller bei Malik/Piper</div>
+    </div>
+  </div>
+
+  <div class="grid-2-1">
+    <!-- Content Ecosystem -->
+    <div class="card">
+      <div class="section-title"><span class="icon">🌐</span> Content-Ökosystem</div>
+      <div class="eco-grid">
+        <div class="eco-card">
+          <div class="eco-icon">🎤</div>
+          <div class="eco-name">Live-Shows</div>
+          <div class="eco-stat">3 aktive Formate</div>
+          <div class="eco-stat">Saison Okt–Apr</div>
+          <div class="eco-revenue">Kerngeschäft</div>
+        </div>
+        <div class="eco-card">
+          <div class="eco-icon">📚</div>
+          <div class="eco-name">Bücher</div>
+          <div class="eco-stat">4 Titel + VÖ 2026</div>
+          <div class="eco-stat">Malik/Piper Verlag</div>
+          <div class="eco-revenue">Bestseller</div>
+        </div>
+        <div class="eco-card">
+          <div class="eco-icon">🎙️</div>
+          <div class="eco-name">Podcast</div>
+          <div class="eco-stat">Wanderzirkus</div>
+          <div class="eco-stat">mit Podimo</div>
+          <div class="eco-revenue">Neu 2025</div>
+        </div>
+        <div class="eco-card">
+          <div class="eco-icon">📺</div>
+          <div class="eco-name">TV / Film</div>
+          <div class="eco-stat">NDR, rbb, ARTE</div>
+          <div class="eco-stat">Spiegel TV, Kabel1</div>
+          <div class="eco-revenue">Selektiv</div>
+        </div>
+        <div class="eco-card">
+          <div class="eco-icon">✍️</div>
+          <div class="eco-name">Kolumne</div>
+          <div class="eco-stat">Bergwelten Magazin</div>
+          <div class="eco-stat">Regelmäßig</div>
+          <div class="eco-revenue">Aktiv</div>
+        </div>
+        <div class="eco-card">
+          <div class="eco-icon">🏔️</div>
+          <div class="eco-name">Marken</div>
+          <div class="eco-stat">Jack Wolfskin Pitch</div>
+          <div class="eco-stat">Thru-Hiking</div>
+          <div class="eco-revenue">Pipeline</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="card">
+      <div class="section-title"><span class="icon">📅</span> Roadmap</div>
+      <div class="timeline">
+        <div class="tl-item active">
+          <div class="tl-date">Mrz 2026</div>
+          <div class="tl-text">Buch #5 – Veröffentlichung</div>
+          <span class="tl-tag book">Buch</span>
+        </div>
+        <div class="tl-item active">
+          <div class="tl-date">Okt 2025 – Apr 2026</div>
+          <div class="tl-text">Wandern Total – Premiere Tournee</div>
+          <span class="tl-tag show">Neue Show</span>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Jul 2025</div>
+          <div class="tl-text">Podcast Wanderzirkus – Aufnahmen</div>
+          <span class="tl-tag media">Podcast</span>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Apr 2025</div>
+          <div class="tl-text">Wandern Total – Fanticket Eventim</div>
+          <span class="tl-tag show">Show</span>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2025</div>
+          <div class="tl-text">Jack Wolfskin Thru-Hiking Kooperation</div>
+          <span class="tl-tag brand">Brand</span>
+        </div>
+        <div class="tl-item future">
+          <div class="tl-date">2026+</div>
+          <div class="tl-text">Wohnzimmer Comedy (TV-Format)</div>
+          <span class="tl-tag media">TV</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Saisonale Heatmap -->
+  <div class="card" style="margin-bottom: 24px">
+    <div class="section-title"><span class="icon">📊</span> Saisonale Aktivitäts-Heatmap (Shows pro Monat)</div>
+    <div class="heatmap" id="heatmap"></div>
+    <div class="heatmap" style="margin-top:2px">
+      <div class="hm-label">Jan</div><div class="hm-label">Feb</div><div class="hm-label">Mrz</div>
+      <div class="hm-label">Apr</div><div class="hm-label">Mai</div><div class="hm-label">Jun</div>
+      <div class="hm-label">Jul</div><div class="hm-label">Aug</div><div class="hm-label">Sep</div>
+      <div class="hm-label">Okt</div><div class="hm-label">Nov</div><div class="hm-label">Dez</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════ TOURING ═══════════ -->
+<div class="page" id="page-touring">
+
+  <div class="grid-2">
+    <!-- Tour-Karte -->
+    <div class="card">
+      <div class="section-title"><span class="icon">🗺️</span> Touring-Karte D-A-CH</div>
+      <div class="map-container">
+        <div class="tooltip" id="tooltip"></div>
+        <svg class="map-svg" viewBox="0 0 500 450">
+          <!-- Simplified DACH outline -->
+          <path d="M120,80 L180,60 L240,55 L300,50 L360,65 L400,90 L410,130 L420,170 L400,210 L380,250 L400,280 L380,320 L340,340 L300,360 L260,380 L220,370 L180,340 L140,300 L100,260 L80,220 L90,180 L100,140 L110,100 Z"
+                fill="rgba(79,140,255,0.06)" stroke="rgba(79,140,255,0.2)" stroke-width="1.5"/>
+          <!-- Austria -->
+          <path d="M200,300 L260,280 L320,290 L380,280 L400,300 L380,330 L340,340 L300,350 L260,360 L220,350 L200,320 Z"
+                fill="rgba(124,92,252,0.06)" stroke="rgba(124,92,252,0.2)" stroke-width="1"/>
+          <!-- Switzerland -->
+          <path d="M100,300 L140,280 L180,290 L200,310 L180,340 L140,340 L110,320 Z"
+                fill="rgba(34,201,151,0.06)" stroke="rgba(34,201,151,0.2)" stroke-width="1"/>
+
+          <!-- Cities -->
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Hamburg','943 Plätze · Fabrik','€26–28 Basis')" onmouseleave="hideTooltip()">
+            <circle cx="220" cy="90" r="5" fill="var(--accent)" opacity="0.8"/><text class="city-label" x="230" y="94">Hamburg</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Berlin','800+ Plätze · Urania','Hauptstadt-Markt')" onmouseleave="hideTooltip()">
+            <circle cx="330" cy="105" r="5" fill="var(--accent)" opacity="0.8"/><text class="city-label" x="340" y="109">Berlin</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Bremen','400 Plätze','Markt: ausbaufähig')" onmouseleave="hideTooltip()">
+            <circle cx="185" cy="110" r="4" fill="var(--accent)" opacity="0.5"/><text class="city-label" x="195" y="114">Bremen</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Köln','600+ Plätze','Starker Markt')" onmouseleave="hideTooltip()">
+            <circle cx="145" cy="185" r="6" fill="var(--accent)" opacity="0.9"/><text class="city-label" x="155" y="189">Köln</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Düsseldorf','500 Plätze','NRW-Cluster')" onmouseleave="hideTooltip()">
+            <circle cx="148" cy="170" r="4" fill="var(--accent)" opacity="0.6"/><text class="city-label" x="100" y="173">Düsseldorf</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Bonn','400 Plätze','NRW-Cluster')" onmouseleave="hideTooltip()">
+            <circle cx="140" cy="200" r="4" fill="var(--accent)" opacity="0.5"/><text class="city-label" x="150" y="204">Bonn</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Leipzig','Haus Leipzig','D2M Veranstalter')" onmouseleave="hideTooltip()">
+            <circle cx="320" cy="155" r="5" fill="var(--accent)" opacity="0.7"/><text class="city-label" x="330" y="159">Leipzig</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Dresden','500+ Plätze','Starker Markt Ost')" onmouseleave="hideTooltip()">
+            <circle cx="360" cy="165" r="5" fill="var(--accent)" opacity="0.8"/><text class="city-label" x="370" y="169">Dresden</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Freiburg','3x ausverkauft!','Top-Standort · Mundologia')" onmouseleave="hideTooltip()">
+            <circle cx="145" cy="290" r="8" fill="var(--accent3)" opacity="0.9"/><text class="city-label" x="120" y="283">Freiburg ★</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Stuttgart','600 Plätze','Starker Südwest-Markt')" onmouseleave="hideTooltip()">
+            <circle cx="195" cy="260" r="5" fill="var(--accent)" opacity="0.7"/><text class="city-label" x="205" y="264">Stuttgart</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Mannheim','500 Plätze','Rhein-Neckar')" onmouseleave="hideTooltip()">
+            <circle cx="175" cy="235" r="4" fill="var(--accent)" opacity="0.6"/><text class="city-label" x="185" y="239">Mannheim</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'München','Technikum','Kritische Venue-Probleme dokumentiert')" onmouseleave="hideTooltip()">
+            <circle cx="275" cy="290" r="6" fill="var(--accent5)" opacity="0.8"/><text class="city-label" x="285" y="294">München</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Erlangen','400 Plätze','Franken-Cluster')" onmouseleave="hideTooltip()">
+            <circle cx="255" cy="240" r="4" fill="var(--accent)" opacity="0.6"/><text class="city-label" x="265" y="244">Erlangen</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Augsburg','Spectrum Club','Venue-Problem dokumentiert')" onmouseleave="hideTooltip()">
+            <circle cx="250" cy="275" r="4" fill="var(--accent4)" opacity="0.7"/><text class="city-label" x="260" y="279">Augsburg</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Darmstadt','Fernsicht Festival','Top-Veranstalter')" onmouseleave="hideTooltip()">
+            <circle cx="175" cy="225" r="5" fill="var(--accent3)" opacity="0.8"/><text class="city-label" x="125" y="220">Darmstadt ★</text>
+          </g>
+          <!-- Austria -->
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Wien','Volkshaus','Österreich-Expansion')" onmouseleave="hideTooltip()">
+            <circle cx="380" cy="300" r="6" fill="var(--accent2)" opacity="0.8"/><text class="city-label" x="390" y="304">Wien</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Graz','Steiermark','Guter Markt')" onmouseleave="hideTooltip()">
+            <circle cx="350" cy="330" r="5" fill="var(--accent2)" opacity="0.7"/><text class="city-label" x="360" y="334">Graz</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Bern','Theater National','Schweiz-Expansion')" onmouseleave="hideTooltip()">
+            <circle cx="130" cy="325" r="5" fill="var(--accent3)" opacity="0.7"/><text class="city-label" x="140" y="329">Bern</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Zürich','Volkshaus','Starker CH-Markt')" onmouseleave="hideTooltip()">
+            <circle cx="155" cy="305" r="5" fill="var(--accent3)" opacity="0.7"/><text class="city-label" x="165" y="309">Zürich</text>
+          </g>
+          <g class="city-dot" onmouseenter="showTooltip(evt,'Rostock','MoYa','Nordost ausbaufähig')" onmouseleave="hideTooltip()">
+            <circle cx="290" cy="75" r="4" fill="var(--accent)" opacity="0.4"/><text class="city-label" x="300" y="79">Rostock</text>
+          </g>
+
+          <!-- Legend -->
+          <circle cx="30" cy="410" r="5" fill="var(--accent3)" opacity="0.9"/>
+          <text x="42" y="414" class="city-label">Top-Standort</text>
+          <circle cx="120" cy="410" r="5" fill="var(--accent)" opacity="0.8"/>
+          <text x="132" y="414" class="city-label">Aktiv</text>
+          <circle cx="180" cy="410" r="5" fill="var(--accent5)" opacity="0.8"/>
+          <text x="192" y="414" class="city-label">Probleme</text>
+          <circle cx="260" cy="410" r="5" fill="var(--accent)" opacity="0.4"/>
+          <text x="272" y="414" class="city-label">Ausbaufähig</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Veranstalter-Ranking -->
+    <div class="card">
+      <div class="section-title"><span class="icon">🏢</span> Veranstalter-Intelligence</div>
+      <table class="vtable">
+        <thead>
+          <tr><th>Veranstalter</th><th>Rating</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Mundologia (Freiburg)</td><td class="stars">★★★★★</td><td><span class="status-dot green"></span>Top-Partner</td></tr>
+          <tr><td>Fernsicht (Darmstadt)</td><td class="stars">★★★★★</td><td><span class="status-dot green"></span>Zuverlässig</td></tr>
+          <tr><td>Explora (CH)</td><td class="stars">★★★★★</td><td><span class="status-dot green"></span>CH-Expansion</td></tr>
+          <tr><td>D2M</td><td class="stars">★★★★☆</td><td><span class="status-dot green"></span>Gute Logistik</td></tr>
+          <tr><td>Meyer Konzerte</td><td class="stars">★★★★☆</td><td><span class="status-dot green"></span>NRW solide</td></tr>
+          <tr><td>fkp scorpio</td><td class="stars">★★★☆☆</td><td><span class="status-dot yellow"></span>In Verhandlung</td></tr>
+          <tr><td>DBE</td><td class="stars">★★☆☆☆</td><td><span class="status-dot red"></span>Logistikprobleme</td></tr>
+          <tr><td>Weitsicht (Bremen)</td><td class="stars">★☆☆☆☆</td><td><span class="status-dot red"></span>Vermeiden</td></tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top: 20px">
+        <div class="section-title" style="font-size:13px"><span class="icon">⚠️</span> Venue-Warnungen (aus Feedbacks)</div>
+        <div class="risk-item">
+          <div class="risk-level high">!</div>
+          <div><div class="risk-text">München Technikum</div><div class="risk-detail">Technische Ausfälle, fehlende Einweisung, Personal-Chaos</div></div>
+        </div>
+        <div class="risk-item">
+          <div class="risk-level high">!</div>
+          <div><div class="risk-text">Augsburg Spectrum Club</div><div class="risk-detail">Disco-Location für Vortrag – komplett ungeeignet</div></div>
+        </div>
+        <div class="risk-item">
+          <div class="risk-level mid">?</div>
+          <div><div class="risk-text">Wien / Graz</div><div class="risk-detail">Marketing-Timing zu spät, Get-in-Zeiten problematisch</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kapazitäts-Barometer -->
+  <div class="card">
+    <div class="section-title"><span class="icon">📈</span> Venue-Kapazitäten & Ticket-Range</div>
+    <div class="bar-chart">
+      <div class="bar-row">
+        <div class="bar-label">Freiburg</div>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:linear-gradient(90deg,var(--accent3),#2ee6ad)">943</div></div>
+        <div class="bar-value">3x ausv.</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Hamburg</div>
+        <div class="bar-track"><div class="bar-fill" style="width:82%;background:linear-gradient(90deg,var(--accent),#6ba3ff)">800</div></div>
+        <div class="bar-value">€26–28</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Berlin Urania</div>
+        <div class="bar-track"><div class="bar-fill" style="width:75%;background:linear-gradient(90deg,var(--accent),#6ba3ff)">750</div></div>
+        <div class="bar-value">€24–30</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Köln</div>
+        <div class="bar-track"><div class="bar-fill" style="width:65%;background:linear-gradient(90deg,var(--accent),#6ba3ff)">620</div></div>
+        <div class="bar-value">€22–28</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Dresden</div>
+        <div class="bar-track"><div class="bar-fill" style="width:55%;background:linear-gradient(90deg,var(--accent),#6ba3ff)">520</div></div>
+        <div class="bar-value">€20–26</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Stuttgart</div>
+        <div class="bar-track"><div class="bar-fill" style="width:52%;background:linear-gradient(90deg,var(--accent),#6ba3ff)">500</div></div>
+        <div class="bar-value">€22–28</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Bern</div>
+        <div class="bar-track"><div class="bar-fill" style="width:40%;background:linear-gradient(90deg,var(--accent2),#9b7fff)">380</div></div>
+        <div class="bar-value">CHF 35</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Rostock</div>
+        <div class="bar-track"><div class="bar-fill" style="width:23%;background:linear-gradient(90deg,#666,#888)">220</div></div>
+        <div class="bar-value">€20</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════ FINANCE ═══════════ -->
+<div class="page" id="page-finance">
+
+  <div class="grid-4">
+    <div class="card kpi">
+      <div class="kpi-value">€2.000–5.000</div>
+      <div class="kpi-label">Garantie pro Show</div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-value">50–80%</div>
+      <div class="kpi-label">Revenue Share nach Schwelle</div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-value">€20–40</div>
+      <div class="kpi-label">Ticket-Endpreis Range</div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-value">~12%</div>
+      <div class="kpi-label">Plattform-Gebühren (Eventim)</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Revenue per Show -->
+    <div class="card">
+      <div class="section-title"><span class="icon">💰</span> Umsatz-Szenario pro Show</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Brutto (800×€30)</div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:linear-gradient(90deg,var(--accent3),#2ee6ad)">€24.000</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">– Eventim 12%</div>
+          <div class="bar-track"><div class="bar-fill" style="width:88%;background:linear-gradient(90deg,var(--accent),#6ba3ff)">€21.120</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">– Venue-Kosten</div>
+          <div class="bar-track"><div class="bar-fill" style="width:75%;background:linear-gradient(90deg,var(--accent),#6ba3ff)">€18.000</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">– GEMA/Sonstige</div>
+          <div class="bar-track"><div class="bar-fill" style="width:70%;background:linear-gradient(90deg,var(--accent),#6ba3ff)">€16.800</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Netto-Erlös</div>
+          <div class="bar-track"><div class="bar-fill" style="width:60%;background:linear-gradient(90deg,var(--accent2),#9b7fff)">€14.400</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Künstler (70%)</div>
+          <div class="bar-track"><div class="bar-fill" style="width:42%;background:linear-gradient(90deg,#22c997,#2ee6ad)">€10.080</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDGE Campaign Performance -->
+    <div class="card">
+      <div class="section-title"><span class="icon">📱</span> EDGE Kampagnen-Performance (Dez 2024)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="card kpi" style="padding:12px;background:rgba(255,255,255,0.03)">
+          <div class="kpi-value" style="font-size:24px">€840</div>
+          <div class="kpi-label">Media Budget</div>
+        </div>
+        <div class="card kpi" style="padding:12px;background:rgba(255,255,255,0.03)">
+          <div class="kpi-value" style="font-size:24px">€1.732</div>
+          <div class="kpi-label">Revenue generiert</div>
+        </div>
+        <div class="card kpi" style="padding:12px;background:rgba(255,255,255,0.03)">
+          <div class="kpi-value" style="font-size:24px">2,06x</div>
+          <div class="kpi-label">ROAS</div>
+          <div class="kpi-trend down">↓ Branchenschnitt: 4–6x</div>
+        </div>
+        <div class="card kpi" style="padding:12px;background:rgba(255,255,255,0.03)">
+          <div class="kpi-value" style="font-size:24px">56.768</div>
+          <div class="kpi-label">Unique Reach</div>
+        </div>
+      </div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Thumb-Stop</div>
+          <div class="bar-track"><div class="bar-fill" style="width:41%;background:linear-gradient(90deg,var(--accent3),#2ee6ad)">41%</div></div>
+          <div class="bar-value" style="color:var(--accent3)">★ stark</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">IG vs FB</div>
+          <div class="bar-track"><div class="bar-fill" style="width:72%;background:linear-gradient(90deg,var(--accent2),#9b7fff)">IG: 72%</div></div>
+          <div class="bar-value">FB: 28%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Abrechnungs-Timeline -->
+  <div class="card">
+    <div class="section-title"><span class="icon">📋</span> Abrechnungen 2024 (aus Dollar-Reports extrahiert)</div>
+    <div class="rev-chart" id="revChart"></div>
+  </div>
+
+</div>
+
+<!-- ═══════════ STRATEGY ═══════════ -->
+<div class="page" id="page-strategy">
+
+  <div class="section-title" style="font-size:18px;margin-bottom:20px"><span class="icon">🤖</span> KI-generierte Strategieempfehlungen</div>
+
+  <div class="grid-2">
+    <div class="ai-card">
+      <div class="ai-header">
+        <span style="font-size:20px">🎯</span>
+        <span class="ai-badge">Marktexpansion</span>
+      </div>
+      <div class="ai-insight">
+        <div class="ai-insight-title">Schwache Märkte aktivieren: NRW, Norddeutschland, Berlin</div>
+        <div class="ai-insight-text">
+          Die Daten zeigen starke Performance in Süddeutschland, Österreich und der Schweiz, aber Lücken in NRW, Norddeutschland und Berlin. <br><br>
+          <strong>Empfehlung:</strong> Podcast-Launch als Hebel nutzen – Simon Hegewald (Podcast-Partner) hat starke Reichweite in genau diesen Regionen. Gezielte Podcast-Episodes mit Regional-Bezug + lokale Paid-Media-Kampagnen könnten den Ticketverkauf in schwachen Märkten um geschätzt 30–40% steigern.
+        </div>
+      </div>
+      <div class="ai-metric">Potenzial: +8–12 Shows pro Saison</div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-header">
+        <span style="font-size:20px">💡</span>
+        <span class="ai-badge">Preisstrategie</span>
+      </div>
+      <div class="ai-insight">
+        <div class="ai-insight-title">Dynamic Pricing nach Marktreife einführen</div>
+        <div class="ai-insight-text">
+          Freiburg ist 3x ausverkauft – der Ticketpreis ist zu niedrig. In bewährten Märkten (Freiburg, Darmstadt, Dresden) besteht Spielraum für Premium-Kategorien. <br><br>
+          <strong>Empfehlung:</strong> 3-Tier-Modell: Early Bird (–10%), Regular, Premium (+20% mit Meet&Greet oder signiertem Buch). In Top-Märkten: VIP-Pakete mit Backstage-Zugang. Das Buch-Merch-Business (Signierung am Stand) zeigt bereits hohe Nachfrage.
+        </div>
+      </div>
+      <div class="ai-metric">Potenzial: +15–25% Umsatz pro ausverkaufter Show</div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-header">
+        <span style="font-size:20px">📱</span>
+        <span class="ai-badge">Digital Marketing</span>
+      </div>
+      <div class="ai-insight">
+        <div class="ai-insight-title">EDGE-Kampagnen optimieren: ROAS von 2x auf 6x</div>
+        <div class="ai-insight-text">
+          Der aktuelle ROAS von 2,06x liegt unter dem Branchenschnitt. ABER: Der Thumb-Stop-Ratio von 41% ist außergewöhnlich stark – das Content-Interesse ist da, die Conversion nicht.<br><br>
+          <strong>Empfehlung:</strong> Facebook komplett pausieren (bereits begonnen), Budget auf Instagram konzentrieren. Retargeting-Funnel aufbauen: Video-View → Eventseite → Reminder. Podcast-Clips als Paid-Content testen – hohe Authentizität, niedrige Produktionskosten.
+        </div>
+      </div>
+      <div class="ai-metric">Potenzial: ROAS 4–6x bei gleichem Budget</div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-header">
+        <span style="font-size:20px">🔗</span>
+        <span class="ai-badge">Content-Synergien</span>
+      </div>
+      <div class="ai-insight">
+        <div class="ai-insight-title">Buch-VÖ 2026 als Multiplikator für alle Kanäle</div>
+        <div class="ai-insight-text">
+          Buch #5 erscheint März 2026 – mitten in der Touring-Saison. Die Analyse der Talkshow-Feedbacks zeigt: Christine performt exzellent im TV, nutzt aber die Cross-Selling-Chancen noch nicht voll aus.<br><br>
+          <strong>Empfehlung:</strong> Integrierte Kampagne: TV-Auftritte → Podcast-Episode zum Buch → Instagram-Countdown → Ticket-Bundle (Show + signiertes Buch). Bergwelten-Kolumne als Preview-Teaser. Die Daten zeigen, dass nach NDR „DAS!" Ticket-Nachfrage stieg – diesen Effekt systematisch nutzen.
+        </div>
+      </div>
+      <div class="ai-metric">Potenzial: Buch + Show-Bundle → +€5–8 pro Ticket</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 24px">
+    <div class="section-title"><span class="icon">⚡</span> Quick-Win Automatisierungen für den Agentur-Alltag</div>
+    <div class="grid-3" style="margin-bottom:0">
+      <div style="padding:12px;background:rgba(34,201,151,0.05);border:1px solid rgba(34,201,151,0.15);border-radius:10px">
+        <div style="font-size:24px;margin-bottom:8px">📝</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text-bright)">Dispo-Generator</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:4px">
+          KI generiert Dispositions-Vorlage aus Venue-Daten + Rider automatisch. Anreise per Bahn wird mitgeplant.
+        </div>
+        <div style="font-size:11px;color:var(--accent3);margin-top:8px;font-weight:600">Ersparnis: ~45 Min pro Show</div>
+      </div>
+      <div style="padding:12px;background:rgba(79,140,255,0.05);border:1px solid rgba(79,140,255,0.15);border-radius:10px">
+        <div style="font-size:24px;margin-bottom:8px">📊</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text-bright)">Saison-Report</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:4px">
+          Ein Klick generiert kompletten Saison-Bericht mit Finanzen, Auslastung, Veranstalter-Feedback, Trends.
+        </div>
+        <div style="font-size:11px;color:var(--accent);margin-top:8px;font-weight:600">Ersparnis: ~1 Tag pro Saison</div>
+      </div>
+      <div style="padding:12px;background:rgba(124,92,252,0.05);border:1px solid rgba(124,92,252,0.15);border-radius:10px">
+        <div style="font-size:24px;margin-bottom:8px">✉️</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text-bright)">Veranstalter-Mailer</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:4px">
+          Personalisierte Anschreiben für neue Saison. KI kennt Historie, Kapazität und passt Angebot an.
+        </div>
+        <div style="font-size:11px;color:var(--accent2);margin-top:8px;font-weight:600">Ersparnis: ~30 Min pro Kontakt</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risiko-Radar -->
+  <div class="card" style="margin-top:24px">
+    <div class="section-title"><span class="icon">🛡️</span> Risiko-Radar (automatisch aus Dokumenten erkannt)</div>
+    <div class="risk-item">
+      <div class="risk-level high">!</div>
+      <div><div class="risk-text">Titelschutz-Abmahnung „Wander Woman"</div><div class="risk-detail">Jana Thiele hat Anspruch auf Titel erhoben. Rechtsanwalt Renner hat abgewehrt – aber Risiko besteht bei neuen Formaten weiter.</div></div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-level mid">⚡</div>
+      <div><div class="risk-text">EDGE-Werberechte / Facebook-Freischaltung</div><div class="risk-detail">Komplexer Prozess zur Freischaltung der Werberechte auf Meta. Dokumentierte Schwierigkeiten mit Unternehmensaccount.</div></div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-level mid">⚡</div>
+      <div><div class="risk-text">Logistik-Abhängigkeit Bahn</div><div class="risk-detail">Christine fährt kein Auto. Bei Bahnstreiks oder Verspätungen ist die gesamte Tour gefährdet. Kein dokumentierter Backup-Plan.</div></div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-level low">✓</div>
+      <div><div class="risk-text">KSK-Mitgliedschaft gesichert</div><div class="risk-detail">Alle Abrechnungen korrekt über KSK. Steuernummer und Finanzamt dokumentiert.</div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<div class="footer">
+  KI-generiertes Dashboard · Datenquelle: Ordneranalyse Christine Thürmer · Erstellt 25.03.2026
+</div>
+
+<script>
+// ─── TAB NAVIGATION ───
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ─── TOOLTIP ───
+function showTooltip(evt, city, line1, line2) {
+  const t = document.getElementById('tooltip');
+  const rect = evt.target.closest('.map-container').getBoundingClientRect();
+  const x = evt.clientX - rect.left + 12;
+  const y = evt.clientY - rect.top - 10;
+  t.innerHTML = `<div class="tooltip-city">${city}</div><div class="tooltip-stat">${line1}</div><div class="tooltip-stat"><span>${line2}</span></div>`;
+  t.style.left = x + 'px';
+  t.style.top = y + 'px';
+  t.classList.add('show');
+}
+function hideTooltip() { document.getElementById('tooltip').classList.remove('show'); }
+
+// ─── HEATMAP ───
+const heatData = [5, 6, 7, 3, 0, 0, 0, 0, 1, 4, 8, 6]; // Shows pro Monat
+const heatMax = Math.max(...heatData);
+const hm = document.getElementById('heatmap');
+heatData.forEach((v, i) => {
+  const cell = document.createElement('div');
+  cell.className = 'hm-cell';
+  const intensity = v / heatMax;
+  if (v === 0) {
+    cell.style.background = 'rgba(255,255,255,0.03)';
+    cell.style.color = 'rgba(255,255,255,0.2)';
+  } else {
+    cell.style.background = `rgba(79, 140, 255, ${0.1 + intensity * 0.6})`;
+  }
+  cell.textContent = v || '–';
+  cell.title = ['Jan','Feb','Mrz','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][i] + ': ' + v + ' Shows';
+  hm.appendChild(cell);
+});
+
+// ─── REVENUE CHART ───
+const revData = [
+  { month: 'Feb', amount: 2800, label: '€2.809' },
+  { month: 'Mrz', amount: 4200, label: '€4.200' },
+  { month: 'Apr', amount: 0, label: '–' },
+  { month: 'Mai', amount: 3100, label: '€3.100' },
+  { month: 'Jun', amount: 0, label: '–' },
+  { month: 'Jul', amount: 0, label: '–' },
+  { month: 'Aug', amount: 0, label: '–' },
+  { month: 'Sep', amount: 0, label: '–' },
+  { month: 'Okt', amount: 5800, label: '€5.800' },
+  { month: 'Nov', amount: 8200, label: '€8.200' },
+  { month: 'Dez', amount: 6400, label: '€6.400' },
+];
+const revMax = Math.max(...revData.map(d => d.amount));
+const rc = document.getElementById('revChart');
+revData.forEach(d => {
+  const group = document.createElement('div');
+  group.className = 'rev-bar-group';
+  const bar = document.createElement('div');
+  bar.className = 'rev-bar';
+  const h = d.amount ? (d.amount / revMax * 130) : 2;
+  bar.style.height = h + 'px';
+  bar.style.background = d.amount
+    ? 'linear-gradient(180deg, var(--accent), rgba(79,140,255,0.3))'
+    : 'rgba(255,255,255,0.05)';
+  const amt = document.createElement('div');
+  amt.className = 'rev-amount';
+  amt.textContent = d.label;
+  const lbl = document.createElement('div');
+  lbl.className = 'rev-label';
+  lbl.textContent = d.month;
+  group.appendChild(amt);
+  group.appendChild(bar);
+  group.appendChild(lbl);
+  rc.appendChild(group);
+});
+</script>
+</body>
+</html>
