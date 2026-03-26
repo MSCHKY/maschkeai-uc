@@ -108,7 +108,7 @@ export async function onRequestPost(context) {
         const readableTime = `${dateStr}, ${timeStr} Uhr`;
 
         // Escape HTML in user input
-        const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 
         // --- Send via Brevo API ---
         const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
