@@ -1,6 +1,6 @@
 # HANDOVER_CONTEXT.md — maschkeai-uc
 
-> Last updated: 2026-03-24T21:30 (Session 942c9ed)
+> Last updated: 2026-03-24T23:00 (Session e1e82f7)
 
 ## Project Status: FEATURE-COMPLETE (Under Construction)
 
@@ -240,7 +240,37 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 - ✅ Performance (JS 14.59kB gzip, CSS 6.83kB gzip, 0 Dependencies)
 - ✅ Tests (42/42)
 
-## Recent Session Changes (942c9ed — 2026-03-24, Abend/Nacht)
+## Recent Session Changes (e1e82f7 — 2026-03-24, Nacht)
+
+### P1 Mobile Layout Refactor — ERLEDIGT
+
+**Architektur-Entscheid umgesetzt:** Mobile (≤768px) von `position: fixed` auf Flexbox.
+
+**CSS (`src/style.css`):**
+- ✅ `@media (max-width: 768px)`: html `position: static` + `overflow: auto`, body `display: flex; flex-direction: column; height: 100dvh`, #terminal `flex: 1; min-height: 0; margin: 24px 24px 16px`, #legal-footer `position: static; flex-shrink: 0`
+- ✅ `@media (max-width: 480px)`: #terminal `top/left/right/bottom` → `margin: 8px 10px 10px`
+- ✅ Desktop (>768px) unverändert — weiterhin `position: fixed`
+- ✅ Dekorative Elemente (particles, plasma, astronaut, crt-boot) bleiben `position: fixed`
+
+**JS (`src/main.ts`):**
+- ✅ Keyboard-Handler komplett entfernt (94 Zeilen: focus/blur, visualViewport, scroll safety net)
+- ✅ Browser handled Keyboard jetzt nativ — kein JS-Workaround mehr nötig
+
+**HTML (`index.html`):**
+- ✅ `interactive-widget=resizes-visual` → `resizes-content` (Android Layout-Viewport resized bei Keyboard)
+
+**Playwright-Verifikation:**
+- ✅ Desktop 1280×800: Identisch wie vorher
+- ✅ Mobile Portrait 375×812: Flexbox-Layout korrekt, YORI + Footer sichtbar
+- ✅ Mobile Landscape 667×375: Deutlich besser als vorher ("katastrophal" → funktional)
+- ✅ Tablet 768×1024: Flexbox-Layout korrekt
+
+**Noch zu testen auf echtem Gerät:**
+- iOS Safari: Keyboard öffnen → Input sichtbar? (Browser scrollt nativ)
+- Chrome Android: Keyboard öffnen → Layout resized? (resizes-content)
+- Landscape + Keyboard auf beiden Plattformen
+
+## Previous Session Changes (942c9ed — 2026-03-24, Abend/Nacht)
 
 ### Mobile Keyboard — Root Cause gefunden, Architektur-Entscheid getroffen
 
@@ -385,12 +415,9 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 
 ## Open Tasks / Next Session
 
-- **P1: Mobile Layout Refactor — `position: fixed` → Flexbox (ARCHITEKTUR-ENTSCHEID)**
-  - Betrifft NUR Mobile (≤768px), Desktop bleibt unverändert
-  - Ziel: Browser handled Keyboard nativ, kein JS-Workaround nötig
-  - Detailplan oben unter "ARCHITEKTUR-ENTSCHEID"
-  - **Umsetzung mit parallelen Agenten** (CSS, JS, Testing)
-  - Landscape muss mitgetestet werden
+- **P1: Mobile Keyboard auf echtem Gerät testen** (iOS Safari + Chrome Android)
+  - Flexbox-Refactor ist deployed — Keyboard-Verhalten muss auf echtem Gerät verifiziert werden
+  - Falls Input noch verdeckt: Feintuning an body overflow oder scroll-Verhalten
 - P2: `www.maschke.ai` als Custom Domain in Cloudflare Pages hinzufügen (fehlt noch)
 - P3: Neue YORI-Sprites erstellen (Wave, Scared, Celebrate) — Robert erstellt die Pixel-Art
 - P3: maschke-vdna Abgleich fortsetzen (About-Text, Services-Text Feinschliff)
@@ -473,12 +500,9 @@ Under-construction holding page for `maschke.ai`. Fullscreen terminal experience
 ## Branch Status
 
 - **Branch:** `main`
-- **HEAD:** `942c9ed`
-- **Session commits (942c9ed — 2026-03-24, Abend/Nacht):** 4
-  - `f40843c` fix: set input font-size to 16px — prevent iOS auto-zoom viewport drift ✅ (Drift gefixt)
-  - `a9ad915` fix: add interactive-widget=resizes-visual — Safari keyboard detection ❌ (Safari ignoriert)
-  - `850d324` fix: rewrite keyboard handler — focus/blur primary, no per-device hacks ⚠️ (initial OK, bricht nach Chat)
-  - `942c9ed` fix: prevent visualViewport from falsely closing keyboard state ❌ (Problem bleibt)
+- **HEAD:** `e1e82f7`
+- **Session commits (e1e82f7 — 2026-03-24, Nacht):** 1
+  - `e1e82f7` refactor: mobile layout position:fixed → flexbox (≤768px) ✅
 
 ## Tech Stack
 - Vite (vanilla TypeScript)
