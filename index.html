@@ -51,7 +51,7 @@
   <div id="crt-boot-overlay" aria-hidden="true"></div>
 
   <div id="terminal">
-    <div id="terminal-output"></div>
+    <div id="terminal-output" aria-live="polite" aria-atomic="false"></div>
     <div id="terminal-separator"></div>
     <div id="terminal-input-line">
       <span id="prompt"><span class="prompt-full">nexus@maschke.ai ~ %</span><span class="prompt-short">nexus &gt;</span>&nbsp;</span>
@@ -67,8 +67,8 @@
   </div>
 
   <!-- Astronaut Yori — floating pixel mascot -->
-  <div id="astronaut-overlay" aria-hidden="true">
-    <div id="astronaut-bubble"></div>
+  <div id="astronaut-overlay">
+    <div id="astronaut-bubble" aria-live="polite"></div>
     <button type="button" id="astronaut-sprite" aria-label="Astronaut"></button>
   </div>
 
@@ -83,7 +83,7 @@
     <span class="separator">|</span>
     <button id="sound-toggle-mobile" title="Sound an/aus" aria-label="Sound an/aus">SOUND ON</button>
     <span class="separator">|</span>
-    <button id="theme-toggle" title="Theme wechseln">DARK</button>
+    <button id="theme-toggle" title="Theme wechseln" aria-label="Theme wechseln">DARK</button>
   </footer>
 
   <!-- Legal overlay (floating panel) -->

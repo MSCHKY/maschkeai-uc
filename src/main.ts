@@ -690,11 +690,11 @@ function formatAiText(raw: string): string {
     // Strip remaining *kursiv* markers (Mistral ignores the ban) → plain text
     formatted = formatted.replace(/\*([^*]+?)\*/g, '$1');
     // `command` → clickable chip
-    formatted = formatted.replace(/`([^`]+)`/g, '<span class="cmd-chip" data-cmd="$1">$1</span>');
+    formatted = formatted.replace(/`([^`]+)`/g, '<button type="button" class="cmd-chip" data-cmd="$1">$1</button>');
     // kontakt@maschke.ai → clickable chip that triggers contact form (not mailto)
     formatted = formatted.replace(
         /(?:<strong>)?(kontakt@maschke\.ai)(?:<\/strong>)?/g,
-        '<span class="cmd-chip" data-cmd="contact">$1</span>',
+        '<button type="button" class="cmd-chip" data-cmd="contact">$1</button>',
     );
     return formatted;
 }
@@ -885,10 +885,11 @@ async function processInput(text: string) {
         // Datenschutz hint with clickable command chip
         const hintLine = document.createElement('div');
         hintLine.className = 'line line-dim';
-        hintLine.innerHTML = 'Deine Nachrichten werden verarbeitet, aber nicht gespeichert. Details: <span class="cmd-chip" data-cmd="datenschutz">datenschutz</span>';
+        hintLine.innerHTML = 'Deine Nachrichten werden verarbeitet, aber nicht gespeichert. Details: <button type="button" class="cmd-chip" data-cmd="datenschutz">datenschutz</button>';
         output.appendChild(hintLine);
         hintLine.querySelector('.cmd-chip')?.addEventListener('click', () => {
             processInput('datenschutz');
+            input.focus();
         });
         addLine('', '');
         const consentLine = document.createElement('div');
@@ -1037,6 +1038,7 @@ async function processInput(text: string) {
                     const cmdName = el.dataset.cmd || '';
                     input.value = cmdName;
                     processInput(cmdName);
+                    input.focus();
                 });
             });
         } else if (result.lines) {
@@ -1104,6 +1106,7 @@ async function processInput(text: string) {
                 const cmd = (chip as HTMLElement).dataset.cmd || '';
                 input.value = cmd;
                 processInput(cmd);
+                input.focus();
             });
         });
         addLine('', '');
